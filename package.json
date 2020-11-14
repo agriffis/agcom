@@ -11,5 +11,16 @@
     "next": "10.0.1",
     "react": "17.0.1",
     "react-dom": "17.0.1"
+  },
+  "prettier": {
+    "arrowParens": "avoid",
+    "bracketSpacing": false,
+    "semi": false,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "all"
+  },
+  "devDependencies": {
+    "prettier": "^2.1.2"
   }
 }
