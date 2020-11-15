@@ -1,14 +1,17 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
+import {MyImage} from './MyImage'
 
 const SITE_TITLE = 'Aron Griffis'
+const SITE_LOGO = 'wave-crt.png'
 const SITE_LOGO_LINK = '/'
 
 export function Page({
   children,
   description,
   favicon = '/favicon.ico',
+  logo = SITE_LOGO,
   logoLink = SITE_LOGO_LINK,
   siteTitle = SITE_TITLE,
   title,
@@ -55,9 +58,9 @@ export function Page({
       */}
       </Head>
       <header className="page-header">
-        <Link href={logoLink}>
-          <Image id="logo" height={100} width={100} src="/img/wave-crt.png" />
-        </Link>
+        <div style={{maxWidth: '100px'}}>
+          <MyImage name={logo} href={logoLink} sizes="100px" />
+        </div>
       </header>
       <main className="page-content">{children}</main>
 
