@@ -1,0 +1,92 @@
+---
+title: httplib2 debug in a threaded app
+author: Aron
+tags: [python, httplib, n01se]
+excerpt: Duck-typing to the rescue
+layout: article
+---
+
+A couple months ago I blogged about my frustration with httplib logging.
+Andrew Dalke suggested that I should replace
+[sys.stdout](http://docs.python.org/library/sys.html#sys.stdout). His
+suggestion sent me googling, which turned up an [old email from
+Guido](https://web.archive.org/web/20110610082804/http://www.python.org/search/hypermail/python-1994q1/0169.html).
+Add threading.local and we have a solution!
+
+We need a duck-typed replacement for sys.stdout that behaves like a writeable
+file, but also provides the ability to capture to thread-local storage. One of
+the ways to use threading.local is to subclass it. An instance of this subclass
+will have per-thread attributes, even if the instance itself is common to
+multiple threads.
+
+Since [StringIO](http://docs.python.org/library/stringio.html) intentionally
+doesn't implement isatty(), we also need to make sure that gets passed through
+to the underlying file (we do this by catching the exception in getattr). And
+since we like seeing HTTP transactions when we're debugging, we include a
+writethrough mode that provides simultaneous capture and print.
+
+    import cStringIO, threading
+
+    class LocalCapturingWriter(threading.local):
+        def __init__(self, fp, writethrough=False):
+            self.__dict__['_fp'] = fp
+            self.__dict__['_stringio'] = None
+            self.__dict__['_writethrough'] = writethrough
+
+        def start_capture(self):
+            self.__dict__['_stringio'] = cStringIO.StringIO()
+
+        def stop_capture(self):
+            v = self._stringio.getvalue()
+            self._stringio.close()
+            self.__dict__['_stringio'] = None
+            return v
+
+        def write(self, s):
+            if self._stringio:
+                result = self._stringio.write(s)
+            if not self._stringio or self._writethrough:
+                result = self._fp.write(s)
+            return result
+
+        def __getattr__(self, name):
+            if self._stringio is not None:
+                try:
+                    return getattr(self._stringio, name)
+                except:
+                    pass
+            return getattr(self._fp, name)
+
+        def __setattr__(self, name, value):
+            if self._stringio:
+                setattr(self._stringio, name, value)
+            if not self._stringio or self._writethrough:
+                setattr(self._fp, name, value)
+
+And here's how to use it. First, the global settings:
+
+    import httplib2, sys
+    httplib2.debuglevel = 1
+    sys.stdout = LocalCapturingWriter(sys.stdout)
+
+Then the code that runs in a thread to capture the debugging output. This
+will work as expected even in multiple threads simultaneously.
+
+    sys.stdout.start_capture()
+    try:
+        response, content = \
+            httplib2.Http().request("http://n01se.net")
+    finally:
+        debug_trace = sys.stdout.stop_capture()
+
+    # Note that httplib2 doesn't include the content in its
+    # debug output.
+    debug_trace += "content: %r\n" % content
+
+We're now using this in our Django app, with a custom Exception class (to
+hold the captured trace) and middleware that knows to look for it. The end
+result is that every time an exception occurs due to a problem talking to
+a backend server, the exception email includes the httplib2 trace. Yeah!
+
+(originally posted on the [n01se blog](http://blog.n01se.net/blog-n01se-net-p-218.html))
+

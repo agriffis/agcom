@@ -1,0 +1,281 @@
+---
+title: Open edX devstack on KVM (Eucalyptus edition)
+excerpt: Tweaking Eucalyptus to run on KVM instead of Virtualbox
+author: Aron
+last_modified_at: '2017-02-16'
+tags: [edx, devstack, eucalyptus, vagrant, libvirt, kvm]
+layout: article
+redirect_from:
+  - /2016/11/05/openedx-libvirt.html
+---
+
+The
+[Open edX devstack](https://openedx.atlassian.net/wiki/display/OpenOPS/Running+Devstack)
+expects to run on Vagrant with VirtualBox. With a few tweaks, you can use
+Vagrant with KVM instead.
+
+The instructions here are specific to the Eucalyptus release.
+If you need Ficus, look [here]({% post_url 2017-02-16-openedx-ficus-libvirt %}).
+{:.note}
+
+## Rationale
+{:.no_toc}
+
+At [Scampersand](https://scampersand.com) we SSH into a shared development
+server that provides a stable environment and regular backups without relying on
+individual hardware or configuration. That server
+runs [Fedora](http://fedoraproject.org) and
+hosts [docker containers](https://www.docker.com)
+and [KVM virtual machines](http://www.linux-kvm.org/page/Main_Page).
+
+KVM and VirtualBox are mutually exclusive on Linux because they each supply a
+kernel module that handles the
+[CPU virtualization instructions](https://en.wikipedia.org/wiki/X86_virtualization),
+so only one can be loaded at a time. Since we have an existing infrastructure
+based on KVM, we'd rather run the devstack on it than need to bring up a
+separate host for Virtualbox.
+
+## Steps
+{:.no_toc}
+
+If you'd like to run the Open edX devstack on KVM, these are the steps you'll
+need. I'll explain these in detail below.
+
+* TOC
+{:toc}
+
+<style>
+#markdown-toc {list-style-type: decimal;}
+</style>
+
+### Install Vagrant 1.8.6 or later
+
+Vagrant prior to 1.8.6 has a [bug that affects old Ubuntu boxes](https://github.com/edx/configuration/issues/3385).
+The current release of Open edX--known as Eucalyptus--is based on Ubuntu 12.04
+which is affected by this bug.
+
+You can check what version of Vagrant you have:
+
+    $ vagrant -v
+    Vagrant 1.8.6
+
+If the version reported is older than 1.8.6 (or if you don't have Vagrant
+already) go ahead and get the latest
+from [vagrantup.com](https://www.vagrantup.com/downloads.html).
+
+Also note that if you're planning for more than one user to run devstack on the
+same host, you'll actually need the version *after* 1.8.6 to fix
+a [bug with NFS exports](https://github.com/mitchellh/vagrant/issues/7938).
+Unfortunately that version isn't released as I'm writing this, but if you're
+impatient then you can find a workaround
+in [my pull request](https://github.com/mitchellh/vagrant/pull/7939/files).
+This isn't necessary for single-user systems, so don't sweat it in that case.
+
+### Install the vagrant-libvirt plugin
+
+"Wait, libvirt? I thought we were using KVM."
+
+Right, so let's step back and review how this works. Vagrant is a tool for
+controlling a virtual machine. The configuration for the VM is described in
+`Vagrantfile`, and Vagrant depends on a virtualization provider to do the heavy
+lifting. Most of the time the provider is Virtualbox, but Vagrant can also use
+[VMware, Hyper-V, Docker and others](https://www.vagrantup.com/docs/providers/).
+
+KVM is a kernel-level virtualization technology that's managed
+by [libvirtd](http://libvirt.org/) in Linux distributions. In fact there used to
+be a [KVM-specific provider plugin](https://github.com/adrahon/vagrant-kvm) for
+Vagrant, but that's been deprecated in favor of
+the [libvirt provider plugin](https://github.com/vagrant-libvirt/vagrant-libvirt).
+
+So in order to use Vagrant with KVM, you need the vagrant-libvirt plugin. You
+can install it like this:
+
+    $ sudo dnf install libvirt-devel    # Fedora
+    $ sudo apt-get install libvirt-dev  # Ubuntu
+    $ vagrant plugin install vagrant-libvirt
+
+This approach installs it
+from [rubygems.org](https://rubygems.org/gems/vagrant-libvirt), which gives you
+the most recent version the author has released. The distributions also package
+the plugin so you can install it with `dnf` (Fedora) or `apt-get` (Ubuntu), but
+they're usually a few versions behind.
+
+### Enable user for vagrant with libvirt
+
+The libvirt daemon will need to know that you're authorized to manage virtual
+machines. The easiest way to do this is to add yourself to the libvirt group:
+
+    $ sudo usermod -aG libvirt $USER
+
+There's no need to log out and back in, since libvirtd checks group membership
+directly rather than via process inheritance.
+
+It's a good idea to make sure that `virsh` works properly before proceeding:
+
+    $ virsh --connect=qemu:///system sysinfo
+
+If that command produces some XML output, you should be good to go. If it
+doesn't, then you might need to investigate since vagrant-libvirt isn't likely
+to work either.
+
+{% comment %}
+You should make sure that `virsh` works properly before proceeding. Since
+vagrant-libvirt
+[always uses the system qemu session](https://github.com/vagrant-libvirt/vagrant-libvirt/blob/9682161c8a10122222c0f39328a1ebff1bcfaae2/lib/vagrant-libvirt/config.rb#L439).
+you can either use the `--connect` command-line option or set the environment
+variable, as shown here:
+{% endcomment %}
+
+### Mutate the devstack box
+
+The box image provided by edX is specific to to VirtualBox. Use
+the [vagrant-mutate](https://github.com/sciurus/vagrant-mutate) plugin to
+convert it for libvirt/KVM.
+
+    $ vagrant plugin install vagrant-mutate
+    Installing the 'vagrant-mutate' plugin. This can take a few minutes...
+    Installed the plugin 'vagrant-mutate (1.2.0)'!
+
+    $ vagrant box add --name eucalyptus-devstack-2016-09-01 --provider virtualbox \
+        http://files.edx.org/vagrant-images/eucalyptus-devstack-2016-09-01.box
+    ==> box: Box file was not detected as metadata. Adding it directly...
+    ==> box: Adding box 'eucalyptus-devstack-2016-09-01' (v0) for provider: virtualbox
+        box: Downloading: http://files.edx.org/vagrant-images/eucalyptus-devstack-2016-09-01.box
+    ==> box: Successfully added box 'eucalyptus-devstack-2016-09-01' (v0) for 'virtualbox'!
+
+    $ vagrant mutate eucalyptus-devstack-2016-09-01 libvirt
+    Converting eucalyptus-devstack-2016-09-01 from virtualbox to libvirt.
+        (100.00/100%)
+    The box eucalyptus-devstack-2016-09-01 (libvirt) is now ready to use.
+
+You can inspect what this does on the filesystem in your `.vagrant.d` directory.
+
+    $ tree ~/.vagrant.d/boxes
+    /home/aron/.vagrant.d/boxes
+    └── eucalyptus-devstack-2016-09-01
+        └── 0
+            ├── libvirt
+            │   ├── Vagrantfile
+            │   ├── box.img
+            │   └── metadata.json
+            └── virtualbox
+                ├── Vagrantfile
+                ├── box-disk1.vmdk
+                ├── box.ovf
+                ├── metadata.json
+                └── vagrant_private_key
+
+Notice that the `vagrant_private_key` wasn't included in the migration. While it
+would be possible to copy this manually, the easier workaround is to set
+`config.ssh.password`, and this is the approach already taken in the custom
+`Vagrantfile` you'll download next.
+
+### Download the modified devstack Vagrantfile
+
+The edX-provided Vagrantfile assumes Virtualbox, so I've provided a modified
+Vagrantfile that supports libvirt/KVM. You can inspect the differences
+[here](https://github.com/edx/configuration/compare/open-release/eucalyptus.master...scampersand:scampersand/eucalyptus.libvirt-kvm).
+
+You should download this into a new directory where the sources will
+also eventually be checked out.
+
+    $ mkdir devstack
+    $ cd devstack
+    $ curl -OL https://raw.githubusercontent.com/scampersand/configuration/scampersand/eucalyptus.libvirt-kvm/vagrant/release/devstack/Vagrantfile
+
+### Fire it up!
+
+At this point you can start devstack. If you will have more than one user
+running on the same host, then you should start it with `VAGRANT_NO_PORTS=1` to
+avoid listening on a bunch of localhost ports that will collide between users.
+Instead you can access the VM by its own IP address as shown below.
+
+    $ VAGRANT_NO_PORTS=1 vagrant up --provider=libvirt
+    Bringing machine 'default' up with 'libvirt' provider...
+    ==> default: Creating image (snapshot of base box volume).
+    ==> default: Creating domain with the following settings...
+    ==> default:  -- Name:              devstack_default_1478018111_5f69c2128844670d27e2
+    ==> default:  -- Domain type:       kvm
+    ==> default:  -- Cpus:              2
+    ==> default:  -- Memory:            4096M
+    ==> default:  -- Management MAC:
+    ==> default:  -- Loader:
+    ==> default:  -- Base box:          eucalyptus-devstack-2016-09-01
+    ==> default:  -- Storage pool:      default
+    ==> default:  -- Image:             /var/lib/libvirt/images/devstack_default_1478018111_5f69c2128844670d27e2.img (80G)
+    ==> default:  -- Volume Cache:      default
+    ==> default:  -- Kernel:
+    ==> default:  -- Initrd:
+    ==> default:  -- Graphics Type:     vnc
+    ==> default:  -- Graphics Port:     5900
+    ==> default:  -- Graphics IP:       127.0.0.1
+    ==> default:  -- Graphics Password: Not defined
+    ==> default:  -- Video Type:        cirrus
+    ==> default:  -- Video VRAM:        9216
+    ==> default:  -- Keymap:            en-us
+    ==> default:  -- TPM Path:
+    ==> default:  -- INPUT:             type=mouse, bus=ps2
+    ==> default:  -- Command line :
+    ==> default: Creating shared folders metadata...
+    ==> default: Starting domain.
+    ==> default: Waiting for domain to get an IP address...
+    ==> default: Waiting for SSH to become available...
+        default:
+        default: Inserting generated public key within guest...
+        default: Removing insecure key from the guest if it's present...
+        default: Key inserted! Disconnecting and reconnecting using new SSH key...
+    ==> default: Configuring and enabling network interfaces...
+    ==> default: Exporting NFS shared folders...
+    ==> default: Preparing to edit /etc/exports. Administrator privileges will be required...
+    Redirecting to /bin/systemctl status  nfs-server.service
+    ● nfs-server.service - NFS server and services
+       Loaded: loaded (/usr/lib/systemd/system/nfs-server.service; enabled; vendor preset: disabled)
+      Drop-In: /run/systemd/generator/nfs-server.service.d
+               └─order-with-mounts.conf
+       Active: active (exited) since Thu 2016-09-15 17:33:21 EDT; 1 months 16 days ago
+     Main PID: 1470 (code=exited, status=0/SUCCESS)
+        Tasks: 0 (limit: 512)
+       Memory: 0B
+          CPU: 0
+       CGroup: /system.slice/nfs-server.service
+
+    Sep 15 17:33:20 gargan.jupiter systemd[1]: Starting NFS server and services...
+    Sep 15 17:33:21 gargan.jupiter systemd[1]: Started NFS server and services.
+    ==> default: Mounting NFS shared folders...
+    ==> default: Running provisioner: shell...
+        default: Running: inline script
+    ==> default: stdin: is not a tty
+    ==> default:
+    ==> default: PLAY [all] ********************************************************************
+    ...
+
+When this finishes, you can start Studio or LMS just like the
+[edX-provided instructions](https://openedx.atlassian.net/wiki/display/OpenOPS/Running+Devstack):
+
+    $ vagrant ssh
+    vagrant@precise64:~$ sudo su edxapp
+    edxapp@precise64:~/edx-platform$ paver devstack studio  # or lms
+
+If you ran with `VAGRANT_NO_PORTS=1` then you'll need the IP address of the
+virtual machine:
+
+    $ vagrant ssh-config
+    Host default
+      HostName 192.168.121.155
+      User vagrant
+      Port 22
+      UserKnownHostsFile /dev/null
+      StrictHostKeyChecking no
+      PasswordAuthentication no
+      IdentityFile /home/aron/devstack/.vagrant/machines/default/libvirt/private_key
+      IdentitiesOnly yes
+      LogLevel FATAL
+
+Use the IP address shown in the output construct the URL. For example, in the
+output above, the LMS will be on `http://192.168.121.155:8000` and Studio is on
+`http://192.168.121.155:8001`
+
+Note that this IP address is a private IPv4 address as defined
+by [RFC 1918](https://tools.ietf.org/html/rfc1918), so if you're running on
+a server separate from your own workstation, you'll need some additional network
+hookup. I'll show you what I use in a following article.

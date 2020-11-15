@@ -1,0 +1,80 @@
+---
+title: Ruby like a Pythonista
+excerpt: Isolating Ruby development with Python's virtualenv
+author: Aron
+tags: [virtualenv, python, ruby, gems, bundler]
+layout: article
+---
+
+As a Python developer, I'm accustomed to using
+[virtualenv](https://virtualenv.pypa.io/en/stable/)
+with
+[virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/index.html)
+to isolate development. Even inside a Vagrant VM or Docker container, I rely on
+virtualenv to separate my project dependencies from the packages supplied by the
+system.
+
+Occasionally I find myself working in Ruby, and I'd like to isolate my
+development there too. There are a couple of worthy options,
+namely [RVM](https://rvm.io/) and [rbenv](https://github.com/rbenv/rbenv).
+Similarly to virtualenv, these tools create a project-specific directory for
+installing gems, and then set some environment variables such as `GEM_HOME` and
+`PATH` to use that directory.
+
+If I were working in Ruby more frequently, I'd embrace one or both of
+those tools. But with virtualenv already in hand, I wondered if there would be a
+way to piggyback Ruby isolation on my existing toolset. It turns out it's not
+hard at all--at least if you're using virtualenvwrapper, which provides some
+extra hooks for when you're activating and deactivating the virtualenv.
+
+To use virtualenvwrapper with Ruby, first put the following in
+`~/.virtualenvs/postactivate`. This will cause these environment variables to be
+set whenever you do a `workon`.
+
+    # postactivate: this hook is run after every virtualenv is activated.
+
+    DEACTIVATE_GEM_HOME=$GEM_HOME
+    export GEM_HOME=$VIRTUAL_ENV/gems
+    PATH=$GEM_HOME/bin:$PATH
+
+Second, put the following in `~/.virtualenvs/predeactivate`. This will clean up
+the environment when you do a `deactivate`.
+
+    # predeactivate: this hook is run before every virtualenv is deactivated.
+
+    if [[ -n $DEACTIVATE_GEM_HOME ]]; then
+        export GEM_HOME=$DEACTIVATE_GEM_HOME
+    else
+        unset GEM_HOME
+    fi
+    unset DEACTIVATE_GEM_HOME
+
+You don't need to clean up `PATH` because virtualenvwrapper already does that in
+the default `postdeactivate` hook.
+
+With these hooks in place, you can work on Ruby projects in isolation using the
+same (Python-based) virtualenv tools that you're already familiar with. For
+example:
+
+    # Clone a popular ruby project
+    git clone https://github.com/scampersand/jekyll-pants.git
+    cd jekyll-pants
+
+    # Make the virtualenv, implicitly runs workon and postactivate
+    mkvirtualenv jekyll-pants
+
+    # Install the dependencies from the Gemfile
+    bundle install
+
+    # Run the tests
+    bundle exec rspec
+
+The caveat to this approach is that you'll only have one version of Ruby
+available--whatever is installed on your system. If you need to work with a
+different version--or multiple versions--then you'll want to try RVM, or rbenv
+with its [ruby-build](https://github.com/rbenv/ruby-build) plugin.
+
+So far, though, this setup is working well for me, and I just rely
+on [Travis-CI](https://travis-ci.org/scampersand/jekyll-pants)
+to test the [outlying Ruby versions](http://rubies.travis-ci.org/) when I push
+to Github.

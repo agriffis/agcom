@@ -1,0 +1,54 @@
+---
+title: Neovim nightlies revisited
+excerpt: With LuaJIT and rpkg spec templates
+author: Aron
+tags: [fedora, neovim, copr, rpkg]
+layout: article
+---
+
+Last month I kicked off [Neovim nightly builds in Fedora
+COPR]({% post_url 2019-03-02-neovim-nightly-builds %}). Since then
+something interesting happened: the maintainer for the Neovim package in
+Fedora [accepted
+a change](https://src.fedoraproject.org/rpms/neovim/pull-request/2) to
+build Neovim with LuaJIT instead of Lua 5.3.
+
+This is significant because Neovim upstream [explicitly depends on Lua
+5.1](https://github.com/neovim/neovim/wiki/FAQ#why-lua-51-instead-of-lua-53)
+(which LuaJIT implements). Most open source projects use [semantic
+versioning](https://semver.org) (major.minor.patch) so version 5.3 would
+normally indicate a non-breaking update to version 5.1. But Lua is an
+outlier--it doesn't use semantic versioning. Here's what [Lua's versions
+page](https://www.lua.org/versions.html) says (emphasis mine):
+
+> The releases of Lua are numbered x.y.z, where **x.y is the version** and **z is the release.**
+>
+> Different releases of the same version correspond to bug fixes. Different
+> releases of the same version have the same reference manual, the same
+> virtual machine, and are binary compatible (ABI compatible).
+>
+> **Different versions are really different...**
+
+By switching the Neovim package to use LuaJIT, the Fedora package ensures
+compatibility with Lua code in the core Neovim package as well as external
+plugins written against the Lua 5.1 API.
+
+Also, you just might notice it's
+[faster](https://luajit.org/performance_x86.html).
+
+Since this change landed in Fedora, I updated the nightly COPR builds to do
+the same. I also cleaned up the build process using [rpkg spec
+templates](https://docs.pagure.org/rpkg-util/spec_templates_from_scratch.html)
+instead of messily rewriting the spec for each update. See
+[neovim.spec.rpkg](https://github.com/agriffis/neovim/blob/copr/neovim.spec.rpkg)
+and
+[python-neovim.spec.rpkg](https://github.com/agriffis/pynvim/blob/copr/python-neovim.spec.rpkg)
+
+One more thing: if you're on Fedora 31 (Rawhide) there's no longer
+a python2-neovim package because [Python 2 will be
+EOL](https://pythonclock.org) shortly after [Fedora 31
+release](https://fedoraproject.org/wiki/Releases/31/Schedule).
+
+    sudo dnf copr enable agriffis/neovim-nightly
+    sudo dnf upgrade neovim python3-neovim     # Fedora 31/Rawhide
+    sudo dnf upgrade neovim python{2,3}-neovim # Everybody else

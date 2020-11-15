@@ -3,6 +3,7 @@ import hydrate from 'next-mdx-remote/hydrate'
 import matter from 'gray-matter'
 import fs from 'fs'
 import path from 'path'
+import {Page} from '../../components'
 
 const root = process.cwd()
 const blogContent = path.join(root, 'content/blog')
@@ -10,10 +11,10 @@ const blogContent = path.join(root, 'content/blog')
 export default function BlogPost({mdxSource, frontMatter}) {
   const content = hydrate(mdxSource)
   return (
-    <>
+    <Page>
       <h1>{frontMatter.title}</h1>
       {content}
-    </>
+    </Page>
   )
 }
 

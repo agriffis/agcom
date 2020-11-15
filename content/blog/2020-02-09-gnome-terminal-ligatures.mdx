@@ -1,0 +1,94 @@
+---
+title: How to disable ligatures in GNOME Terminal
+excerpt: Fontconfig to the rescue
+author: Aron
+tags: [fontconfig,fonts,gnome-terminal,ligatures]
+layout: article
+---
+
+Lately a bunch of programming-oriented fonts have added ligatures, especially
+for operators. For example, take a look at [Fira
+Code](https://github.com/tonsky/FiraCode) and [JetBrains
+Mono](https://www.jetbrains.com/lp/mono/). To be honest, I'm not sure what
+I think of the ligatures, but I'd still like to be able to use the fonts. The
+problem is that GNOME Terminal makes a mess of the ligatures, for example here's
+JetBrains Mono:
+
+<div className="post-image wide">
+  <img alt="JetBrains Mono with ligatures in Gnome Terminal" src="/img/as-is/gnome-terminal-jetbrains-mono-ligatures.png">
+</div>
+
+One option is to use a [terminal emulator that supports
+ligatures](https://github.com/tonsky/FiraCode/blob/master/README.md#terminal-support).
+Another option is to find a forked font that disables ligatures. For Fira Code,
+that's especially easy because it was forked from [Fira
+Mono](http://mozilla.github.io/Fira/) specifically to add ligatures!
+
+A third option is to disable the ligatures in GNOME Terminal, instead of
+disabling them in the font. This is good for JetBrains Mono, which comes with
+ligatures in the upstream build, and it would be nice to avoid forking the font.
+
+GNOME Terminal uses
+[fontconfig](https://www.freedesktop.org/wiki/Software/fontconfig/) under the
+hood, so the file we need to change is `~/.config/fontconfig/fonts.conf`. Here
+is a configuration that recognizes GNOME Terminal, then disables the [OpenType
+features](https://docs.microsoft.com/en-us/typography/opentype/spec/featurelist)
+related to ligatures:
+
+    <?xml version='1.0'?>
+    <!DOCTYPE fontconfig SYSTEM 'fonts.dtd'>
+    <fontconfig>
+      <match>
+        <test name="prgname" compare="contains">
+          <string>gnome-terminal</string>
+        </test>
+        <edit name="fontfeatures" mode="append">
+          <string>calt off</string>
+          <string>clig off</string>
+          <string>dlig off</string>
+          <string>liga off</string>
+        </edit>
+      </match>
+    </fontconfig>
+
+Here's JetBrains Mono with ligatures disabled:
+
+<div className="post-image wide">
+  <img alt="JetBrains Mono without ligatures in Gnome Terminal" src="/img/as-is/gnome-terminal-jetbrains-mono-fixed.png">
+</div>
+
+## Matching GNOME Terminal in fonts.conf
+
+You might have noticed the config snippet uses `compare="contains"`:
+
+    <test name="prgname" compare="contains">
+      <string>gnome-terminal</string>
+    </test>
+
+It took me a little while to figure out the right test to use here. I had worked
+out how to disable the ligatures with OpenType feature flags, but I wanted to
+constrain that to GNOME Terminal instead of affecting other programs. Originally
+I had `compare="eq"` but it wasn't recognizing.
+
+I figured I had the program name wrong, but I didn't know what it should be. To
+find the right name, [I started the GNOME Terminal
+server](https://wiki.gnome.org/Apps/Terminal/Debugging) with [fontconfig
+debugging
+enabled](https://www.freedesktop.org/software/fontconfig/fontconfig-user.html#DEBUG):
+
+    $ FC_DEBUG=5 /usr/libexec/gnome-terminal-server \
+        --app-id=my.foo.Terminal &> out &
+
+Next, I ran the client. The interesting stuff happens in the server, but it
+doesn't happen until the client connects:
+
+    $ gnome-terminal --app-id=my.foo.Terminal
+
+Finally, I found lots of this in the captured output:
+
+    prgname: "gnome-terminal-server"(s)
+
+The program name is "gnome-terminal-server," so "contains gnome-terminal" does
+the trick.
+
+If you're curious, [here's my full fonts.conf](https://github.com/agriffis/skel/blob/master/fontconfig/.config/fontconfig/fonts.conf).

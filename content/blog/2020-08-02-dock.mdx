@@ -1,0 +1,127 @@
+---
+title: How to use Docker for quick stuff
+slug: dock
+author: Aron
+tags: [dock, docker, chromebook, pixelbook, keybase]
+excerpt: Making an easy Docker container for local experimentation
+layout: article
+---
+
+Today I needed to build some Debian packages, and I thought I'd do it in
+a container on my Fedora desktop. I've used Docker previously for development
+and deployment, but never for quick personal containers, and it was easier than
+I imagined. There are just two steps: make the image, and run the container.
+
+I anticipate that I'll accumulate a few of these quick distro containers, so I'm
+keeping Dockerfiles in `~/docks` and using a script `dock` to run them.
+
+## Make the image
+
+Here's my Dockerfile for Debian Buster. It installs some packages, fakes the
+Keybase redirector, and makes my user. It's important that the "aron" user here
+has the same UID and GID as my host user, so that I'll have permissions to read
+and write my home directory mounted in the container.
+
+    # ~/docks/Dockerfile-buster
+    FROM debian:buster
+
+    # Enable source repos for apt-get build-dep.
+    RUN sed -ni 'p;s/^deb /deb-src /p' /etc/apt/sources.list
+
+    # Base system and build requirements.
+    RUN apt-get update && apt-get install -y \
+            build-essential \
+            devscripts \
+            fakeroot \
+            mini-dinstall \
+            msmtp \
+            msmtp-mta \
+            ncurses-term \
+            sudo \
+            vim \
+        && apt-get build-dep -y \
+            kitty \
+            mosh
+
+    # Enable running sudo without a password.
+    RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
+    # Avoid locale warnings with LANG=en_US.UTF-8
+    RUN sed -i '/^# en_US.UTF-8/s/^# //' /etc/locale.gen
+    RUN locale-gen
+
+    # This symlink takes the place of the keybase redirector in the container.
+    RUN ln -s /run/user/10208/keybase/kbfs /keybase
+
+    # Set up my user and make it the default.
+    RUN groupadd -g 10208 aron
+    RUN useradd -u 10208 -g aron -G sudo -s /bin/bash -m aron
+    USER aron
+    WORKDIR /home/aron
+
+Building and tagging the image using this Dockerfile:
+
+    ✸ docker build --tag dock-buster -f Dockerfile-buster ~/docks
+    ...
+    Successfully tagged dock-buster:latest
+
+## Run the container
+
+Running the container looks like this:
+
+    aron@fedora ✸ dock buster
+    aron@buster ✸ cat /etc/debian_version
+    10.4
+
+The `dock` script is a wrapper around the `docker` command to run with some
+arguments. It looks like this:
+
+    #!/bin/bash
+    #
+    # dock -- run a Docker container with my stuff in it
+    #
+
+    main() {
+        declare keybase=/run/user/$UID/keybase
+
+        docker run --name=$1 --hostname=$1 -it -e SSH_AUTH_SOCK -e TERM --rm \
+            --mount type=bind,source=$HOME,target=$HOME,bind-propagation=rslave \
+            --mount type=bind,source=$keybase,target=$keybase,bind-propagation=rslave \
+            --mount type=bind,source=$SSH_AUTH_SOCK,target=$SSH_AUTH_SOCK \
+            dock-$1 /bin/bash
+
+        exit
+    }
+
+    main "$@"
+
+That command might seem daunting, but it's pretty straightforward:
+
+* Call the container `buster` when we run `dock buster`.
+* Pass through `SSH_AUTH_SOCK` and `TERM` in the environment.
+* Remove the container automatically between runs.
+* Bind-mount home directory, keybase dir and the SSH agent socket.
+* Use the image called `dock-buster`, and run `/bin/bash`.
+
+Docker's
+[bind-propagation](https://docs.docker.com/storage/bind-mounts/#configure-bind-propagation)
+flag was new to me. Normally sub-mounts of the original mount aren't exposed to
+the container, but using `rslave` allows them to be shared. For example, I have
+`/home/aron/Dropbox` mounted as a separate filesystem, and
+`bind-propagation=rslave` allows me to access Dropbox in the container.
+
+This is especially important for the Keybase mount. The dir I actually wanted to
+bind-mount was `/run/user/$UID/keybase/kbfs` but trying to share that directly
+yields a permission error. This is because the Docker daemon, running as root,
+isn't allowed to access the kbfs fuse-mounts of individual users. Bind mounting
+the parent dir with `bind-propagation=rslave` allows my user, who is allowed by
+the fuse-mount, to access kbfs in the container.
+
+The other interesting thing here is the bind mount of the SSH socket. That
+allows SSH in the container to access my SSH agent running in the host, so that
+I don't need to enter my password for git commands.
+
+## Putting it together
+
+At the end of this I have a directory `~/docks` that contains Dockerfiles for
+distro experimentation, and a script `~/bin/dock` to run them conveniently.

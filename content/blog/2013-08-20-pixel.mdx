@@ -1,0 +1,114 @@
+---
+title: Developing on the Chromebook Pixel
+slug: pixel
+author: Aron
+tags: [chromebook, pixel, google, crouton]
+excerpt: Developing on a Chromebook is fine, if your habits match mine.
+layout: article
+redirect_from:
+  - /blog/articles/2013-08-20-pixel.html
+---
+
+I'm using the Pixel for daily development in Python/Django, with [crouton](https://github.com/dnschneid/crouton),
+[ssh](https://chrome.google.com/webstore/detail/secure-shell/pnhechapfaindjhompbnflcldabbghjo?hl=en) to localhost,
+[mosh](http://mosh.mit.edu) to home server, and [tmux](http://tmux.sourceforge.net) FTW.
+
+### How it works
+
+I do everything in two applications: browser and terminal. This statement
+holds true on the Pixel or my desktop, and it's one of the key reasons that
+the Pixel works well for me as a development front-end.
+
+So on the Pixel I have a total of two windows. Right, you guessed it:
+browser and terminal. They're both running full-screen, which is important
+because it enables the terminal app to handle more keypresses than running
+in a browser tab.  For example I'm accustomed to ctrl-w for deleting words,
+but in the browser it pops up a dialog to ask if I'd like to close the tab.
+Additionally this means that it's easy to toggle between the browser and
+terminal with alt-tab.
+
+The terminal itself is an ssh connection to localhost, specifically to sshd
+running inside a crouton-built Debian chroot.  Doing it this way rather
+than ssh directly to remote hosts means that I have mosh available so the
+laptop can sleep or move between networks without losing my connection.
+This is especially nice for using LTE while moving in and out of
+connectivity.
+
+I don't use the chroot for anything else. This way I'm not wasting time
+trying to get a Linux desktop to handle the high resolution, and I'm not
+switching between desktops. It's all Chrome OS plus mosh in the chroot.
+
+On my home server my entire development session is in tmux, including
+a vagrant VM running my Django server. This affords a lot of flexibility,
+provided you're comfortable with terminal-based tools.
+
+### Initial setup
+
+On a fresh Chromebook in developer mode, press ctrl-alt-t for crosh. First
+set the password for the chronos user, otherwise your Chromebook is easily
+accessed by anyone on VT2:
+
+    crosh> shell
+    chronos@localhost / $ sudo chromeos-setdevpasswd
+
+Install the crouton chroot:
+
+    chronos@localhost ~ $ curl -L http://goo.gl/fd3zc > ~/Downloads/crouton
+    chronos@localhost ~ $ sudo sh -e ~/Downloads/crouton -t cli-extra -r sid
+
+This will ask some questions, during which I set up my "aron" user in the
+chroot. Next, enter the chroot to finish configuration:
+
+    chronos@localhost ~ $ sudo enter-chroot -u root
+    (sid)root@localhost:~# apt-get install -y mosh ssh sudo
+    (sid)root@localhost:~# usermod -a -G sudo aron
+    (sid)root@localhost:~# exit
+
+### First time, and after any reboot
+
+Usually I don't reboot my Pixel, rather it's either running or suspended to
+avoid needing to run these commands often, but it's not that hard...
+
+    chronos@localhost / $ sudo bash
+    localhost / # enter-chroot -b sleep 999999
+    localhost / # enter-chroot -u root install -d -m 0755 /var/run/sshd
+    localhost / # enter-chroot -u root -b /usr/sbin/sshd -D
+
+The sleep just keeps the chroot from unmounting. The directory is normally
+made on boot by the initscript but I found it easier to create it and run
+sshd directly. YMMV.
+
+### Now to work
+
+In a full-screen ssh window, I establish a connection to localhost. In that
+terminal, I connect to my development session:
+
+    mosh gargan.no-ip.org tmux attach -d
+
+The only gotcha is that I still need to access my Django development
+server. For that, I start a crosh tab with ctrl-alt-t, then:
+
+    crosh> shell
+    chronos@localhost / $ ssh -L 8000:localhost:8000 gargan.no-ip.org
+
+Unfortunately this needs to be re-established any time the connection is
+interrupted, such as when the laptop goes to sleep. Mosh doesn't provide
+port-forwarding, and I don't take security lightly, so this is the best
+I've got for now.
+
+### Advertent omissions
+
+I don't actually use mosh directly, rather I use ssh keys with ssh-agent
+and the following script (called "gosh") to jump through my home gateway on
+the way to my server. It uses a short-lived ssh connection to forward the
+agent to the gateway for the final hop:
+
+    #!/bin/bash
+    gateway=gargan.no-ip.org
+    ssh -fA $gateway 'ln -sfn $SSH_AUTH_SOCK foo; sleep 30'
+    mosh $gateway -- env SSH_AUTH_SOCK=foo ssh -t "$@"
+
+I also install synergy in the chroot, so that I can control my Pixel from
+my desktop keyboard and mouse whenever I'm on the LAN:
+
+    enter-chroot -b host-x11 synergyc --no-daemon --name jasperodus gargan
