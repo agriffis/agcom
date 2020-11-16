@@ -6,6 +6,7 @@
     "start": "next-remote-watch ./content"
   },
   "dependencies": {
+    "@silvenon/remark-smartypants": "^1.0.0",
     "gray-matter": "^4.0.2",
     "next": "10.0.1",
     "next-mdx-remote": "^1.0.0",

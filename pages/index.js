@@ -1,6 +1,7 @@
 import renderToString from 'next-mdx-remote/render-to-string'
 import hydrate from 'next-mdx-remote/hydrate'
 import matter from 'gray-matter'
+import smartypants from '@silvenon/remark-smartypants'
 import fs from 'fs'
 import path from 'path'
 import Head from 'next/head'
@@ -13,7 +14,7 @@ import {enrichFrontMatter, isoDate, shortDate} from '../utils'
 export default function Home({frontMatter, mdxSource, posts}) {
   const content = hydrate(mdxSource)
   return (
-    <Page>
+    <Page {...frontMatter}>
       {content}
       <h2>Writing</h2>
       {posts.map(post => {
@@ -57,7 +58,9 @@ export async function getStaticProps({params}) {
     'utf8',
   )
   const {data, content} = matter(source)
-  const mdxSource = await renderToString(content)
+  const mdxSource = await renderToString(content, {
+    mdxOptions: {remarkPlugins: [smartypants]},
+  })
   const posts = getPosts()
   return {props: {frontMatter: data, mdxSource, posts}}
 }
