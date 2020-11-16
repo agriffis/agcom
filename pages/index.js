@@ -7,52 +7,57 @@ import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import {Page} from '../components'
+import {getPosts} from '../utils-node'
+import {enrichFrontMatter, isoDate, shortDate} from '../utils'
 
-const root = process.cwd()
-const blogContent = path.join(root, 'content/blog')
-
-export default function Home({mdxSource, frontMatter, postData}) {
+export default function Home({frontMatter, mdxSource, posts}) {
   const content = hydrate(mdxSource)
   return (
     <Page>
       {content}
       <h2>Writing</h2>
-      {postData.map(data => (
-        <article className="post-listing">
-          <header className="post-header">
-            <h3 className="post-title">
-              <Link href="/blog/[slug]" as={`/blog/${data.slug}`}>
-                <a>{data.frontMatter.title}</a>
-              </Link>
-            </h3>
-          </header>
-          <section>
-            <p className="post-excerpt">{data.frontMatter.excerpt}</p>
-          </section>
-          {/*
-          <footer className="post-meta">
-            <time datetime="2020-08-02T00:00:00+00:00">Aug 02, 2020</time>
-          </footer>
-          */}
-        </article>
-      ))}
+      {posts.map(post => {
+        const postMatter = enrichFrontMatter(post)
+        return (
+          <article key={post.slug} className="post-listing">
+            <header className="post-header">
+              <h3 className="post-title">
+                <Link href={`/${post.slug}`}>
+                  <a>{postMatter.title}</a>
+                </Link>
+              </h3>
+            </header>
+            <section>
+              <p className="post-excerpt">{postMatter.excerpt}</p>
+            </section>
+            <footer className="post-meta">
+              <time datetime={isoDate(postMatter.created)}>
+                {shortDate(postMatter.created)}
+              </time>
+              {postMatter.updated && (
+                <>
+                  {' (updated: '}
+                  <time datetime={isoDate(postMatter.updated)}>
+                    {shortDate(postMatter.updated)}
+                  </time>
+                  )
+                </>
+              )}
+            </footer>
+          </article>
+        )
+      })}
     </Page>
   )
 }
 
 export async function getStaticProps({params}) {
-  const source = fs.readFileSync(path.join(root, 'content/home.mdx'), 'utf8')
+  const source = fs.readFileSync(
+    path.join(process.cwd(), 'content/home.mdx'),
+    'utf8',
+  )
   const {data, content} = matter(source)
   const mdxSource = await renderToString(content)
-
-  const postData = fs.readdirSync(blogContent).map(p => {
-    const content = fs.readFileSync(path.join(blogContent, p), 'utf8')
-    return {
-      slug: p.replace(/\.mdx/, ''),
-      content,
-      frontMatter: matter(content).data,
-    }
-  })
-
-  return {props: {mdxSource, frontMatter: data, postData}}
+  const posts = getPosts()
+  return {props: {frontMatter: data, mdxSource, posts}}
 }
