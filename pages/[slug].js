@@ -19,7 +19,7 @@ export default function BlogPost({data, mdxSource, slug}) {
           {postMatter.subTitle && <h2>{postMatter.subTitle}</h2>}
           <div className="post-meta">
             <time
-              datetime={isoDate(postMatter.created)}
+              dateTime={isoDate(postMatter.created)}
               itemprop="datePublished"
             >
               {shortDate(postMatter.created)}
@@ -28,7 +28,7 @@ export default function BlogPost({data, mdxSource, slug}) {
               <>
                 {' (updated: '}
                 <time
-                  datetime={isoDate(postMatter.updated)}
+                  dateTime={isoDate(postMatter.updated)}
                   itemprop="dateModified"
                 >
                   {shortDate(postMatter.updated)}

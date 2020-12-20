@@ -32,13 +32,13 @@ export default function Home({frontMatter, mdxSource, posts}) {
               <p className="post-excerpt">{postMatter.excerpt}</p>
             </section>
             <footer className="post-meta">
-              <time datetime={isoDate(postMatter.created)}>
+              <time dateTime={isoDate(postMatter.created)}>
                 {shortDate(postMatter.created)}
               </time>
               {postMatter.updated && (
                 <>
                   {' (updated: '}
-                  <time datetime={isoDate(postMatter.updated)}>
+                  <time dateTime={isoDate(postMatter.updated)}>
                     {shortDate(postMatter.updated)}
                   </time>
                   )
