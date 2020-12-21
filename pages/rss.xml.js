@@ -48,6 +48,7 @@ export async function getServerSideProps({res}) {
   )
 
   res.setHeader('Content-Type', 'text/xml')
+  res.setHeader('Cache-Control', 'max-age=3600, public, immutable')
   res.write(rssXml({blogUrl: 'https://arongriffis.com', lastBuildDate, posts}))
   res.end()
 
