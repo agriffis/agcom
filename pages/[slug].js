@@ -9,14 +9,14 @@ export default function BlogPost({data, mdxSource, slug}) {
   const content = hydrate(mdxSource, {components})
   return (
     <Page {...postMatter}>
-      <article itemscope itemtype="http://schema.org/CreativeWork">
+      <article itemScope itemType="http://schema.org/CreativeWork">
         <header>
           <h1>{postMatter.title}</h1>
           {postMatter.subTitle && <h2>{postMatter.subTitle}</h2>}
           <div className="post-meta">
             <time
               dateTime={isoDate(postMatter.created)}
-              itemprop="datePublished"
+              itemProp="datePublished"
             >
               {shortDate(postMatter.created)}
             </time>
@@ -25,7 +25,7 @@ export default function BlogPost({data, mdxSource, slug}) {
                 {' (updated: '}
                 <time
                   dateTime={isoDate(postMatter.updated)}
-                  itemprop="dateModified"
+                  itemProp="dateModified"
                 >
                   {shortDate(postMatter.updated)}
                 </time>
