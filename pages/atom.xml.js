@@ -1,17 +1,17 @@
 import * as site from '../site'
-import {enrichFrontMatter, isoDate, escapeXml as ex, cdata} from '../utils'
-import {getDeployDate, getSlugs, getPostProps} from '../utils-node'
+import {isoDate, escapeXml as ex, cdata} from '../utils'
+import {getRssProps} from '../utils-node'
 
 export default function dummy() {
   // nothing happens here, it's all in getServerSideProps
 }
 
-function atomXml({blogUrl, deployDate, posts}) {
+function atomXml({blogUrl, lastUpdated, posts}) {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <id>${ex(blogUrl)}</id>
   <title>${ex(site.TITLE)}</title>
-  <updated>${isoDate(deployDate)}</updated>
+  <updated>${isoDate(lastUpdated)}</updated>
   <author>
     <name>Aron Griffis</name>
     <uri>${ex(blogUrl)}</uri>
@@ -26,19 +26,18 @@ function atomXml({blogUrl, deployDate, posts}) {
 function entryXml({
   blogUrl,
   post: {
-    data,
+    matter,
     mdxSource: {renderedOutput},
     slug,
   },
 }) {
-  const pm = enrichFrontMatter({data, slug})
-  const link = `${blogUrl}/${pm.slug}`
-  const created = pm.created.toUTCString()
-  const updated = pm.updated?.toUTCString()
-  const copyright = (pm.updated || pm.created).getUTCFullYear()
+  const link = `${blogUrl}/${slug}`
+  const created = matter.created.toUTCString()
+  const updated = matter.updated?.toUTCString()
+  const copyright = (matter.updated || matter.created).getUTCFullYear()
   return `<entry>
       <id>${ex(link)}</id>
-      <title>${ex(pm.title)}</title>
+      <title>${ex(matter.title)}</title>
       <link href="${ex(link)}" />
       <published>${ex(created)}</published>
       <rights>Copyright ${copyright} Aron Griffis</rights>
@@ -48,26 +47,11 @@ function entryXml({
 }
 
 export async function getServerSideProps({res}) {
-  const slugs = getSlugs()
-
-  const posts = await Promise.all(
-    slugs.map(slug =>
-      getPostProps(slug).catch(e => {
-        console.error(`Failed rendering ${slug}`)
-        throw e
-      }),
-    ),
-  )
+  const rssProps = await getRssProps()
 
   res.setHeader('Content-Type', 'text/xml')
   res.setHeader('Cache-Control', 'max-age=3600, public, immutable')
-  res.write(
-    atomXml({
-      blogUrl: site.BASE_URL,
-      deployDate: getDeployDate(),
-      posts,
-    }),
-  )
+  res.write(atomXml(rssProps))
   res.end()
 
   return {props: {}}

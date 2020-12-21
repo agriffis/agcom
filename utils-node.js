@@ -4,6 +4,7 @@ import matter from 'gray-matter'
 import renderToString from 'next-mdx-remote/render-to-string'
 import smartypants from '@silvenon/remark-smartypants'
 import * as components from './components'
+import * as site from './site'
 import {enrichFrontMatter, slugDateRe} from './utils'
 
 const root = process.cwd()
@@ -41,15 +42,32 @@ export async function getPostProps(slug) {
   return {data, mdxSource, slug}
 }
 
-export const getDeployDate = () => {
-  const stats = fs.lstatSync(path.join(root, 'node_modules'))
-  return stats.birthtime
-}
-
-export const getPageProps = () => {
+export function getPageProps() {
   return {
     vercelEnv: process.env.VERCEL_ENV || null,
     googleAnalyticsId: 'UA-39603016-1',
     googleAnalyticsDomain: 'arongriffis.com',
   }
+}
+
+export async function getRssProps() {
+  const slugs = getSlugs()
+
+  const posts = await Promise.all(
+    slugs.map(slug =>
+      getPostProps(slug)
+        .then(post => ({...post, matter: enrichFrontMatter(post)}))
+        .catch(e => {
+          console.error(`Failed rendering ${slug}`)
+          throw e
+        }),
+    ),
+  )
+
+  const lastUpdated = posts
+    .map(({matter: {created, updated}}) => updated || created)
+    .sort((a, b) => (a === b ? 0 : a < b ? -1 : 1))
+    .slice(-1)[0]
+
+  return {blogUrl: site.BASE_URL, posts, lastUpdated}
 }

@@ -1,20 +1,20 @@
 import * as site from '../site'
-import {enrichFrontMatter, isoDate, escapeXml as ex, cdata} from '../utils'
-import {getDeployDate, getSlugs, getPostProps} from '../utils-node'
+import {isoDate, escapeXml as ex, cdata} from '../utils'
+import {getRssProps} from '../utils-node'
 
 export default function dummy() {
   // nothing happens here, it's all in getServerSideProps
 }
 
-function rssXml({blogUrl, deployDate, posts}) {
+function rssXml({blogUrl, lastUpdated, posts}) {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
     <title>${ex(site.TITLE)}</title>
     <link>${ex(blogUrl)}</link>
     <description>Aron's Blog</description>
-    <lastBuildDate>${ex(deployDate.toUTCString())}</lastBuildDate>
-    <pubDate>${ex(deployDate.toUTCString())}</pubDate>
+    <lastBuildDate>${ex(lastUpdated.toUTCString())}</lastBuildDate>
+    <pubDate>${ex(lastUpdated.toUTCString())}</pubDate>
     <docs>https://cyber.harvard.edu/rss/rss.html</docs>
     ${posts.map(post => postXml({blogUrl, post})).join('\n    ')}
   </channel>
@@ -24,41 +24,27 @@ function rssXml({blogUrl, deployDate, posts}) {
 function postXml({
   blogUrl,
   post: {
-    data,
+    matter,
     mdxSource: {renderedOutput},
     slug,
   },
 }) {
-  const pm = enrichFrontMatter({data, slug})
-  const link = `${blogUrl}/${pm.slug}`
+  const link = `${blogUrl}/${slug}`
   return `<item>
-      <title>${ex(pm.title)}</title>
+      <title>${ex(matter.title)}</title>
       <link>${ex(link)}</link>
       <guid isPermaLink="true">${ex(link)}</guid>
-      <pubDate>${ex(pm.created.toUTCString())}</pubDate>
+      <pubDate>${ex(matter.created.toUTCString())}</pubDate>
       <description>${cdata(renderedOutput)}</description>
     </item>`
 }
 
 export async function getServerSideProps({res}) {
-  const posts = await Promise.all(
-    getSlugs().map(slug =>
-      getPostProps(slug).catch(e => {
-        console.error(`Failed rendering ${slug}`)
-        throw e
-      }),
-    ),
-  )
+  const rssProps = await getRssProps()
 
   res.setHeader('Content-Type', 'text/xml')
   res.setHeader('Cache-Control', 'max-age=3600, public, immutable')
-  res.write(
-    rssXml({
-      blogUrl: site.BASE_URL,
-      deployDate: getDeployDate(),
-      posts,
-    }),
-  )
+  res.write(rssXml(rssProps))
   res.end()
 
   return {props: {}}
