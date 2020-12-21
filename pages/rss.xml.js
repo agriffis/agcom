@@ -15,7 +15,7 @@ function rssXml({blogUrl, deployDate, posts}) {
     <description>Aron's Blog</description>
     <lastBuildDate>${ex(deployDate.toUTCString())}</lastBuildDate>
     <pubDate>${ex(deployDate.toUTCString())}</pubDate>
-    <docs>http://cyber.law.harvard.edu/rss/rss.html</docs>
+    <docs>https://cyber.harvard.edu/rss/rss.html</docs>
     ${posts.map(post => postXml({blogUrl, post})).join('\n    ')}
   </channel>
 </rss>`
