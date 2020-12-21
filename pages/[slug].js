@@ -1,4 +1,5 @@
 import hydrate from 'next-mdx-remote/hydrate'
+import * as components from '../components'
 import {Page} from '../components'
 import {enrichFrontMatter, isoDate, shortDate} from '../utils'
 import {getPostProps, getSlugs} from '../utils-node'
