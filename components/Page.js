@@ -2,25 +2,22 @@ import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import {MyImage} from './MyImage'
-
-const SITE_TITLE = 'Aron Griffis'
-const SITE_LOGO = 'wave-crt.png'
-const SITE_LOGO_LINK = '/'
+import * as site from '../site'
 
 export function Page({
   children,
   description,
-  favicon = '/favicon.ico',
-  logo = SITE_LOGO,
-  logoLink = SITE_LOGO_LINK,
-  siteTitle = SITE_TITLE,
+  favicon = site.FAVICON,
+  logo = site.LOGO,
+  logoLink = site.LOGO_LINK,
+  siteTitle = site.TITLE,
   title,
+  vercelEnv,
 }) {
   return (
     <div className="container">
       <Head>
         <meta charSet="utf-8" />
-        <meta httpEquiv="X-UA-Compatible" content="IE=edge,chrome=1" />
         <meta name="viewport" content="width=device-width" />
         <title>
           {title}
@@ -30,6 +27,7 @@ export function Page({
         <link rel="icon" href={favicon} />
         <meta property="og:site_name" content={siteTitle} />
         <meta property="og:title" content={title} />
+        <meta property="og:image" content={site.IMAGES[site.LOGO].src} />
         <meta name="description" content={description} />
         <meta property="og:description" content={description} />
         <link
@@ -49,23 +47,20 @@ export function Page({
           href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono|IBM+Plex+Sans+Condensed:700|IBM+Plex+Sans:400,400i,500,600"
           rel="stylesheet"
         />
-        {/*
-        <meta content="/img/logo-high-resolution.png" property="og:image"/>
-        <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono|IBM+Plex+Sans+Condensed:700|IBM+Plex+Sans:400,400i,500,600" rel="stylesheet">
-        <link href="/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-        <script>
+        {['preview', 'production'].includes(vercelEnv) && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
             (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
                 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
                 m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-                })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-            {% if jekyll.environment == "production" %}
-            ga('create', 'UA-39603016-1', 'arongriffis.com');
-            {% else %}
-            ga('create', 'UA-39603016-2', 'dev.arongriffis.com');
-            {% endif %}
-            ga('send', 'pageview');
-        </script>
-      */}
+                })(window,document,'script','https://www.google-analytics.com/analytics.js','ga')
+            ga('create', 'UA-39603016-1', 'arongriffis.com')
+            ga('send', 'pageview')
+        `,
+            }}
+          />
+        )}
       </Head>
       <header className="page-header">
         <div style={{maxWidth: '100px'}}>

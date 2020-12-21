@@ -1,3 +1,4 @@
+import * as site from '../site'
 import {enrichFrontMatter, isoDate, escapeXml as ex, cdata} from '../utils'
 import {getDeployDate, getSlugs, getPostProps} from '../utils-node'
 
@@ -9,7 +10,7 @@ function rssXml({blogUrl, deployDate, posts}) {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>Aron Griffis</title>
+    <title>${ex(site.TITLE)}</title>
     <link>${ex(blogUrl)}</link>
     <description>Aron's Blog</description>
     <lastBuildDate>${ex(deployDate.toUTCString())}</lastBuildDate>
@@ -53,7 +54,7 @@ export async function getServerSideProps({res}) {
   res.setHeader('Cache-Control', 'max-age=3600, public, immutable')
   res.write(
     rssXml({
-      blogUrl: 'https://arongriffis.com',
+      blogUrl: site.BASE_URL,
       deployDate: getDeployDate(),
       posts,
     }),

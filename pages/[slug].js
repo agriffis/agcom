@@ -2,13 +2,13 @@ import hydrate from 'next-mdx-remote/hydrate'
 import * as components from '../components'
 import {Page} from '../components'
 import {enrichFrontMatter, isoDate, shortDate} from '../utils'
-import {getPostProps, getSlugs} from '../utils-node'
+import {getPageProps, getPostProps, getSlugs} from '../utils-node'
 
-export default function BlogPost({data, mdxSource, slug}) {
+export default function BlogPost({data, mdxSource, slug, ...pageProps}) {
   const postMatter = enrichFrontMatter({data, slug})
   const content = hydrate(mdxSource, {components})
   return (
-    <Page {...postMatter}>
+    <Page {...postMatter} {...pageProps}>
       <article itemScope itemType="http://schema.org/CreativeWork">
         <header>
           <h1>{postMatter.title}</h1>
@@ -48,6 +48,7 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({params: {slug}}) {
-  const props = await getPostProps(slug)
-  return {props}
+  const pageProps = getPageProps()
+  const postProps = await getPostProps(slug)
+  return {props: {...pageProps, ...postProps}}
 }

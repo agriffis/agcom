@@ -1,3 +1,4 @@
+import * as site from '../site'
 import {enrichFrontMatter, isoDate, escapeXml as ex, cdata} from '../utils'
 import {getDeployDate, getSlugs, getPostProps} from '../utils-node'
 
@@ -9,12 +10,12 @@ function atomXml({blogUrl, deployDate, posts}) {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <id>${ex(blogUrl)}</id>
-  <title>Aron Griffis</title>
+  <title>${ex(site.TITLE)}</title>
   <updated>${isoDate(deployDate)}</updated>
   <author>
     <name>Aron Griffis</name>
     <uri>${ex(blogUrl)}</uri>
-    <email>aron@arongriffis.com</email>
+    <email>${ex(site.EMAIL)}</email>
   </author>
   <link rel="alternate" href="${ex(blogUrl)}" />
   <link rel="self" href="${ex(blogUrl)}/atom.xml" />
@@ -62,7 +63,7 @@ export async function getServerSideProps({res}) {
   res.setHeader('Cache-Control', 'max-age=3600, public, immutable')
   res.write(
     atomXml({
-      blogUrl: 'https://arongriffis.com',
+      blogUrl: site.BASE_URL,
       deployDate: getDeployDate(),
       posts,
     }),

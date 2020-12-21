@@ -8,13 +8,13 @@ import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import {Page} from '../components'
-import {getIndex} from '../utils-node'
+import {getIndex, getPageProps} from '../utils-node'
 import {enrichFrontMatter, isoDate, shortDate} from '../utils'
 
-export default function Home({frontMatter, mdxSource, posts}) {
+export default function Home({frontMatter, mdxSource, posts, ...pageProps}) {
   const content = hydrate(mdxSource)
   return (
-    <Page {...frontMatter}>
+    <Page {...frontMatter} {...pageProps}>
       {content}
       <h2>Writing</h2>
       {posts.map(post => {
@@ -62,5 +62,5 @@ export async function getStaticProps({params}) {
     mdxOptions: {remarkPlugins: [smartypants]},
   })
   const posts = getIndex()
-  return {props: {frontMatter: data, mdxSource, posts}}
+  return {props: {frontMatter: data, mdxSource, posts, ...getPageProps()}}
 }

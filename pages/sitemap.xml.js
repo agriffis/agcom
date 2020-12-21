@@ -1,4 +1,5 @@
 import globby from 'globby'
+import * as site from '../site'
 import {escapeXml as ex} from '../utils'
 import {getSlugs} from '../utils-node'
 
@@ -42,7 +43,7 @@ export async function getServerSideProps({res}) {
   res.setHeader('Cache-Control', 'max-age=3600, public, immutable')
   res.write(
     sitemapXml({
-      baseUrl: 'https://arongriffis.com',
+      baseUrl: site.BASE_URL,
       routes,
     }),
   )

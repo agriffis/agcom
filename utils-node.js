@@ -45,3 +45,11 @@ export const getDeployDate = () => {
   const stats = fs.lstatSync(path.join(root, 'node_modules'))
   return stats.birthtime
 }
+
+export const getPageProps = () => {
+  return {
+    vercelEnv: process.env.VERCEL_ENV || null,
+    googleAnalyticsId: 'UA-39603016-1',
+    googleAnalyticsDomain: 'arongriffis.com',
+  }
+}
