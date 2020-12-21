@@ -128,7 +128,7 @@ export function Page({
           </div>
         </div>
         <div className="info-site">
-          <p>&copy; Aron Griffis 2011-2020</p>
+          <p>&copy; Aron Griffis 2011-{new Date().getUTCFullYear()}</p>
         </div>
       </footer>
     </div>
