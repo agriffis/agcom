@@ -1,12 +1,7 @@
-import renderToString from 'next-mdx-remote/render-to-string'
 import hydrate from 'next-mdx-remote/hydrate'
-import matter from 'gray-matter'
-import smartypants from '@silvenon/remark-smartypants'
-import {MyImage, Page} from '../components'
+import {Page} from '../components'
 import {enrichFrontMatter, isoDate, shortDate} from '../utils'
-import {getPostSource, getSlugs} from '../utils-node'
-
-const components = {MyImage}
+import {getPostProps, getSlugs} from '../utils-node'
 
 export default function BlogPost({data, mdxSource, slug}) {
   const postMatter = enrichFrontMatter({data, slug})
@@ -52,11 +47,6 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({params: {slug}}) {
-  const source = getPostSource(slug)
-  const {data, content} = matter(source)
-  const mdxSource = await renderToString(content, {
-    components,
-    mdxOptions: {remarkPlugins: [smartypants]},
-  })
-  return {props: {data, mdxSource, slug}}
+  const props = await getPostProps(slug)
+  return {props}
 }

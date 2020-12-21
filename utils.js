@@ -28,3 +28,25 @@ const shortMonths = [
 
 export const shortDate = d =>
   `${shortMonths[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`
+
+const xmlEscapes = {
+  "'": '&apos;',
+  '"': '&quot;',
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+}
+
+const xmlEscapeRx = new RegExp(`[${Object.keys(xmlEscapes).join('')}]`, 'g')
+
+export function escapeXml(s) {
+  return ('' + s).replace(xmlEscapeRx, c => xmlEscapes[c])
+}
+
+export function escapeCdata(s) {
+  return ('' + s).split(']]>').join(']]]]><![CDATA[>')
+}
+
+export function cdata(s) {
+  return `<![CDATA[${escapeCdata(s)}]]>`
+}

@@ -18,6 +18,11 @@ const images = {
     width: 1287,
     height: 1010,
   },
+  'chromeos-vs-fedora-font-rendering.gif': {
+    src: '/img/chromeos-vs-fedora-font-rendering.gif',
+    width: 580,
+    height: 477,
+  },
   'gnome-terminal-jetbrains-mono-fixed.png': {
     src: '/img/gnome-terminal-jetbrains-mono-fixed.png',
     width: 1284,

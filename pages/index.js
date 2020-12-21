@@ -8,7 +8,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import {Page} from '../components'
-import {getPosts} from '../utils-node'
+import {getIndex} from '../utils-node'
 import {enrichFrontMatter, isoDate, shortDate} from '../utils'
 
 export default function Home({frontMatter, mdxSource, posts}) {
@@ -61,6 +61,6 @@ export async function getStaticProps({params}) {
   const mdxSource = await renderToString(content, {
     mdxOptions: {remarkPlugins: [smartypants]},
   })
-  const posts = getPosts()
+  const posts = getIndex()
   return {props: {frontMatter: data, mdxSource, posts}}
 }
