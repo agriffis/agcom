@@ -32,14 +32,24 @@ export function Page({
         <meta property="og:title" content={title} />
         <meta name="description" content={description} />
         <meta property="og:description" content={description} />
+        <link
+          rel="alternate"
+          type="application/atom+xml"
+          title={siteTitle}
+          href="/atom.xml"
+        />
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title={siteTitle}
+          href="/rss.xml"
+        />
         <link rel="me" href="https://micro.blog/agriffis" />
         <link
           href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono|IBM+Plex+Sans+Condensed:700|IBM+Plex+Sans:400,400i,500,600"
           rel="stylesheet"
         />
         {/*
-        <link rel="alternate" type="application/atom+xml" title={siteTitle} href="/atom.xml" />
-        <link rel="alternate" type="application/rss+xml" title={siteTitle} href="/rss.xml" />
         <meta content="/img/logo-high-resolution.png" property="og:image"/>
         <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono|IBM+Plex+Sans+Condensed:700|IBM+Plex+Sans:400,400i,500,600" rel="stylesheet">
         <link href="/css/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
