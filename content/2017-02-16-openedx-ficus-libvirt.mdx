@@ -3,7 +3,7 @@ title: Open edX devstack on KVM (Ficus edition)
 excerpt: Tweaking Ficus to run on KVM instead of Virtualbox
 author: Aron
 tags: [edx, devstack, ficus, vagrant, libvirt, kvm]
-layout: article
+toc: steps
 ---
 
 The
@@ -12,11 +12,10 @@ expects to run on Vagrant with VirtualBox. With a few tweaks, you can use
 Vagrant with KVM instead.
 
 The instructions here are specific to the Ficus release.
-If you need Eucalyptus, look [here]({% post_url 2016-11-05-openedx-eucalyptus-libvirt %}).
+If you need Eucalyptus, look [here](/2016-11-05-openedx-eucalyptus-libvirt).
 {:.note}
 
 ## Rationale
-{:.no_toc}
 
 At [Scampersand](https://scampersand.com) we SSH into a shared development
 server that provides a stable environment and regular backups without relying on
@@ -33,19 +32,11 @@ based on KVM, we'd rather run the devstack on it than need to bring up a
 separate host for Virtualbox.
 
 ## Steps
-{:.no_toc}
 
 If you'd like to run the Open edX devstack on KVM, these are the steps you'll
 need. I'll explain these in detail below.
 
-* TOC
-{:toc}
-
-```
-<style>
-#markdown-toc {list-style-type: decimal;}
-</style>
-```
+{:.toc-placeholder}
 
 ### Install Vagrant 1.8.7 or later, sorta
 
@@ -111,14 +102,6 @@ It's a good idea to make sure that `virsh` works properly before proceeding:
 If that command produces some XML output, you should be good to go. If it
 doesn't, then you might need to investigate since vagrant-libvirt isn't likely
 to work either.
-
-{% comment %}
-You should make sure that `virsh` works properly before proceeding. Since
-vagrant-libvirt
-[always uses the system qemu session](https://github.com/vagrant-libvirt/vagrant-libvirt/blob/9682161c8a10122222c0f39328a1ebff1bcfaae2/lib/vagrant-libvirt/config.rb#L439).
-you can either use the `--connect` command-line option or set the environment
-variable, as shown here:
-{% endcomment %}
 
 ### Mutate the devstack box
 

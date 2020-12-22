@@ -1,27 +1,22 @@
+import * as R from 'ramda'
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
 import renderToString from 'next-mdx-remote/render-to-string'
-import smartypants from '@silvenon/remark-smartypants'
+import remarkPants from '@silvenon/remark-smartypants'
+import rehypeSlug from 'rehype-slug'
+import rehypeToc from '@jsdevtools/rehype-toc'
+import select from 'hast-util-select'
+import visit from 'unist-util-visit'
 import * as components from './components'
 import * as site from './site'
 import {enrichFrontMatter, slugDateRe} from './utils'
 
-const root = process.cwd()
-const contentDir = path.join(root, 'content')
-
-const pathToSlug = name => path.basename(name, '.mdx')
-
-const slugToPath = slug => path.join(contentDir, `${slug}.mdx`)
+import {pathToSlug, slugToPath, getSlugs} from './slugs'
+export * from './slugs'
 
 export function getPostSource(slug) {
   return fs.readFileSync(slugToPath(slug), 'utf8')
-}
-
-export function getSlugs() {
-  const contentFiles = fs.readdirSync(contentDir)
-  const postFiles = contentFiles.filter(p => slugDateRe.test(p))
-  return postFiles.map(pathToSlug).sort().reverse()
 }
 
 export function getIndex() {
@@ -32,13 +27,80 @@ export function getIndex() {
   })
 }
 
+/**
+ * Just the class-setting part of
+ * https://kramdown.gettalong.org/syntax.html#inline-attribute-lists
+ */
+function rehypeInlineAttributeLists() {
+  return (tree, file) => {
+    visit(tree, node => {
+      if (node.type === 'element') {
+        const lastChild = node.children?.slice(-1)[0]
+        if (lastChild?.type === 'text') {
+          const m = lastChild.value.match(/\s*\{:\.(\S+)\}$/)
+          if (m) {
+            lastChild.value = lastChild.value.substring(0, m.index)
+            node.properties.className = `${node.properties.className || ''} ${
+              m[1]
+            }`
+          }
+        }
+      }
+    })
+  }
+}
+
+export async function renderMdx(content, data) {
+  return await renderToString(content, {
+    components,
+    mdxOptions: {
+      remarkPlugins: [remarkPants],
+      rehypePlugins: [
+        rehypeInlineAttributeLists,
+        rehypeSlug,
+        ...(!data.toc
+          ? []
+          : [
+              [
+                rehypeToc,
+                {
+                  customizeTOC: toc => {
+                    if (typeof data.toc === 'string') {
+                      const id = '#' + data.toc.replace(/^#/, '')
+                      const ol = select.select(`li > a[href="${id}"] + ol`, toc)
+                      if (ol) {
+                        return R.assoc('children', [ol], toc)
+                      }
+                    }
+                  },
+                },
+              ],
+              () => (tree, file) => {
+                const nav = select.select('nav.toc', tree)
+                const placeholder = select.select('p.toc-placeholder', tree)
+                if (nav && placeholder) {
+                  visit(tree, (node, index, parent) => {
+                    if (node === nav) {
+                      parent.children.splice(index, 1)
+                      return [visit.SKIP, index]
+                    }
+                    if (node === placeholder) {
+                      parent.children[index] = nav
+                      return visit.SKIP
+                    }
+                  })
+                }
+              },
+            ]),
+      ],
+    },
+  })
+}
+
 export async function getPostProps(slug) {
   const source = getPostSource(slug)
   const {data, content} = matter(source)
-  const mdxSource = await renderToString(content, {
-    components,
-    mdxOptions: {remarkPlugins: [smartypants]},
-  })
+  const mdxSource = await renderMdx(content, data)
   return {data, mdxSource, slug}
 }
 
