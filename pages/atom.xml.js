@@ -1,6 +1,6 @@
-import * as site from '../site'
-import {isoDate, escapeXml as ex, cdata} from '../utils'
-import {getRssProps} from '../utils-node'
+import * as site from 'lib/site'
+import {isoDate, escapeXml as ex, cdata} from 'lib/utils'
+import {getRssProps} from 'lib/utils-node'
 
 export default function dummy() {
   // nothing happens here, it's all in getServerSideProps

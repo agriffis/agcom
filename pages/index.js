@@ -7,8 +7,8 @@ import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import {Page} from '../components'
-import {getIndex, getPageProps, renderMdx} from '../utils-node'
-import {enrichFrontMatter, isoDate, shortDate} from '../utils'
+import {getIndex, getPageProps, renderMdx} from 'lib/utils-node'
+import {enrichFrontMatter, isoDate, shortDate} from 'lib/utils'
 
 export default function Home({frontMatter, mdxSource, posts, ...pageProps}) {
   const content = hydrate(mdxSource)

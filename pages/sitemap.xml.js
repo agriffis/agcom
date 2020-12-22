@@ -1,7 +1,7 @@
 import globby from 'globby'
-import * as site from '../site'
-import {escapeXml as ex} from '../utils'
-import {getSlugs} from '../utils-node'
+import * as site from 'lib/site'
+import {escapeXml as ex} from 'lib/utils'
+import {getSlugs} from 'lib/utils-node'
 
 export default function dummy() {
   // nothing happens here, it's all in getServerSideProps
