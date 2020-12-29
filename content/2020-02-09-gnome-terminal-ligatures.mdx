@@ -36,21 +36,23 @@ is a configuration that recognizes GNOME Terminal, then disables the [OpenType
 features](https://docs.microsoft.com/en-us/typography/opentype/spec/featurelist)
 related to ligatures:
 
-    <?xml version='1.0'?>
-    <!DOCTYPE fontconfig SYSTEM 'fonts.dtd'>
-    <fontconfig>
-      <match>
-        <test name="prgname" compare="contains">
-          <string>gnome-terminal</string>
-        </test>
-        <edit name="fontfeatures" mode="append">
-          <string>calt off</string>
-          <string>clig off</string>
-          <string>dlig off</string>
-          <string>liga off</string>
-        </edit>
-      </match>
-    </fontconfig>
+```xml
+<?xml version='1.0'?>
+<!DOCTYPE fontconfig SYSTEM 'fonts.dtd'>
+<fontconfig>
+  <match>
+    <test name="prgname" compare="contains">
+      <string>gnome-terminal</string>
+    </test>
+    <edit name="fontfeatures" mode="append">
+      <string>calt off</string>
+      <string>clig off</string>
+      <string>dlig off</string>
+      <string>liga off</string>
+    </edit>
+  </match>
+</fontconfig>
+```
 
 Here's JetBrains Mono with ligatures disabled:
 
@@ -63,9 +65,11 @@ Here's JetBrains Mono with ligatures disabled:
 
 You might have noticed the config snippet uses `compare="contains"`:
 
-    <test name="prgname" compare="contains">
-      <string>gnome-terminal</string>
-    </test>
+```xml
+<test name="prgname" compare="contains">
+  <string>gnome-terminal</string>
+</test>
+```
 
 It took me a little while to figure out the right test to use here. I had worked
 out how to disable the ligatures with OpenType feature flags, but I wanted to

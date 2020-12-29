@@ -21,42 +21,45 @@ Keybase redirector, and makes my user. It's important that the "aron" user here
 has the same UID and GID as my host user, so that I'll have permissions to read
 and write my home directory mounted in the container.
 
-    # ~/docks/Dockerfile-buster
-    FROM debian:buster
+```Dockerfile
+# ~/docks/Dockerfile-buster
+FROM debian:buster
 
-    # Enable source repos for apt-get build-dep.
-    RUN sed -ni 'p;s/^deb /deb-src /p' /etc/apt/sources.list
+# Enable source repos for apt-get build-dep.
+RUN sed -ni 'p;s/^deb /deb-src /p' /etc/apt/sources.list
 
-    # Base system and build requirements.
-    RUN apt-get update && apt-get install -y \
-            build-essential \
-            devscripts \
-            fakeroot \
-            mini-dinstall \
-            msmtp \
-            msmtp-mta \
-            ncurses-term \
-            sudo \
-            vim \
-        && apt-get build-dep -y \
-            kitty \
-            mosh
+# Base system and build requirements.
+RUN apt-get update && apt-get install -y \
+        build-essential \
+        devscripts \
+        fakeroot \
+        mini-dinstall \
+        msmtp \
+        msmtp-mta \
+        ncurses-term \
+        sudo \
+        vim \
+    && apt-get build-dep -y \
+        kitty \
+        mosh
 
-    # Enable running sudo without a password.
-    RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+# Enable running sudo without a password.
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
-    # Avoid locale warnings with LANG=en_US.UTF-8
-    RUN sed -i '/^# en_US.UTF-8/s/^# //' /etc/locale.gen
-    RUN locale-gen
+# Avoid locale warnings with LANG=en_US.UTF-8
+RUN sed -i '/^# en_US.UTF-8/s/^# //' /etc/locale.gen
+RUN locale-gen
 
-    # This symlink takes the place of the keybase redirector in the container.
-    RUN ln -s /run/user/10208/keybase/kbfs /keybase
+# This symlink takes the place of the keybase redirector in
+# the container.
+RUN ln -s /run/user/10208/keybase/kbfs /keybase
 
-    # Set up my user and make it the default.
-    RUN groupadd -g 10208 aron
-    RUN useradd -u 10208 -g aron -G sudo -s /bin/bash -m aron
-    USER aron
-    WORKDIR /home/aron
+# Set up my user and make it the default.
+RUN groupadd -g 10208 aron
+RUN useradd -u 10208 -g aron -G sudo -s /bin/bash -m aron
+USER aron
+WORKDIR /home/aron
+```
 
 Building and tagging the image using this Dockerfile:
 
@@ -75,24 +78,26 @@ Running the container looks like this:
 The `dock` script is a wrapper around the `docker` command to run with some
 arguments. It looks like this:
 
-    #!/bin/bash
-    #
-    # dock -- run a Docker container with my stuff in it
-    #
+```bash
+#!/bin/bash
+#
+# dock -- run a Docker container with my stuff in it
+#
 
-    main() {
-        declare keybase=/run/user/$UID/keybase
+main() {
+    declare keybase=/run/user/$UID/keybase
 
-        docker run --name=$1 --hostname=$1 -it -e SSH_AUTH_SOCK -e TERM --rm \
-            --mount type=bind,source=$HOME,target=$HOME,bind-propagation=rslave \
-            --mount type=bind,source=$keybase,target=$keybase,bind-propagation=rslave \
-            --mount type=bind,source=$SSH_AUTH_SOCK,target=$SSH_AUTH_SOCK \
-            dock-$1 /bin/bash
+    docker run --name=$1 --hostname=$1 -it -e SSH_AUTH_SOCK -e TERM --rm \
+        --mount type=bind,source=$HOME,target=$HOME,bind-propagation=rslave \
+        --mount type=bind,source=$keybase,target=$keybase,bind-propagation=rslave \
+        --mount type=bind,source=$SSH_AUTH_SOCK,target=$SSH_AUTH_SOCK \
+        dock-$1 /bin/bash
 
-        exit
-    }
+    exit
+}
 
-    main "$@"
+main "$@"
+```
 
 That command might seem daunting, but it's pretty straightforward:
 

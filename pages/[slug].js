@@ -1,40 +1,32 @@
 import hydrate from 'next-mdx-remote/hydrate'
-import * as components from '../components'
-import {Page} from '../components'
+import * as components from 'components'
+import {Page} from 'components/Page'
 import {getSlugs} from 'lib/slugs'
 import {enrichFrontMatter, isoDate, shortDate} from 'lib/utils'
 import {getPageProps, getPostProps} from 'lib/utils-node'
 
-export default function BlogPost({data, mdxSource, slug, ...pageProps}) {
-  const postMatter = enrichFrontMatter({data, slug})
+export default function BlogPost({data, mdxSource, slug, ...props}) {
+  const matter = enrichFrontMatter({data, slug})
   const content = hydrate(mdxSource, {components})
+  const meta = (
+    <>
+      <time dateTime={isoDate(matter.created)} itemProp="datePublished">
+        {shortDate(matter.created)}
+      </time>
+      {matter.updated && (
+        <>
+          {' (updated: '}
+          <time dateTime={isoDate(matter.updated)} itemProp="dateModified">
+            {shortDate(matter.updated)}
+          </time>
+          )
+        </>
+      )}
+    </>
+  )
   return (
-    <Page {...postMatter} {...pageProps}>
+    <Page {...matter} {...props} postMeta={meta}>
       <article itemScope itemType="http://schema.org/CreativeWork">
-        <header>
-          <h1>{postMatter.title}</h1>
-          {postMatter.subTitle && <h2>{postMatter.subTitle}</h2>}
-          <div className="post-meta">
-            <time
-              dateTime={isoDate(postMatter.created)}
-              itemProp="datePublished"
-            >
-              {shortDate(postMatter.created)}
-            </time>
-            {postMatter.updated && (
-              <>
-                {' (updated: '}
-                <time
-                  dateTime={isoDate(postMatter.updated)}
-                  itemProp="dateModified"
-                >
-                  {shortDate(postMatter.updated)}
-                </time>
-                )
-              </>
-            )}
-          </div>
-        </header>
         <div className="post-markdown">{content}</div>
       </article>
     </Page>

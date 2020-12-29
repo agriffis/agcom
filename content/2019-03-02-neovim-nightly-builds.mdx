@@ -39,15 +39,17 @@ here's what I did:
 
 My crontab looks like this:
 
-    MAILTO=aron@scampersand.com
-    SHELL=/bin/bash
-    PATH=/home/aron/bin:/home/aron/.local/bin:/usr/local/bin:/usr/bin
+```
+MAILTO=aron@scampersand.com
+SHELL=/bin/bash
+PATH=/home/aron/bin:/home/aron/.local/bin:/usr/local/bin:/usr/bin
 
-    # Long-running SSH agent so nightly builds can push to GitHub
-    @reboot ssh-agent | grep export > .ssh/agent
+# Long-running SSH agent so nightly builds can push to GitHub
+@reboot ssh-agent | grep export > .ssh/agent
 
-    # Run the build at 4am ET
-    0 4 * * * nightly-copr.bash src/copr-builds/neovim
+# Run the build at 4am ET
+0 4 * * * nightly-copr.bash src/copr-builds/neovim
+```
 
 You can find the [branch on GitHub](https://github.com/agriffis/neovim) and
 the [builds in

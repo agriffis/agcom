@@ -41,18 +41,20 @@ add it to the GNOME dock. This is based on Fedora's default
 [firefox-wayland.desktop](https://src.fedoraproject.org/rpms/firefox/blob/master/f/firefox-wayland.desktop).
 It should be installed as `~/.local/share/applications/firefox-nightly.desktop`
 
-    [Desktop Entry]
-    Version=1.0
-    Name=Firefox Nightly
-    Exec=env MOZ_ENABLE_WAYLAND=1 /opt/firefox/firefox-bin --name=firefox-nightly -P nightly %u
-    Icon=firefox-nightly
-    Terminal=false
-    Type=Application
-    MimeType=text/html;text/xml;application/xhtml+xml;application/vnd.mozilla.xul+xml;text/mml;x-scheme-handler/http;x-scheme-handler/https;
-    Categories=Network;WebBrowser;
-    Keywords=web;browser;internet;
-    StartupNotify=true
-    StartupWMClass=firefox-nightly
+```ini
+[Desktop Entry]
+Version=1.0
+Name=Firefox Nightly
+Exec=env MOZ_ENABLE_WAYLAND=1 /opt/firefox/firefox-bin --name=firefox-nightly -P nightly %u
+Icon=firefox-nightly
+Terminal=false
+Type=Application
+MimeType=text/html;text/xml;application/xhtml+xml;application/vnd.mozilla.xul+xml;text/mml;x-scheme-handler/http;x-scheme-handler/https;
+Categories=Network;WebBrowser;
+Keywords=web;browser;internet;
+StartupNotify=true
+StartupWMClass=firefox-nightly
+```
 
 Notes:
 
