@@ -218,12 +218,22 @@ a {
   // minmax here allows pre to fit with max-width
   // https://css-tricks.com/preventing-a-grid-blowout/
   grid-template-columns: $logo-px minmax(0, $container);
-  grid-template-areas: "logo nav" "title title" "meta meta" "main main" "footer footer";
+  grid-template-areas:
+    "logo nav"
+    "title title"
+    "meta meta"
+    "main main"
+    "footer footer";
   column-gap: $gutter;
 
   @media (min-width: $desktop) {
+    // center on the content column, not the full grid including logo column
     margin-left: max(0px, calc(50vw - (#{$container} / 2) - (#{$page-padding} + #{$logo-px} + #{$gutter})));
-    grid-template-areas: "logo title" ". meta" "nav main" ". footer";
+    grid-template-areas:
+      "logo title"
+      ". meta"
+      "nav main"
+      ". footer";
   }
 }
 
