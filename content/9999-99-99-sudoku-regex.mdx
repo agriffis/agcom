@@ -1,0 +1,86 @@
+---
+title: Sudoku by Regex
+excerpt:
+tags: []
+---
+
+Better version of this at https://github.com/agriffis/sudoku-pcre
+
+About a year ago, I proposed a contest on #noise to write a sudoku solver. LIM
+wrote us a driver and generator. Chouser, Mr_Bones_, and owend wrote solvers.
+I started one in LISP but never finished it, to my shame...
+
+One question that's always been in my mind is "How could we use a regex to solve
+a sudoku?" The main problem seems to be the input: Regular expressions are
+a language for searching, so you need the search space expressed in a way that
+the regex can process it. The naive approach expresses all the possible puzzles
+on the input, which is way too much data.
+
+I usually think of a sudoku like this, where zeros are squares that need to be
+solved:
+
+```
+0 0 0 4 0 0 0 0 0
+0 0 0 0 0 2 0 7 0
+0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 4 1 0
+0 0 9 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 6 7
+0 0 0 0 0 0 0 0 0
+0 7 6 3 0 0 0 0 0
+```
+
+The problem with this representation is that the zeros aren't searchable. The regular expression can't tell that they mean "any number 1 through 9". So for a first step, my solver replaces them:
+
+```perl
+$puz =~ s{\d}{$& ? $&.'        ' : '123456789'}ge;
+```
+
+So the massaged input looks like this:
+
+```
+123456789 123456789 123456789 4         123456789 123456789 123456789 123456789 123456789
+123456789 123456789 123456789 123456789 123456789 2         123456789 7         123456789
+123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789
+123456789 123456789 123456789 123456789 123456789 123456789 4         1         123456789
+123456789 123456789 9         123456789 123456789 123456789 123456789 123456789 123456789
+123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789
+123456789 123456789 123456789 123456789 123456789 123456789 123456789 6         7
+123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789 123456789
+123456789 7         6         3         123456789 123456789 123456789 123456789 123456789
+```
+
+Now each cell contains the full list of possibilities for that cell. This is
+searchable. And with negative lookahead assertions, it doesn't have to waste
+nearly as much time backtracking.
+
+The final output, after the second substitution, is:
+
+```
+9 8 7 4 6 5 3 2 1
+6 5 4 1 3 2 9 7 8
+3 2 1 9 8 7 6 5 4
+8 6 5 7 9 3 4 1 2
+7 4 9 8 2 1 5 3 6
+2 1 3 6 5 4 7 8 9
+5 3 8 2 4 9 1 6 7
+1 9 2 5 7 6 8 4 3
+4 7 6 3 1 8 2 9 5
+```
+
+Neat, eh? So finally, here are the two scripts implementing this solution. The
+first script is the solver itself. It accepts a puzzle on stdin formatted like
+the input above, converts it internally to the searchable format, and generates
+on stdout the solved puzzle. The second script generates the regular expression
+which is inserted into the first script.
+
+sudre.pl
+genre.pl
+
+By the way, while this isn't the fastest solver out there by any means (it's
+just brute force, after all), it solves most puzzles in approximately 0.01
+seconds. That's 1/10 of the time genre.pl takes to generate the regular
+expression in the first place.
+
+

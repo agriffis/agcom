@@ -1,0 +1,33 @@
+---
+created: '2006-02-08'
+title: bash default/alternate values
+excerpt:
+tags: [gentoo]
+---
+
+<div class="entry-content">
+<p>Many people are familiar with the bourne shell constructs for default or alternate values, but there&#8217;s a detail that I suspect most people don&#8217;t know: the semantic difference between the bash and bourne shell syntax.  Here is the summary:</p>
+<blockquote>
+<pre>${var-word}    # insert $var, or default value if var is unset
+${var+word}    # insert alternate value if var is set
+${var:-word}   # insert $var, or default value if var is unset or null
+${var:+word}   # insert alternate value if var is set and non-null
+</pre>
+</blockquote>
+<p>Do you see the difference between these?  The first two are classic bourne shell syntax, the second two are bash additions (they&#8217;re also present in most bourne shell derivatives, including posix shell).  The semantic difference is that the first two only check for the existence of the variable, but the second two additionally check that it has non-zero length.</p>
+<p>Here is an example of when the older bourne shell syntax is useful.  Imagine you have a configuration file in shell syntax, so you&#8217;re going to source it into the current shell to pick up the variable settings.  Something like this, which happens to work because Gentoo&#8217;s /etc/make.conf is valid shell syntax:</p>
+<blockquote>
+<pre>source /etc/make.conf</pre>
+</blockquote>
+<p>You might like to know if GENTOO_MIRRORS is set by the environment or by the configuration file, <em>even if it was set to a null string</em>.  If it is unset after consulting both sources, we&#8217;ll call that an error.  Here&#8217;s one way you could do it:</p>
+<blockquote>
+<pre>if [[ -z ${GENTOO_MIRRORS+set} ]]; then
+source /e100 19660    0 19660    0     0  27590      0 --:--:-- --:--:-- --:--:-- 27573
+tc/make.conf
+fi
+if [[ -z ${GENTOO_MIRRORS+set} ]]; then
+echo "Error: GENTOO_MIRRORS not found in environment or /etc/make.conf" >&amp;2
+exit 1
+fi</pre>
+</blockquote>
+</div><!-- .entry-content -->

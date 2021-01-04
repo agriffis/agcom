@@ -1,0 +1,89 @@
+---
+title: Pixelbook with Crostini
+tags: [chromebook, pixelbook, google, crostini, kitty]
+excerpt: Revisiting Chromebook config, seven years on.
+---
+
+Seven years ago I wrote about [using the Chromebook Pixel for
+development](/2013/08/20/pixel). That setup used Crouton, the Google Secure
+Shell App, mosh and tmux.
+
+Now I have a Pixelbook. Still using mosh and tmux, but I've traded in Crouton
+for Crostini, and the SSH app for the Kitty terminal emulator. I'm also using
+Syncthing to share a few directories between my Chromebooks, desktop, and server
+systems.
+
+### Chromebook Pixel to Pixelbook
+
+Like the [Pixel](https://en.m.wikipedia.org/wiki/Chromebook_Pixel), the
+[Pixelbook](https://en.m.wikipedia.org/wiki/Google_Pixelbook) has a 3:2
+high-resolution screen, but it upgrades the keyboard from great to awesome,
+replaces CPU fans with silence, and supports running Linux apps with Crostini.
+It's all good.
+
+The switch from [Crouton](https://github.com/dnschneid/crouton) to
+[Crostini](https://chromium.googlesource.com/chromiumos/docs/+/master/containers_and_vms.md)
+is dramatic. The older Crouton ran a Linux chroot in developer mode. It was
+a beautiful and functional hack, but it had some sharp edges. Like this,
+a 30-second pause on boot:
+
+<div class="post-image">
+    <a href="/img/orig/chrome-os-verification-is-off.png">
+        <img alt="Screenshot: OS verification is off. Press SPACE to re-enable."
+            sizes="(min-width: 36em) 28em, 100vw"
+            src="/img/575/chrome-os-verification-is-off.png"
+            srcset="/img/1440/chrome-os-verification-is-off.png 1440w,
+                /img/1150/chrome-os-verification-is-off.png 1080w,
+                /img/1080/chrome-os-verification-is-off.png 1150w,
+                /img/720/chrome-os-verification-is-off.png 720w,
+                /img/575/chrome-os-verification-is-off.png 575w">
+    </a>
+</div>
+
+Whatever you do, *don't press space*, or you can say goodbye to your
+painstakingly built chroot.
+
+The newer Crostini provides a Linux virtual machine that's part of the supported
+system. It runs without developer mode, so no more boot-time scares.
+
+And great name, right? Crouton derives from chroot, and Crostini derives from
+Crouton. Nice way for the supported solution to honor the community hack that
+preceded it.
+
+### Kitty on Crostini
+
+build kitty flatpak
+
+Getting started on Crostini is [super
+simple](https://www.reddit.com/r/Crostini/wiki/getstarted/crostini-setup-guide):
+
+1. Go to Chrome OS settings (chrome://settings)
+2. Scroll down to "Linux (Beta)"
+3. Turn it on!
+
+### Installing Kitty
+
+On my Fedora desktop, I recently switched from GNOME Terminal to
+[Kitty](https://sw.kovidgoyal.net/kitty/). Now I'm
+spoiled by programming ligatures, so it's thrilling to get this GPU-accelerated
+terminal emulator running on Chrome OS.
+
+Behold [JetBrains Mono](https://www.jetbrains.com/lp/mono/) on Kitty on Chrome
+OS:
+
+<div class="post-image">
+    <a href="/img/orig/kitty-on-chrome-os.png">
+        <img alt="Screenshot of Kitty on Chrome OS, showing programming ligatures"
+            sizes="(min-width: 36em) 28em, 100vw"
+            src="/img/575/kitty-on-chrome-os.png"
+            srcset="/img/1440/kitty-on-chrome-os.png 1440w,
+                    /img/1150/kitty-on-chrome-os.png 1080w,
+                    /img/1080/kitty-on-chrome-os.png 1150w,
+                    /img/720/kitty-on-chrome-os.png 720w,
+                    /img/575/kitty-on-chrome-os.png 575w">
+    </a>
+</div>
+
+### Installing mosh
+
+

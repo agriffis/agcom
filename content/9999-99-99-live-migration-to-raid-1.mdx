@@ -1,0 +1,118 @@
+---
+title: Live migration to RAID-1
+created: '2009-11-08'
+excerpt:
+tags: [n01se]
+---
+
+http://blog.n01se.net/blog-n01se-net-p-51.html
+
+I've blogged about using md with lvm before. This weekend I came to appreciate it even more when I migrated a live system from single disk to RAID-1 without needing to unmount or reboot. Here's the overview of the steps I used:
+
+    Create a RAID-1 on the second disk (sdb). It's initially degraded, meaning that even though we're accessing it as md0, there's only one disk in the array.
+    Migrate data from the first disk (sda) to the newly-created md0.
+    Now that sda is freed up, add it to the array to make it a mirror.
+
+Reviewing my system inventory, I have two 500G disks but I'm only using one of them, hosting logical volumes for root, swap, four nfsroots, and two (running) KVM virtual machines. Apart from the large partition holding the logical volumes, I also have a couple small partitions for Windows 7 (I don't actually use it but it's there in case I need to call for warranty support). The other disk is blank and idle. I installed it some time back when I had the machine powered off, though I could have attached it with eSATA to avoid even that interruption.
+
+Here's the partition table from that first disk:
+
+$ sudo parted /dev/sda
+(parted) unit kB
+(parted) print
+Model: ATA WDC WD5000AAKS-6 (scsi)
+Disk /dev/sda: 500107862kB
+Sector size (logical/physical): 512B/512B
+Partition Table: msdos
+
+Number  Start       End          Size         Type      File system  Flags
+ 1      1049kB      6443500kB    6442451kB    primary   ntfs         boot
+ 2      6443500kB   46443500kB   40000000kB   primary   ntfs
+ 3      46448156kB  47443415kB   995259kB     primary   ext3
+ 4      47443415kB  500105249kB  452661834kB  extended
+ 5      47443447kB  500105249kB  452661802kB  logical                lvm
+
+and here's the volume groups and logical volumes, annotated a bit:
+
+$ sudo vgs
+  VG   #PV #LV #SN Attr   VSize   VFree
+  vg0    1  10   0 wz--n- 421.57G 250.40G
+
+$ sudo lvs
+LV         VG   Attr   LSize
+jabberwock vg0  -wi-ao  9.31G  # host root filesystem
+swap       vg0  -wi-ao  1.86G  # host swap
+jubjub     vg0  -wi-ao 20.00G  # jubjub VM disk
+agriffis   vg0  -wi-ao 50.00G  # my $HOME, jubjub VM second disk
+oliva      vg0  -wi-a- 20.00G  # oliva VM disk
+amg        vg0  -wi-a- 50.00G  # Amy's $HOME, oliva VM second disk
+nord       vg0  -wi-ao  5.00G  # thin client nfsroot
+sud        vg0  -wi-ao  5.00G  # thin client nfsroot
+parmigiano vg0  -wi-ao  5.00G  # thin client nfsroot
+romano     vg0  -wi-ao  5.00G  # thin client nfsroot
+
+For the partition listing, I used units of kB because that makes it easier to be sure the partitions are exactly the same size when I apply them to the second disk. I'll initially create the RAID-1 with only sdb5 (a degraded array), then later I'll add sda5 to md0 to make it a mirror. For this reason, it's important that the two partitions that will eventually make up md0 are exactly the same size.
+
+Here's the application of that partition table to the second disk. Note I'm not going to actually use the first few partitions there, but I create them anyway for the sake of symmetry:
+
+$ sudo parted /dev/sdb
+(parted) unit kB
+(parted) mklabel msdos
+(parted) mkpart primary  1049kB     6443500kB
+(parted) mkpart primary  6443500kB  46443500kB
+(parted) mkpart primary  46448156kB 47443415kB
+(parted) mkpart extended 47443415kB 500105249kB
+(parted) mkpart logical  47443447kB 500105249kB
+(parted) set 5 raid on
+(parted) print
+Model: ATA ST3500418AS (scsi)
+Disk /dev/sdb: 500107862kB
+Sector size (logical/physical): 512B/512B
+Partition Table: msdos
+
+Number  Start       End          Size         Type      File system  Flags
+ 1      1049kB      6443500kB    6442451kB    primary
+ 2      6443500kB   46443500kB   40000000kB   primary
+ 3      46448156kB  47443415kB   995259kB     primary
+ 4      47443415kB  500105249kB  452661834kB  extended               lba
+ 5      47443447kB  500105249kB  452661802kB  logical                raid
+
+Now create the RAID-1 and extend the volume group to it:
+
+$ sudo mdadm --create /dev/md0 --level=1 --raid-devices=2 /dev/sdb5 missing
+$ sudo pvcreate /dev/md0
+$ sudo vgextend vg0 /dev/md0
+
+Move the data hosted on sda5 to md0. Note pvmove reports an error, but when I try to continue the operation, it reports that it's already done, so I don't think this is a real problem:
+
+$ sudo pvmove /dev/sda5 /dev/md0
+/dev/sda5: Moved: 99.9%
+ABORTING: Can't find mirror LV in vg0 for /dev/sda5
+
+$ sudo pvmove /dev/sda5 /dev/md0
+No data to move for vg0
+
+Now remove sda5 from the volume group and add it to md0:
+
+$ sudo vgreduce vg0 /dev/sda5
+$ sudo pvremove /dev/sda5
+$ sudo parted /dev/sda set 5 lvm off set 5 raid on
+$ sudo mdadm /dev/md0 --add /dev/sda5
+
+And see that it's working:
+
+$ cat /proc/mdstat
+Personalities : [raid1]
+md0 : active raid1 sda5[2] sdb5[0]
+      442052416 blocks [2/1] [U_]
+      [>....................]  recovery =  0.0% (288512/442052416)
+      finish=153.1min speed=48085K/sec
+
+Finally, add the info to the mdadm config and regenerate the initrd to make sure md0 is found when the system eventually reboots. I found that I had to remove the "metadata" tag from the generated config line, YMMV:
+
+$ sudo mdadm --detail --scan | sudo tee -a /etc/mdadm/mdadm.conf
+ARRAY /dev/md0 level=raid1 num-devices=2 metadata=00.90 UUID=4aa66439:62c76598:cb06150d:d44aeb51
+$ sudo vim /etc/mdadm/mdadm.conf  # to remove "metadata=00.90"
+$ sudo update-initramfs -u -k all
+
+All this without any interruption to the system operation!
