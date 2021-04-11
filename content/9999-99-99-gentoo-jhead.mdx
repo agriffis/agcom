@@ -5,24 +5,33 @@ excerpt:
 tags: [gentoo]
 ---
 
-<div class="entry-content">
-<p>Working on some digital photos today, I found the Date/Time field in the Exif header was set to EDT, because that&#8217;s how my camera was set (I&#8217;ve changed it now to UTC).  This is problematic because I recently took a trip to Italy, and of course the times on those photos don&#8217;t make sense:</p>
-<blockquote>
-<pre>$ jhead IMG_0356.JPG | grep ^Date
+Working on some digital photos today, I found the Date/Time field in the
+Exif header was set to EDT, because that’s how my camera was set (I’ve
+changed it now to UTC). This is problematic because I recently took a trip
+to Italy, and of course the times on those photos don’t make sense:
+
+```
+$ jhead IMG_0356.JPG | grep ^Date
 Date/Time    : 2005:09:20 09:46:49
-</pre>
-</blockquote>
-<p>To get the times changed to UTC on my existing pictures, I used the following sequence:</p>
-<blockquote>
-<pre>$ jhead -ta+4:00 *.JPG
+```
+
+To get the times changed to UTC on my existing pictures, I used the
+following sequence:
+
+```
+$ jhead -ta+4:00 *.JPG
 $ TZ=UTC jhead -ft */*.JPG
-</pre>
-</blockquote>
-<p>The first command advances the Exif Date/Time on all the pictures by 4 hours, which is the difference between EDT and UTC.  The second command copies the Exif Date/Time to the file&#8217;s mtime, pretending that we&#8217;re presently in UTC so that it doesn&#8217;t attempt to adjust.  The final result is:</p>
-<blockquote>
-<pre>$ jhead IMG_0356.JPG | grep ^Date
+```
+
+The first command advances the Exif Date/Time on all the pictures by 4
+hours, which is the difference between EDT and UTC. The second command
+copies the Exif Date/Time to the file’s mtime, pretending that we’re
+presently in UTC so that it doesn’t attempt to adjust. The final result
+is:
+
+```
+$ jhead IMG_0356.JPG | grep ^Date
 Date/Time    : 2005:09:20 13:46:49
 $ ls -l IMG_0356.JPG
 -rw-r--r--  1 agriffis agriffis 3.9M Sep 20 09:46 IMG_0356.JPG
-</pre>
-</blockquote>
+```

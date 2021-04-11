@@ -7,54 +7,100 @@ tags: []
 http://blog.n01se.net/blog-n01se-net-p-145.html
 
 
-Before we jump into this, let's be clear about intent: There are better languages for writing daemons than bash. Honestly, any other language is probably a better choice. Writing a daemon implies that you're writing a sufficiently complex program that bash is already the wrong language, with or without daemonization!
+Before we jump into this, let's be clear about intent: There are better
+languages for writing daemons than bash. Honestly, any other language is
+probably a better choice. Writing a daemon implies that you're writing
+a sufficiently complex program that bash is already the wrong language, with or
+without daemonization!
 
-But if you find yourself in the unfortunate position of needing to daemonize an existing bash program, and you'd rather put off rewriting it in a more suitable language, keep reading! I found myself in that position recently and kept some notes.
+But if you find yourself in the unfortunate position of needing to daemonize an
+existing bash program, and you'd rather put off rewriting it in a more suitable
+language, keep reading! I found myself in that position recently and kept some
+notes.
 
-Daemonizing a process consists of two primary tasks: forking to the background to return control to the shell, and preventing undesirable interaction between the process and the host. Rich Stevens enumerated the steps in his classic Advanced Programming in the UNIX Environment. Here's my summary of his formula with implementation notes for bash.
+Daemonizing a process consists of two primary tasks: forking to the background
+to return control to the shell, and preventing undesirable interaction between
+the process and the host. Rich Stevens enumerated the steps in his classic
+Advanced Programming in the UNIX Environment. Here's my summary of his formula
+with implementation notes for bash.
 
-    Call fork (to guarantee the child is not a process group leader, necessary for setsid) and have the parent exit (to allow control to return to the shell).
+1. _Call fork (to guarantee the child is not a process group leader, necessary
+   for setsid) and have the parent exit (to allow control to return to the
+   shell)._
 
-    Forking in bash is a simple matter of putting a command in the background using "&". To put a sequence of commands in the background, use a subshell: "( commands ) &". Note that bash doesn't provide any method for the child process to continue the same execution path as the parent, so the entirety of the child must be contained in the subshell. The easiest way to do this is implement the child as a bash function: "childfunc &".
-    Call setsid to create a new session so the child has no controlling terminal. This simultaneously prevents the child from gaining access to the controlling terminal (using /dev/tty) and protects the child from signals originating from the controlling terminal (HUP and INT, for example).
+   Forking in bash is a simple matter of putting a command in the background
+   using "&". To put a sequence of commands in the background, use a subshell:
+   "( commands ) &". Note that bash doesn't provide any method for the child
+   process to continue the same execution path as the parent, so the entirety of
+   the child must be contained in the subshell. The easiest way to do this is
+   implement the child as a bash function: "childfunc &".
 
-    Bash provides no method to call the setsid syscall for the current process. We have two less-than-ideal alternatives:
-        The util-linux-ng package provides an external setsid command but this daemonizes an external command rather than the currently running script. It also makes collecting the PID of the child tricky because the setsid command will fork internally.
+2. _Call setsid to create a new session so the child has no controlling terminal.
+   This simultaneously prevents the child from gaining access to the controlling
+   terminal (using /dev/tty) and protects the child from signals originating
+   from the controlling terminal (HUP and INT, for example)._
 
-        Having said all that, if your application allows you to use the setsid command, it's a good choice because bash can't otherwise fully protect against the child process opening /dev/tty. It's still a good idea to redirect std* to prevent stray output to the terminal.
-        Lacking the setsid syscall, there are steps we can take to partially protect the child process from the effects of the controlling terminal:
-            Redirect std* to files or /dev/null
-            Guard against HUP and INT by signal handler in child
-            Guard against HUP by disown -h in parent
+   Bash provides no method to call the setsid syscall for the current process.
+   We have two less-than-ideal alternatives:
 
-        Unfortunately without setsid there is no way to guard completely against a subchild opening /dev/tty until the terminal emulator exits, then /dev/tty will become unavailable.
-    Change working directory to / to prevent the daemon from holding a mounted filesystem open.
+   1. The util-linux-ng package provides an external setsid command but this
+      daemonizes an external command rather than the currently running script.
+      It also makes collecting the PID of the child tricky because the setsid
+      command will fork internally.
 
-    Bash is good at this. :-)
-    Set umask to 0 to clear file mode creation mask.
+      Having said all that, if your application allows you to use the setsid
+      command, it's a good choice because bash can't otherwise fully protect
+      against the child process opening /dev/tty. It's still a good idea to
+      redirect std* to prevent stray output to the terminal.
 
-    I have to admit that I can't understand the point of this, in bash or any other language. It seems to me that the child will either set its umask explicitly before creating files, or it will set individual file permissions explicitly, or it will fall back on the caller's umask. In the last case, I want my inherited umask, not the wide-open zero.
+   2. Lacking the setsid syscall, there are steps we can take to partially
+      protect the child process from the effects of the controlling terminal:
 
-    If anybody wants to explain a good reason for step 4, I'm all ears... Until then, it's commented out in my implementation below.
-    Close unneeded file descriptors.
+      1. Redirect std* to files or /dev/null
+      2. Guard against HUP and INT by signal handler in child
+      3. Guard against HUP by disown -h in parent
 
-    This step is fun in bash using eval and brace expansion...
+      Unfortunately without setsid there is no way to guard completely against
+      a subchild opening /dev/tty until the terminal emulator exits, then
+      /dev/tty will become unavailable.
+
+   3. Change working directory to / to prevent the daemon from holding a mounted
+      filesystem open.
+
+      Bash is good at this. :-)
+
+   4. Set umask to 0 to clear file mode creation mask.
+
+      I have to admit that I can't understand the point of this, in bash or any
+      other language. It seems to me that the child will either set its umask
+      explicitly before creating files, or it will set individual file
+      permissions explicitly, or it will fall back on the caller's umask. In the
+      last case, I want my inherited umask, not the wide-open zero.
+
+      If anybody wants to explain a good reason for step 4, I'm all ears...
+      Until then, it's commented out in my implementation below.
+
+   5. _Close unneeded file descriptors._
+
+      This step is fun in bash using eval and brace expansion...
 
 With those notes in-hand, here's my implementation. There are two
 functions here, "daemonize" for an external command using setsid,
 "daemonize-job" for a function in the running script.
+
+```bash
 # redirect tty fds to /dev/null
 redirect-std() {
     [[ -t 0 ]] && exec </dev/null
     [[ -t 1 ]] && exec >/dev/null
     [[ -t 2 ]] && exec 2>/dev/null
 }
- 
+
 # close all non-std* fds
 close-fds() {
     eval exec {3..255}\>\&-
 }
- 
+
 # full daemonization of external command with setsid
 daemonize() {
     (                   # 1. fork
@@ -65,7 +111,7 @@ daemonize() {
         exec setsid "$@"
     ) &
 }
- 
+
 # daemonize without setsid, keeps the child in the jobs table
 daemonize-job() {
     (                   # 1. fork
@@ -82,3 +128,4 @@ daemonize-job() {
     ) &
     disown -h $!       # 2.2.3. guard against HUP (in parent)
 }
+```
