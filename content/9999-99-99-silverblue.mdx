@@ -1,0 +1,231 @@
+---
+title: Into the wild Silverblue yonder
+excerpt:
+author: Aron
+tags: []
+---
+
+I installed Fedora Silverblue on my desktop system this past weekend. This isn't
+my first try with this OS--previous bids ended in a frustrated reinstall of
+stock Fedora. But on each attempt I get closer to a system I can use for daily
+work, and this time it might stick.
+
+## What? And... why?
+
+Silverblue is an immutable operating system, which means that major parts of the
+directory tree--including the root filesystem--are read-only. Package installs
+and system updates generate a new bootable root, which doesn't become usable
+until you reboot.
+
+### Life on the edge, sans risque
+
+The benefit is rollback: If something stops working because of an update, you
+can reboot to a previous revision.
+
+This is valuable to me because I like to run the latest software. More than
+once, I've updated to Rawhide--Fedora's continuously updating development
+stream--only to break my entire system. It's miserable reinstalling your old OS
+just because you couldn't resist trying the new stuff.
+
+Silverblue lets me run Rawhide without the risk. If an update breaks the system,
+I can roll back and carry on.
+
+### It's not all roses
+
+The drawback is that you can't `dnf install` software as you're used
+to, but there are exceptions to make it easier:
+
+1. You can install any software packaged as Flatpak and use it immediately.
+
+2. You can install to your home directory and to `/usr/local`, so you can use
+   those for quick installs without needing to reboot. The drawback to remember
+   is that changes to these areas won't roll back, either.
+
+3. You can install to your "toolbox," which is a full writable Fedora system in
+   a container. In fact, you can create as many of these as you want. It's like
+   Docker but tuned for local development, because it automatically mounts your
+   home dir and maps your user into the container. Inside your toolbox, you can
+   freely use `dnf` and `rpm` without the restrictions of the host system.
+
+4. You can install rpms layered on your Silverblue root using the `rpm-ostree`
+   tool, but you'll need to reboot before you can use them.
+
+For whatever you need, one of these approaches will probably work, but it might
+take some trial and error to discover which is best for a given package.
+
+## Installing Silverblue
+
+<div className="post-image">
+  <video autoPlay controls loop muted>
+    <source src="/video/silverblue-33-install.mp4" />
+  </video>
+</div>
+
+Installation is a breeze. Boot from a thumb drive and go through the steps, like
+a normal Fedora install. Don't monkey with partitions and
+filesystems--Silverblue expects a specific layout, so although you can customize
+within bounds, it's easiest to go with the default--and you won't be choosing
+any software, because it's a snapshot of a predefined set of packages, rather
+than assembling from individual rpms.
+
+## Updating Silverblue
+
+Eventually my fingers will stop doing this:
+
+    ✸ sudo dnf upgrade
+    sudo: dnf: command not found
+
+The new command is `rpm-ostree upgrade`, which looks like this:
+
+    INSERT ASCIINEMA
+
+### It's like git for operating systems
+
+Silverblue is built on libostree, which is a git-like system for entire
+operating system trees. Each OSTree bootable root, of which you can have a long
+history on your system, is similar to a git checkout. To keep the checkouts from
+taking enormous space, the individual files are hard-linked into the repository,
+so each root only occupies extra space for the files that are different. The
+reason Silverblue filesystem is immutable (mounted read-only) is so that you
+don't corrupt your OSTree repository by scribbling over a file that's shared
+between roots.
+
+You can also rebase Silverblue from release branch to another. Like rebasing
+with git, your local changes (rpm installs) are reapplied after switching
+branches. I've rebased twice, because I started on Fedora Silverblue 33, then
+rebased to Rawhide, and most recently rebased to 34 which branched from Rawhide
+on February 9.
+
+This is really easy compared to the fraught process of upgrading a system in
+place:
+
+    ✸ rpm-ostree rebase -b fedora/34/x86_64/silverblue
+    ✸ systemctl reboot
+
+## Installing applications
+
+I don't use a lot of desktop software for my daily work, especially because my
+coding and building happen in containers nestled in virtual machines hosted by
+remote servers. One reason that Silverblue works for me is that I don't have
+much local state to lose over a reboot--I just reconnect to my remote tmux
+session and continue typing.
+
+Still there's a bit I want that's not available in the Silverblue base image.
+Each item takes some thought and research to decide which installation method
+applies. Here's the list in overview, then I'll dig into some of the details:
+
+<PackageTable
+  methods={{r: 'rpm-ostree', f: 'flatpak', t: 'toolbox', h: 'homedir'}}
+  packages={{
+    'asciinema': 'h',
+    'autofs': 'r',
+    'brave': 'f',
+    'chrome': 'f',
+    'dconf-editor': 'f',
+    'fd-find': 't',
+    'gnome-tweaks': 'r',
+    'gstreamer1-plugin-openh264': 'r',
+    'keybase': 'r',
+    'kitty': 'rt',
+    'ksnip': 'r',
+    'mosh': 't',
+    'mozilla-openh264': 'r',
+    'msmtp': 'r',
+    'neovim': 't',
+    'nmap-ncat': 'r',
+    'obsidian': 'f',
+    'ripgrep': 't',
+    'rpkg': 't',
+    'signal': 'f',
+    'slack': 'f',
+    'socat': 't',
+    'steam': 'f',
+    'stow': 't',
+    'symlinks': 't',
+    'syncthing': 'r',
+    'vim-enhanced': 'r',
+    'vivaldi-stable': 'r',
+    'wl-clipboard': 'rt',
+    'zoom': 'f',
+  }}
+/>
+
+### rpm-ostree
+
+I tried to use `rpm-ostree` sparingly since it requires a reboot. Some things
+need it, though, for example system-level daemons like the automounter. Other
+things aren't yet packaged as Flatpak, for example the Vivaldi browser.
+
+The biggest problem with `rpm-ostree`, though, is the inability to search for
+software or easily add COPR repos, since the `dnf` command isn't available. It
+seems to get hung up on missing GPG keys, too. So I end up dropping into the
+toolbox regularly:
+
+    ✸ toolbox run dnf search wayland
+    ✸ rpm-ostree install wl-clipboard
+
+Application-specific notes:
+
+* autofs -- You can't mount things in the locations you're used to, like `/cifs`
+  or `/misc` or `/net`, because the root filesystem is read-only. I even tried
+  making my own extra rpm to add those dirs, but it didn't work:
+
+      ✸ rpm-ostree install ./filesystem-aron-1.0-1.fc33.noarch.rpm
+      error: Importing package 'filesystem-aron': Unsupported path: /cifs
+      See https://github.com/projectatomic/rpm-ostree/issues/233
+
+  So I ended up configuring those in `/etc/auto.master` to mount elsewhere, and
+  it's fine. For example, `/var/mnt/misc` which I can access as `/mnt/misc`
+  since Silverblue makes `/mnt` a symlink to `/var/mnt`. Phewph.
+
+* openh264 -- This gives Firefox the ability to play most of the videos on the
+  web. More info at https://fedoraproject.org/wiki/OpenH264, but Silverblue
+  enables the repo by default, you just need to `rpm-ostree install gstreamer1-plugin-openh264 mozilla-openh264`.
+
+* keybase -- The kbfs redirector that normally mounts on `/keybase` won't work,
+  because it can't make that dir on the read-only root filesystem, but it
+  doesn't really matter. I have a symlink in my homedir `keybase ->
+  /run/user/10208/keybase/kbfs`. Start it the first time with `run_keybase` on the
+  command-line, then configure it in the application settings to start
+  automatically, and you're golden.
+
+<MyImage
+  name="keybase-advanced-settings.png"
+  href="https://book.keybase.io/docs/linux#autostart"
+  title="Keybase advanced settings"
+  post />
+
+### flatpak
+
+Enable the [flathub repo](https://flatpak.org/setup/Fedora/) and go to town.
+
+The only really weird thing about Flatpak is that you can't run programs
+directly by name:
+
+    ✸ dconf-editor
+    bash: dconf-editor: command not found
+
+Instead you have to run them through the `flatpak` command:
+
+    ✸ flatpak run ca.desrt.dconf-editor
+
+Programs installed through Flatpak are usually available in the GNOME
+applications list, so hitting `<Super>` and typing the name works too.
+
+Application-specific notes:
+
+* brave -- There's a bug in the Brave flatpak that causes it to forget all your
+  sessions when you quit the browser.
+
+
+
+
+/var/log/dnf.log
+
+dnf copr enable agriffis/mosh-nightly
+dnf copr enable agriffis/neovim-nightly
+dnf -y swap glibc-minimal-langpack glibc-all-langpacks
+
+## Gotchas
+
+## Resources?
