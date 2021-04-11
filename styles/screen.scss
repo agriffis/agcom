@@ -5,10 +5,9 @@
 @function px($n, $font-size: 16px) {
   $result: $n;
 
-  @if unit($n) == "rem" {
+  @if unit($n) == 'rem' {
     $result: strip-unit($n) * $font-size;
-  }
-  @else if unit($n) != "px" {
+  } @else if unit($n) != 'px' {
     @error "px function requires rem units";
   }
 
@@ -35,9 +34,20 @@ $container: 36rem;
 $container-px: expect(576px, px($container));
 
 // Breakpoints
-$desktop: expect(740px, px($page-padding) + $logo-px + px($gutter) + $container-px + px($page-padding));
-$embigger: expect(820px, px($page-padding, 18) + $logo-px + px($gutter, 18) + px($container, 18) + px($page-padding, 18));
-$embiggest: expect(900px, px($page-padding, 20) + $logo-px + px($gutter, 20) + px($container, 20) + px($page-padding, 20));
+$desktop: expect(
+  740px,
+  px($page-padding) + $logo-px + px($gutter) + $container-px + px($page-padding)
+);
+$embigger: expect(
+  820px,
+  px($page-padding, 18) + $logo-px + px($gutter, 18) + px($container, 18) +
+    px($page-padding, 18)
+);
+$embiggest: expect(
+  900px,
+  px($page-padding, 20) + $logo-px + px($gutter, 20) + px($container, 20) +
+    px($page-padding, 20)
+);
 
 //----------------------------------------------------------------------
 // box-sizing
@@ -50,7 +60,8 @@ html {
 * {
   box-sizing: inherit;
 
-  &:before, &:after {
+  &:before,
+  &:after {
     box-sizing: inherit;
   }
 }
@@ -59,25 +70,36 @@ html {
 // fonts
 //----------------------------------------------------------------------
 
-$sans: "Roboto Condensed", sans-serif;
-$serif: "Crimson Pro", serif;
-$mono: "Roboto Mono", monospace;
+$sans: 'Roboto Condensed', sans-serif;
+$serif: 'Crimson Pro', serif;
+$mono: 'Roboto Mono', monospace;
+
+$book: 400;
+$bold: 700;
 
 body {
   font-family: $serif;
-  font-weight: 400;
+  font-weight: $book;
 }
 
-header, footer {
+header,
+footer {
   font-family: $sans;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3,
+h4 {
   font-family: $sans;
-  font-weight: 700;
+  font-weight: $bold;
 }
 
-pre, code, kbd, samp, tt {
+pre,
+code,
+kbd,
+samp,
+tt {
   font-family: $mono;
 }
 
@@ -109,33 +131,41 @@ body {
   line-height: 1.5;
 }
 
-h1, .h1 {
+h1,
+.h1 {
   font-size: 2rem;
   line-height: 1.125;
   margin-top: 0;
   margin-bottom: 1rem;
 }
 
-h2, .h2 {
+h2,
+.h2 {
   font-size: 1.5rem;
   line-height: 1.25;
   margin-top: 2.5rem;
   margin-bottom: 1rem;
 }
 
-h3, .h3 {
+h3,
+.h3 {
   font-size: 1.25rem;
   line-height: 1.375;
   margin-top: 1.5rem;
   margin-bottom: 1rem;
 }
 
-pre, code, kbd, samp, tt {
+pre,
+code,
+kbd,
+samp,
+tt {
   font-size: 0.75rem;
   line-height: 1.4;
 }
 
-p, pre {
+p,
+pre {
   margin-top: 0;
   margin-bottom: 1rem;
 }
@@ -156,26 +186,36 @@ blockquote {
   font-size: 0.75rem;
 }
 
+table {
+  @include meta-sm;
+  margin-bottom: 1rem;
+
+  thead,
+  th {
+    font-weight: $bold;
+  }
+}
+
 //----------------------------------------------------------------------
 // colors and decorations
 //----------------------------------------------------------------------
 
 $colors-light: (
-  "background": #fff,
-  "text": #555,
-  "heading": #444,
-  "icon": #333,
-  "accent": #246EB9,
-  "link": #246EB9,
+  'background': #fff,
+  'text': #555,
+  'heading': #444,
+  'icon': #333,
+  'accent': #246eb9,
+  'link': #246eb9,
 );
 
 $colors-dark: (
-  "background": #111,
-  "text": #ccc,
-  "heading": #ddd,
-  "accent": #76c2fb,
-  "icon": #ccc,
-  "link": #76c2fb,
+  'background': #111,
+  'text': #ccc,
+  'heading': #ddd,
+  'accent': #76c2fb,
+  'icon': #ccc,
+  'link': #76c2fb,
 );
 
 :root {
@@ -194,7 +234,9 @@ body {
   color: var(--text-color);
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   color: var(--heading-color);
 }
 
@@ -219,21 +261,27 @@ a {
   // https://css-tricks.com/preventing-a-grid-blowout/
   grid-template-columns: $logo-px minmax(0, $container);
   grid-template-areas:
-    "logo nav"
-    "title title"
-    "meta meta"
-    "main main"
-    "footer footer";
+    'logo nav'
+    'title title'
+    'meta meta'
+    'main main'
+    'footer footer';
   column-gap: $gutter;
 
   @media (min-width: $desktop) {
     // center on the content column, not the full grid including logo column
-    margin-left: max(0px, calc(50vw - (#{$container} / 2) - (#{$page-padding} + #{$logo-px} + #{$gutter})));
+    margin-left: max(
+      0px,
+      calc(
+        50vw - (#{$container} / 2) -
+          (#{$page-padding} + #{$logo-px} + #{$gutter})
+      )
+    );
     grid-template-areas:
-      "logo title"
-      ". meta"
-      "nav main"
-      ". footer";
+      'logo title'
+      '. meta'
+      'nav main'
+      '. footer';
   }
 }
 
@@ -349,10 +397,10 @@ pre {
     margin: 0;
     & > *:first-child {
       margin-top: 0;
-    };
+    }
     & > *:last-child {
       margin-bottom: 0;
-    };
+    }
   }
 
   .post-excerpt {
@@ -370,12 +418,13 @@ pre {
 
 .note {
   padding: 1em;
-  border: 1px solid #ddd;
+  border: thin solid #ddd;
   border-radius: 4px;
   box-shadow: 0 0 10px #ddd;
 }
 
-img, video {
+img,
+video {
   max-width: 100%;
   height: auto;
 }
@@ -384,11 +433,14 @@ img, video {
   margin-top: 1.5rem;
   margin-bottom: 1.5rem;
 
-  a, img, video {
+  a,
+  img,
+  video {
     display: block;
   }
 
-  img, video {
+  img,
+  video {
     width: auto;
   }
 
@@ -420,5 +472,52 @@ img, video {
       width: 100%;
       margin-top: 0;
     }
+  }
+}
+
+.post-table {
+  border-collapse: collapse;
+
+  th,
+  td {
+    text-align: left;
+    padding-left: 1.5em;
+    padding-right: 1.5em;
+    border-left: thin solid var(--accent-color);
+    &:first-child {
+      border-left: none;
+    }
+  }
+
+  thead tr:last-child {
+    th,
+    td {
+      padding-bottom: 1em;
+    }
+  }
+
+  tbody tr:first-child {
+    th,
+    td {
+      padding-top: 1em;
+    }
+  }
+
+  thead tr:first-child {
+    th,
+    td {
+      padding-top: 0.5em;
+    }
+  }
+
+  tbody tr:last-child {
+    th,
+    td {
+      padding-bottom: 0.5em;
+    }
+  }
+
+  tbody {
+    border-top: thin solid var(--accent-color);
   }
 }
