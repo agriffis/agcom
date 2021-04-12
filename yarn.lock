@@ -1795,17 +1795,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*":
+"@types/node@npm:*, @types/node@npm:^14.14.37":
   version: 14.14.37
   resolution: "@types/node@npm:14.14.37"
   checksum: 647e671ac3815f428a07ae9353ebab93c5335d4d0a461ca837a79eebf55c04f28bee80f0c43881cdd8696f595feb112bc8eb74f6124125e02f79a7677374c187
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^14.14.14":
-  version: 14.14.14
-  resolution: "@types/node@npm:14.14.14"
-  checksum: a4a972105e40d96b197b1fb587a1012b9dd76c41fbca24abfadc3dd305b5fad1e449591a3540f8874f7b2c434d499edfffaa4161ddf8714a7e6f9c942f3d4531
   languageName: node
   linkType: hard
 
@@ -1823,13 +1816,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^17.0.0":
-  version: 17.0.0
-  resolution: "@types/react@npm:17.0.0"
+"@types/react@npm:17.0.1":
+  version: 17.0.1
+  resolution: "@types/react@npm:17.0.1"
   dependencies:
     "@types/prop-types": "*"
     csstype: ^3.0.2
-  checksum: 0767d1c635613cb08de1ad6b8f73e3ee01ae0069733fa56382c72a8dbed741849e74f62a17756c7b76ccd2b57dd9891d5767c3134f35788720c6bb9c186a933b
+  checksum: 592d7a33898550f2139e69c1bb21397ab6f351f406623397cd7f9a4aea20140c779dd23f2934789d40b0bd87995a86c766434ba07bdd1de9533045d0f3596b68
   languageName: node
   linkType: hard
 
@@ -1864,8 +1857,8 @@ __metadata:
     "@jsdevtools/rehype-toc": ^3.0.2
     "@mapbox/rehype-prism": ^0.6.0
     "@silvenon/remark-smartypants": ^1.0.0
-    "@types/node": ^14.14.14
-    "@types/react": ^17.0.0
+    "@types/node": ^14.14.37
+    "@types/react": 17.0.1
     globby: ^11.0.3
     gm: ^1.23.1
     gray-matter: ^4.0.2
