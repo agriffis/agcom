@@ -46,7 +46,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["hast-util-select", "npm:4.0.2"],
             ["next", "virtual:30bfe71813253528096123605b8af852faeac89d31173382cb9262d3e05f485113984c16427f9d40cc97b9b309729bae19ffd4e2b5ce9d38e389ca4097bd1dbd#npm:10.1.3"],
             ["next-mdx-remote", "virtual:30bfe71813253528096123605b8af852faeac89d31173382cb9262d3e05f485113984c16427f9d40cc97b9b309729bae19ffd4e2b5ce9d38e389ca4097bd1dbd#npm:2.1.3"],
-            ["next-remote-watch", "npm:0.2.0"],
+            ["next-remote-watch", "npm:1.0.0"],
             ["normalize.css", "npm:8.0.1"],
             ["prettier", "npm:2.2.1"],
             ["ramda", "npm:0.27.1"],
@@ -2972,7 +2972,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["hast-util-select", "npm:4.0.2"],
             ["next", "virtual:30bfe71813253528096123605b8af852faeac89d31173382cb9262d3e05f485113984c16427f9d40cc97b9b309729bae19ffd4e2b5ce9d38e389ca4097bd1dbd#npm:10.1.3"],
             ["next-mdx-remote", "virtual:30bfe71813253528096123605b8af852faeac89d31173382cb9262d3e05f485113984c16427f9d40cc97b9b309729bae19ffd4e2b5ce9d38e389ca4097bd1dbd#npm:2.1.3"],
-            ["next-remote-watch", "npm:0.2.0"],
+            ["next-remote-watch", "npm:1.0.0"],
             ["normalize.css", "npm:8.0.1"],
             ["prettier", "npm:2.2.1"],
             ["ramda", "npm:0.27.1"],
@@ -6425,10 +6425,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["next-remote-watch", [
-        ["npm:0.2.0", {
-          "packageLocation": "./.yarn/cache/next-remote-watch-npm-0.2.0-f2ca70bb11-93b41a8871.zip/node_modules/next-remote-watch/",
+        ["npm:1.0.0", {
+          "packageLocation": "./.yarn/cache/next-remote-watch-npm-1.0.0-3f2fd05ba3-a67b15c255.zip/node_modules/next-remote-watch/",
           "packageDependencies": [
-            ["next-remote-watch", "npm:0.2.0"],
+            ["next-remote-watch", "npm:1.0.0"],
             ["body-parser", "npm:1.19.0"],
             ["chalk", "npm:4.1.0"],
             ["chokidar", "npm:3.4.3"],
