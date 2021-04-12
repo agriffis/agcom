@@ -1,9 +1,9 @@
 import hydrate from 'next-mdx-remote/hydrate'
-import * as components from 'components'
-import {Page} from 'components/Page'
-import {getSlugs} from 'lib/slugs'
-import {enrichFrontMatter, isoDate, shortDate} from 'lib/utils'
-import {getPageProps, getPostProps} from 'lib/utils-node'
+import * as components from 'agcom/components'
+import {Page} from 'agcom/components/Page'
+import {getSlugs} from 'agcom/lib/slugs'
+import {enrichFrontMatter, isoDate, shortDate} from 'agcom/lib/utils'
+import {getPageProps, getPostProps} from 'agcom/lib/utils-node'
 
 export default function BlogPost({data, mdxSource, slug, ...props}) {
   const matter = enrichFrontMatter({data, slug})

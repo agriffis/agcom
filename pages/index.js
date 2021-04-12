@@ -3,9 +3,9 @@ import matter from 'gray-matter'
 import fs from 'fs'
 import path from 'path'
 import Link from 'next/link'
-import {Page} from 'components/Page'
-import {getIndex, getPageProps, renderMdx} from 'lib/utils-node'
-import {enrichFrontMatter, isoDate, shortDate} from 'lib/utils'
+import {Page} from 'agcom/components/Page'
+import {getIndex, getPageProps, renderMdx} from 'agcom/lib/utils-node'
+import {enrichFrontMatter, isoDate, shortDate} from 'agcom/lib/utils'
 
 export default function Home({frontMatter, mdxSource, posts, ...pageProps}) {
   const content = hydrate(mdxSource)

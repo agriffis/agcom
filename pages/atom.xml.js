@@ -1,6 +1,6 @@
-import * as site from 'lib/site'
-import {isoDate, escapeXml as ex, cdata} from 'lib/utils'
-import {getRssProps} from 'lib/utils-node'
+import * as site from 'agcom/lib/site'
+import {isoDate, escapeXml as ex} from 'agcom/lib/utils'
+import {getRssProps} from 'agcom/lib/utils-node'
 
 export default function dummy() {
   // nothing happens here, it's all in getServerSideProps
