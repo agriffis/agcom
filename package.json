@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "@jsdevtools/rehype-toc": "^3.0.2",
-    "@mapbox/rehype-prism": "^0.5.0",
+    "@mapbox/rehype-prism": "^0.6.0",
     "@silvenon/remark-smartypants": "^1.0.0",
     "globby": "^11.0.1",
     "gray-matter": "^4.0.2",

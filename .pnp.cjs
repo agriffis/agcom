@@ -36,7 +36,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./",
           "packageDependencies": [
             ["@jsdevtools/rehype-toc", "npm:3.0.2"],
-            ["@mapbox/rehype-prism", "npm:0.5.0"],
+            ["@mapbox/rehype-prism", "npm:0.6.0"],
             ["@silvenon/remark-smartypants", "npm:1.0.0"],
             ["@types/node", "npm:14.14.14"],
             ["@types/react", "npm:17.0.0"],
@@ -2630,12 +2630,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["@mapbox/rehype-prism", [
-        ["npm:0.5.0", {
-          "packageLocation": "./.yarn/cache/@mapbox-rehype-prism-npm-0.5.0-df3d439361-2ba3a6c928.zip/node_modules/@mapbox/rehype-prism/",
+        ["npm:0.6.0", {
+          "packageLocation": "./.yarn/cache/@mapbox-rehype-prism-npm-0.6.0-7bff8fb48d-30db7ce34e.zip/node_modules/@mapbox/rehype-prism/",
           "packageDependencies": [
-            ["@mapbox/rehype-prism", "npm:0.5.0"],
+            ["@mapbox/rehype-prism", "npm:0.6.0"],
             ["hast-util-to-string", "npm:1.0.4"],
-            ["refractor", "npm:3.2.0"],
+            ["refractor", "npm:3.3.1"],
             ["unist-util-visit", "npm:2.0.3"]
           ],
           "linkType": "HARD",
@@ -2962,7 +2962,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [
             ["agcom", "workspace:."],
             ["@jsdevtools/rehype-toc", "npm:3.0.2"],
-            ["@mapbox/rehype-prism", "npm:0.5.0"],
+            ["@mapbox/rehype-prism", "npm:0.6.0"],
             ["@silvenon/remark-smartypants", "npm:1.0.0"],
             ["@types/node", "npm:14.14.14"],
             ["@types/react", "npm:17.0.0"],
@@ -6943,10 +6943,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["prismjs", [
-        ["npm:1.22.0", {
-          "packageLocation": "./.yarn/cache/prismjs-npm-1.22.0-5aa7ce32e1-aa2a0e71d2.zip/node_modules/prismjs/",
+        ["npm:1.23.0", {
+          "packageLocation": "./.yarn/cache/prismjs-npm-1.23.0-3781560845-8c3cf69150.zip/node_modules/prismjs/",
           "packageDependencies": [
-            ["prismjs", "npm:1.22.0"],
+            ["prismjs", "npm:1.23.0"],
             ["clipboard", "npm:2.0.6"]
           ],
           "linkType": "HARD",
@@ -7262,13 +7262,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["refractor", [
-        ["npm:3.2.0", {
-          "packageLocation": "./.yarn/cache/refractor-npm-3.2.0-38c54ef1c5-ea4e3ec8e3.zip/node_modules/refractor/",
+        ["npm:3.3.1", {
+          "packageLocation": "./.yarn/cache/refractor-npm-3.3.1-f13a777312-c42d53c3a1.zip/node_modules/refractor/",
           "packageDependencies": [
-            ["refractor", "npm:3.2.0"],
+            ["refractor", "npm:3.3.1"],
             ["hastscript", "npm:6.0.0"],
             ["parse-entities", "npm:2.0.0"],
-            ["prismjs", "npm:1.22.0"]
+            ["prismjs", "npm:1.23.0"]
           ],
           "linkType": "HARD",
         }]
