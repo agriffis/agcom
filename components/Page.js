@@ -1,6 +1,7 @@
 import Head from 'next/head'
-import {MyImage} from 'agcom/components'
-import * as site from 'agcom/lib/site'
+import Link from 'next/link'
+import {MyImage} from 'components'
+import * as site from 'lib/site'
 
 export function Page({
   children,

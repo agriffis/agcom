@@ -2,8 +2,8 @@ import hydrate from 'next-mdx-remote/hydrate'
 import matter from 'gray-matter'
 import fs from 'fs'
 import path from 'path'
-import {Page} from 'agcom/components/Page'
-import {getPageProps, renderMdx} from 'agcom/lib/utils-node'
+import {Page} from 'components/Page'
+import {getPageProps, renderMdx} from 'lib/utils-node'
 
 export default function About({frontMatter, mdxSource, ...pageProps}) {
   const content = hydrate(mdxSource)

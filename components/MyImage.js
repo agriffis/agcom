@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import {IMAGES} from 'agcom/lib/site'
+import {IMAGES} from 'lib/site'
 
 export function MyImage({href, name, post, title, wide, ...props}) {
   let r = <Image {...IMAGES[name]} {...props} />

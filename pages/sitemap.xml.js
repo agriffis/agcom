@@ -1,7 +1,7 @@
 import globby from 'globby'
-import * as site from 'agcom/lib/site'
-import {getSlugs} from 'agcom/lib/slugs'
-import {escapeXml as ex} from 'agcom/lib/utils'
+import * as site from 'lib/site'
+import {getSlugs} from 'lib/slugs'
+import {escapeXml as ex} from 'lib/utils'
 
 export default function dummy() {
   // nothing happens here, it's all in getServerSideProps
