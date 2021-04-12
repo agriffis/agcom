@@ -40,7 +40,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@silvenon/remark-smartypants", "npm:1.0.0"],
             ["@types/node", "npm:14.14.14"],
             ["@types/react", "npm:17.0.0"],
-            ["globby", "npm:11.0.1"],
+            ["globby", "npm:11.0.3"],
             ["gm", "npm:1.23.1"],
             ["gray-matter", "npm:4.0.2"],
             ["hast-util-select", "npm:4.0.2"],
@@ -2966,7 +2966,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@silvenon/remark-smartypants", "npm:1.0.0"],
             ["@types/node", "npm:14.14.14"],
             ["@types/react", "npm:17.0.0"],
-            ["globby", "npm:11.0.1"],
+            ["globby", "npm:11.0.3"],
             ["gm", "npm:1.23.1"],
             ["gray-matter", "npm:4.0.2"],
             ["hast-util-select", "npm:4.0.2"],
@@ -4908,10 +4908,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]
       ]],
       ["globby", [
-        ["npm:11.0.1", {
-          "packageLocation": "./.yarn/cache/globby-npm-11.0.1-b32c0f1cff-b0b26e5806.zip/node_modules/globby/",
+        ["npm:11.0.3", {
+          "packageLocation": "./.yarn/cache/globby-npm-11.0.3-bb0a10f600-7d0d3e1bcb.zip/node_modules/globby/",
           "packageDependencies": [
-            ["globby", "npm:11.0.1"],
+            ["globby", "npm:11.0.3"],
             ["array-union", "npm:2.1.0"],
             ["dir-glob", "npm:3.0.1"],
             ["fast-glob", "npm:3.2.4"],
