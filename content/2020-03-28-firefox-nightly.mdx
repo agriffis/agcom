@@ -91,7 +91,7 @@ Symlink these to the right location and name:
     ✸ for z in 16 32 48 64 128; do \
         dest=~/.local/share/icons/hicolor/${z}x$z/apps; \
         mkdir -p "$dest"; \
-        ln -sv "$source/default$z.png" "$dest/firefox-nightly.png"; \
+        ln -sv "$src/default$z.png" "$dest/firefox-nightly.png"; \
         done
     '/home/aron/.local/share/icons/hicolor/16x16/apps/firefox-nightly.png' -> '/opt/firefox/browser/chrome/icons/default/default16.png'
     '/home/aron/.local/share/icons/hicolor/32x32/apps/firefox-nightly.png' -> '/opt/firefox/browser/chrome/icons/default/default32.png'
