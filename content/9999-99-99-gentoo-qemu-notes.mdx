@@ -5,11 +5,12 @@ excerpt:
 tags: [gentoo]
 ---
 
-<p class="post_link">Link: <a href="http://fabrice.bellard.free.fr/qemu/">http://fabrice.bellard.free.fr/qemu/</a></p><p>I've been using <a href="http://fabrice.bellard.free.fr/qemu/index.html">qemu</a> lately to test kernel changes.  In particular I'm using qemu-0.7.2 running x86 virtual machines on an amd64.  This configuration seems to work really well, particularly once I remembered to "echo 1 &gt;/proc/sys/kernel/sysrq" in the host OS's rc.local (doh!)</p>
+<p className="post_link">Link: <a href="http://fabrice.bellard.free.fr/qemu/">http://fabrice.bellard.free.fr/qemu/</a></p><p>I've been using <a href="http://fabrice.bellard.free.fr/qemu/index.html">qemu</a> lately to test kernel changes.  In particular I'm using qemu-0.7.2 running x86 virtual machines on an amd64.  This configuration seems to work really well, particularly once I remembered to "echo 1 &gt;/proc/sys/kernel/sysrq" in the host OS's rc.local (doh!)</p>
 
-<p>Today I switched from using qemu's <a href="http://fabrice.bellard.free.fr/qemu/qemu-doc.html#TOC21">user mode network stack</a> to using the <a href="http://fabrice.bellard.free.fr/qemu/qemu-doc.html#TOC20">tun/tap interface</a> with masquerading.  To that end, my qemu startup script now looks like this:</p>
+Today I switched from using qemu's <a href="http://fabrice.bellard.free.fr/qemu/qemu-doc.html#TOC21">user mode network stack</a> to using the <a href="http://fabrice.bellard.free.fr/qemu/qemu-doc.html#TOC20">tun/tap interface</a> with masquerading.  To that end, my qemu startup script now looks like this:
 
-<blockquote><pre>#!/bin/bash
+```
+#!/bin/bash
 # qemu.sh
 sudo bash -c 'echo 1024 &gt; /proc/sys/dev/rtc/max-user-freq'
 #sudo modprobe kqemu
@@ -20,11 +21,12 @@ qemu \
 -nographic \
 -n $PWD/qemu-ifup \
 "$@"
-</pre></blockquote>
+```
 
-<p>and qemu-ifup looks like this:</p>
+and qemu-ifup looks like this:
 
-<blockquote><pre>#!/usr/bin/sudo bash
+```
+#!/usr/bin/sudo bash
 /sbin/ifconfig $1 172.20.0.1
 iptables --table nat --flush
 iptables --table nat --append POSTROUTING \
@@ -32,6 +34,8 @@ iptables --table nat --append POSTROUTING \
 --jump MASQUERADE
 [[ -e /proc/sys/net/ipv4/ip_forward ]] &amp;&amp; \
 echo 1 &gt; /proc/sys/net/ipv4/ip_forward
-</pre></blockquote>
+```
 
-<p>This gives me outgoing networking from the virtual machine, plus incoming networking from the host OS.  The virtual OS uses 172.20.0.2 on its virtual adapter.</p>		</div>
+This gives me outgoing networking from the virtual machine, plus incoming
+networking from the host OS. The virtual OS uses 172.20.0.2 on its virtual
+adapter.
