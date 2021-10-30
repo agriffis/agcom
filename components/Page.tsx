@@ -1,7 +1,19 @@
+import {ReactNode} from 'react'
 import Head from 'next/head'
-import Link from 'next/link'
 import {MyImage} from 'components'
 import * as site from 'lib/site'
+
+interface PageProps {
+  children: ReactNode
+  description?: string
+  favicon?: string
+  logo?: string
+  logoLink?: string
+  siteTitle?: string
+  title?: string
+  heading?: ReactNode
+  postMeta?: ReactNode
+}
 
 export function Page({
   children,
@@ -13,7 +25,7 @@ export function Page({
   title = null,
   heading = title,
   postMeta = null,
-}) {
+}: PageProps) {
   return (
     <>
       <Head>
