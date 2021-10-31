@@ -1,4 +1,4 @@
-import {ReactNode} from 'react'
+import {ComponentPropsWithoutRef, ElementType, ReactNode} from 'react'
 import Head from 'next/head'
 import {MyImage} from 'components'
 import * as site from 'lib/site'
@@ -89,12 +89,26 @@ export function Page({
   )
 }
 
-function Footer({
-  as: ElementType = 'footer',
+interface FooterProps<E extends ElementType> {
+  as?: E
+  copyStart?: number
+  copyEnd?: number
+}
+
+const defaultFooterElement = 'footer'
+
+function Footer<E extends ElementType = typeof defaultFooterElement>({
+  as,
   copyStart = 2011,
   copyEnd = new Date().getUTCFullYear(),
   ...props
-}) {
+}: FooterProps<E> & Omit<ComponentPropsWithoutRef<E>, keyof FooterProps<E>>) {
+  // Defaulting while destructuring makes TS unhappy because the generic could
+  // be instantiated with a different type that wouldn't match the default.
+  // There doesn't seem to be a good solution to this, since we can't modify the
+  // default according to the type, and we can't modify the type according to
+  // the default.
+  const ElementType = as || defaultFooterElement
   const copyRange = `${copyStart}${copyStart === copyEnd ? '' : `–${copyEnd}`}`
   return (
     <ElementType {...props}>

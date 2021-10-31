@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import {IMAGES} from 'lib/site'
+import {ComponentPropsWithoutRef} from 'react'
 
 interface MyImagePropsBase {
   href?: string
@@ -19,7 +20,10 @@ interface MyImagePropsWithSrc extends MyImagePropsBase {
   src: any
 }
 
-type MyImageProps = MyImagePropsWithName | MyImagePropsWithSrc
+type MyImagePropsPoly = MyImagePropsWithName | MyImagePropsWithSrc
+
+type MyImageProps = MyImagePropsPoly &
+  Omit<ComponentPropsWithoutRef<typeof Image>, keyof MyImagePropsPoly>
 
 export const MyImage = ({
   href,
