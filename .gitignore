@@ -3,6 +3,9 @@
 # npm
 /node_modules
 
+# build
+/tsconfig.tsbuildinfo
+
 # testing
 /coverage
 
