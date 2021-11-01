@@ -4,8 +4,20 @@ import {Page} from 'components/Page'
 import {getSlugs} from 'lib/slugs'
 import {enrichFrontMatter, isoDate, shortDate} from 'lib/utils'
 import {getPageProps, getPostProps} from 'lib/utils-node'
+import {ComponentProps} from 'react'
 
-export default function BlogPost({data, mdxSource, slug, ...props}) {
+interface BlogPostProps extends ComponentProps<typeof Page> {
+  data: object
+  mdxSource: Parameters<typeof hydrate>[0]
+  slug: string
+}
+
+export default function BlogPost({
+  data,
+  mdxSource,
+  slug,
+  ...props
+}: BlogPostProps) {
   const matter = enrichFrontMatter({data, slug})
   const content = hydrate(mdxSource, {components})
   const meta = (
