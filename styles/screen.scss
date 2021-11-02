@@ -1,5 +1,7 @@
+@use "sass:math";
+
 @function strip-unit($n) {
-  @return $n / ($n * 0 + 1);
+  @return math.div($n, $n * 0 + 1);
 }
 
 @function px($n, $font-size: 16px) {
