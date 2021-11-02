@@ -1,7 +1,7 @@
 import * as R from 'ramda'
 import * as fs from 'fs/promises'
 import matter from 'gray-matter'
-import renderToString from 'next-mdx-remote/render-to-string'
+import {serialize} from 'next-mdx-remote/serialize'
 import remarkPants from '@silvenon/remark-smartypants'
 import rehypePrism from '@mapbox/rehype-prism'
 import rehypeSlug from 'rehype-slug'
@@ -76,8 +76,7 @@ function rehypeInlineAttributeLists() {
 }
 
 export async function renderMdx(content, data) {
-  return await renderToString(content, {
-    components,
+  return await serialize(content, {
     mdxOptions: {
       remarkPlugins: [remarkPants],
       rehypePlugins: [

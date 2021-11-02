@@ -1,4 +1,4 @@
-import hydrate from 'next-mdx-remote/hydrate'
+import {MDXRemote} from 'next-mdx-remote'
 import * as components from 'components'
 import {Page} from 'components/Page'
 import {getSlugs} from 'lib/slugs'
@@ -8,7 +8,7 @@ import {ComponentProps} from 'react'
 
 interface BlogPostProps extends ComponentProps<typeof Page> {
   data: object
-  mdxSource: Parameters<typeof hydrate>[0]
+  mdxSource: Omit<ComponentProps<typeof MDXRemote>, 'components'>
   slug: string
 }
 
@@ -19,7 +19,6 @@ export default function BlogPost({
   ...props
 }: BlogPostProps) {
   const matter = enrichFrontMatter({data, slug})
-  const content = hydrate(mdxSource, {components})
   const meta = (
     <>
       <time dateTime={isoDate(matter.created)} itemProp="datePublished">
@@ -39,7 +38,9 @@ export default function BlogPost({
   return (
     <Page {...matter} {...props} postMeta={meta}>
       <article itemScope itemType="http://schema.org/CreativeWork">
-        <div className="post-markdown">{content}</div>
+        <div className="post-markdown">
+          <MDXRemote {...mdxSource} components={components} />
+        </div>
       </article>
     </Page>
   )

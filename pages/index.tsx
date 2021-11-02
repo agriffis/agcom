@@ -1,4 +1,5 @@
-import hydrate from 'next-mdx-remote/hydrate'
+import {MDXRemote} from 'next-mdx-remote'
+import * as components from 'components'
 import matter from 'gray-matter'
 import fs from 'fs'
 import path from 'path'
@@ -8,10 +9,9 @@ import {getIndex, getPageProps, renderMdx} from 'lib/utils-node'
 import {enrichFrontMatter, isoDate, shortDate} from 'lib/utils'
 
 export default function Home({frontMatter, mdxSource, posts, ...pageProps}) {
-  const content = hydrate(mdxSource)
   return (
     <Page {...frontMatter} {...pageProps}>
-      {content}
+      <MDXRemote {...mdxSource} components={components} />
       <ul className="posts-index">
         {posts.map(post => {
           const matter = enrichFrontMatter(post)
