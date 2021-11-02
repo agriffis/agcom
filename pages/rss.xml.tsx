@@ -1,5 +1,5 @@
 import * as site from 'lib/site'
-import {isoDate, escapeXml as ex, cdata} from 'lib/utils'
+import {escapeXml as ex, cdata} from 'lib/utils'
 import {getRssProps} from 'lib/utils-node'
 
 export default function dummy() {
@@ -21,21 +21,27 @@ function rssXml({blogUrl, lastUpdated, posts}) {
 </rss>`
 }
 
-function postXml({
-  blogUrl,
+interface postXmlProps {
+  blogUrl: string
   post: {
-    matter,
-    mdxSource: {renderedOutput},
-    slug,
-  },
-}) {
+    markup: string
+    matter: {
+      created: Date
+      updated?: Date
+      title: string
+    }
+    slug: string
+  }
+}
+
+function postXml({blogUrl, post: {markup, matter, slug}}: postXmlProps) {
   const link = `${blogUrl}/${slug}`
   return `<item>
       <title>${ex(matter.title)}</title>
       <link>${ex(link)}</link>
       <guid isPermaLink="true">${ex(link)}</guid>
       <pubDate>${ex(matter.created.toUTCString())}</pubDate>
-      <description>${cdata(renderedOutput)}</description>
+      <description>${cdata(markup)}</description>
     </item>`
 }
 

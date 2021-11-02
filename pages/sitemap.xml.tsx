@@ -11,11 +11,7 @@ function sitemapXml({baseUrl, routes}) {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   ${routes
-    .map(
-      r => `<url>
-    <loc>${ex(`${baseUrl}${r}`)}</loc>
-  </url>`,
-    )
+    .map(r => `<url><loc>${ex(`${baseUrl}${r}`)}</loc></url>`)
     .join('\n  ')}
 </urlset>`
 }
@@ -29,13 +25,12 @@ export async function getServerSideProps({res}) {
     '!pages/api',
   ])
 
-  const slugs = getSlugs()
+  const slugs = await getSlugs()
 
   const routes = pages
     .map(page => {
       const path = page.replace('pages', '').replace(/\.js$/, '')
       return path === '/index' ? '' : path
-      return `${baseUrl}${route}`
     })
     .concat(slugs.map(slug => '/' + slug))
 

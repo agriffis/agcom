@@ -1,5 +1,5 @@
 import * as site from 'lib/site'
-import {isoDate, escapeXml as ex, cdata} from 'lib/utils'
+import {isoDate, escapeXml as ex} from 'lib/utils'
 import {getRssProps} from 'lib/utils-node'
 
 export default function dummy() {
@@ -23,14 +23,20 @@ function atomXml({blogUrl, lastUpdated, posts}) {
 </feed>`
 }
 
-function entryXml({
-  blogUrl,
+interface entryXmlProps {
+  blogUrl: string
   post: {
-    matter,
-    mdxSource: {renderedOutput},
-    slug,
-  },
-}) {
+    markup: string
+    matter: {
+      created: Date
+      updated?: Date
+      title: string
+    }
+    slug: string
+  }
+}
+
+function entryXml({blogUrl, post: {markup, matter, slug}}: entryXmlProps) {
   const link = `${blogUrl}/${slug}`
   const created = matter.created.toUTCString()
   const updated = matter.updated?.toUTCString()
@@ -42,7 +48,7 @@ function entryXml({
       <published>${ex(created)}</published>
       <rights>Copyright ${copyright} Aron Griffis</rights>
       ${(updated || '') && `<updated>${ex(updated)}</updated>`}
-      <content>${ex(renderedOutput)}</content>
+      <content>${ex(markup)}</content>
     </entry>`
 }
 

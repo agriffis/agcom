@@ -1,15 +1,17 @@
-import * as R from 'ramda'
+import ReactDOMServer from 'react-dom/server'
+import rehypeToc from '@jsdevtools/rehype-toc'
+import rehypePrism from '@mapbox/rehype-prism'
+import remarkPants from '@silvenon/remark-smartypants'
+import * as components from 'components'
 import * as fs from 'fs/promises'
 import matter from 'gray-matter'
-import {serialize} from 'next-mdx-remote/serialize'
-import remarkPants from '@silvenon/remark-smartypants'
-import rehypePrism from '@mapbox/rehype-prism'
-import rehypeSlug from 'rehype-slug'
-import rehypeToc from '@jsdevtools/rehype-toc'
 import select from 'hast-util-select'
-import visit from 'unist-util-visit'
+import {MDXRemote} from 'next-mdx-remote'
+import {serialize} from 'next-mdx-remote/serialize'
+import * as R from 'ramda'
+import rehypeSlug from 'rehype-slug'
 import * as unist from 'unist'
-import * as components from 'components'
+import visit from 'unist-util-visit'
 import * as site from './site'
 import {slugToPath, getSlugs} from './slugs'
 import {enrichFrontMatter} from './utils'
@@ -119,6 +121,7 @@ export async function renderMdx(content, data) {
         rehypePrism,
       ],
     },
+    target: ['es2020'],
   })
 }
 
@@ -143,7 +146,13 @@ export async function getRssProps() {
   const posts = await Promise.all(
     slugs.map(slug =>
       getPostProps(slug)
-        .then(post => ({...post, matter: enrichFrontMatter(post)}))
+        .then(({mdxSource, ...post}) => ({
+          ...post,
+          markup: ReactDOMServer.renderToStaticMarkup(
+            <MDXRemote {...mdxSource} components={components} />,
+          ),
+          matter: enrichFrontMatter(post),
+        }))
         .catch(e => {
           console.error(`Failed rendering ${slug}`)
           throw e
