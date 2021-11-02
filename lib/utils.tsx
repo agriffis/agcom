@@ -1,6 +1,6 @@
 export const slugDateRe = /^\d\d\d\d-\d\d-\d\d/
 
-export function enrichFrontMatter({data, slug}) {
+export function enrichFrontMatter({data, slug}: {data: any; slug: string}) {
   return {
     ...data,
     slug,
@@ -13,7 +13,7 @@ export function enrichFrontMatter({data, slug}) {
   }
 }
 
-export function isoDate(d) {
+export function isoDate(d: Date) {
   return d.toISOString()
 }
 
@@ -32,7 +32,7 @@ const shortMonths = [
   'Dec',
 ]
 
-export function shortDate(d) {
+export function shortDate(d: Date) {
   return `${
     shortMonths[d.getUTCMonth()]
   } ${d.getUTCDate()}, ${d.getUTCFullYear()}`
@@ -48,14 +48,14 @@ const xmlEscapes = {
 
 const xmlEscapeRx = new RegExp(`[${Object.keys(xmlEscapes).join('')}]`, 'g')
 
-export function escapeXml(s) {
-  return ('' + s).replace(xmlEscapeRx, c => xmlEscapes[c])
+export function escapeXml(s: string) {
+  return s.replace(xmlEscapeRx, c => xmlEscapes[c])
 }
 
-export function escapeCdata(s) {
-  return ('' + s).split(']]>').join(']]]]><![CDATA[>')
+export function escapeCdata(s: string) {
+  return s.split(']]>').join(']]]]><![CDATA[>')
 }
 
-export function cdata(s) {
+export function cdata(s: string) {
   return `<![CDATA[${escapeCdata(s)}]]>`
 }

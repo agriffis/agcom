@@ -1,5 +1,5 @@
 import * as R from 'ramda'
-import fs from 'fs'
+import * as fs from 'fs/promises'
 import matter from 'gray-matter'
 import renderToString from 'next-mdx-remote/render-to-string'
 import remarkPants from '@silvenon/remark-smartypants'
@@ -8,22 +8,51 @@ import rehypeSlug from 'rehype-slug'
 import rehypeToc from '@jsdevtools/rehype-toc'
 import select from 'hast-util-select'
 import visit from 'unist-util-visit'
+import * as unist from 'unist'
 import * as components from 'components'
 import * as site from './site'
 import {slugToPath, getSlugs} from './slugs'
 import {enrichFrontMatter} from './utils'
 
-export function getPostSource(slug) {
-  return fs.readFileSync(slugToPath(slug), 'utf8')
+export async function getPostSource(slug: string) {
+  return fs.readFile(slugToPath(slug))
 }
 
-export function getIndex() {
-  return getSlugs().map(slug => {
-    const content = getPostSource(slug)
-    const {data} = matter(content)
+export async function getIndex() {
+  const slugs = await getSlugs()
+  const sources = await Promise.all(slugs.map(getPostSource))
+  return slugs.map((slug, i) => {
+    const {data} = matter(sources[i])
     return {data, slug}
   })
 }
+
+/**
+ * See https://github.com/syntax-tree/unist-util-visit/issues/15
+ */
+interface RehypeElement extends unist.Parent {
+  type: 'element'
+  tagName: string
+  properties: {
+    [key: string]: unknown
+  }
+  content: unist.Node
+  children: unist.Node[]
+}
+
+interface RehypeText extends unist.Node {
+  type: 'text'
+  value: string
+}
+
+const isNode = (node: unknown): node is unist.Node =>
+  typeof node === 'object' && 'type' in node
+
+const elementTest = (node: unknown): node is RehypeElement =>
+  isNode(node) && node.type === 'element'
+
+const textTest = (node: unknown): node is RehypeText =>
+  isNode(node) && node.type === 'text'
 
 /**
  * Just the class-setting part of
@@ -31,17 +60,15 @@ export function getIndex() {
  */
 function rehypeInlineAttributeLists() {
   return (tree, file) => {
-    visit(tree, node => {
-      if (node.type === 'element') {
-        const lastChild = node.children?.slice(-1)[0]
-        if (lastChild?.type === 'text') {
-          const m = lastChild.value.match(/\s*\{:\.(\S+)\}$/)
-          if (m) {
-            lastChild.value = lastChild.value.substring(0, m.index)
-            node.properties.className = `${node.properties.className || ''} ${
-              m[1]
-            }`
-          }
+    visit(tree, elementTest, node => {
+      const lastChild = node.children.slice(-1)[0]
+      if (textTest(lastChild)) {
+        const m = lastChild.value.match(/\s*\{:\.(\S+)\}$/)
+        if (m) {
+          lastChild.value = lastChild.value.substring(0, m.index)
+          node.properties.className = `${node.properties.className || ''} ${
+            m[1]
+          }`
         }
       }
     })
@@ -96,8 +123,8 @@ export async function renderMdx(content, data) {
   })
 }
 
-export async function getPostProps(slug) {
-  const source = getPostSource(slug)
+export async function getPostProps(slug: string) {
+  const source = await getPostSource(slug)
   const {data, content} = matter(source)
   const mdxSource = await renderMdx(content, data)
   return {data, mdxSource, slug}
@@ -112,7 +139,7 @@ export function getPageProps() {
 }
 
 export async function getRssProps() {
-  const slugs = getSlugs()
+  const slugs = await getSlugs()
 
   const posts = await Promise.all(
     slugs.map(slug =>

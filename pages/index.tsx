@@ -56,6 +56,6 @@ export async function getStaticProps({params}) {
   )
   const {data, content} = matter(source)
   const mdxSource = await renderMdx(content, data)
-  const posts = getIndex()
+  const posts = await getIndex()
   return {props: {frontMatter: data, mdxSource, posts, ...getPageProps()}}
 }

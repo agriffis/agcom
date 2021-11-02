@@ -46,9 +46,10 @@ export default function BlogPost({
 }
 
 export async function getStaticPaths() {
+  const slugs = await getSlugs()
   return {
     fallback: false,
-    paths: getSlugs().map(slug => ({params: {slug}})),
+    paths: slugs.map(slug => ({params: {slug}})),
   }
 }
 
