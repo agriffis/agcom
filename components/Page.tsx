@@ -1,5 +1,6 @@
 import {ComponentPropsWithoutRef, ElementType, ReactNode} from 'react'
 import Head from 'next/head'
+import Link from 'next/link'
 import {MyImage} from 'components'
 import * as site from 'lib/site'
 
@@ -77,8 +78,12 @@ export function Page({
           sizes="100px"
         />
         <nav className="page-nav">
-          <a href="/">Home</a>
-          <a href="/about">About</a>
+          <Link href="/">
+            <a>Home</a>
+          </Link>
+          <Link href="/about">
+            <a>About</a>
+          </Link>
         </nav>
         {heading && <h1 className="page-heading">{heading}</h1>}
         {postMeta && <div className="post-meta">{postMeta}</div>}
