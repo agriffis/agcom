@@ -1,5 +1,4 @@
 export default {
-  swcMinify: true,
   async redirects() {
     return [
       {

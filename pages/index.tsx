@@ -5,6 +5,7 @@ import fs from 'fs'
 import path from 'path'
 import Link from 'next/link'
 import {Page} from 'components/Page'
+import {S} from 'components'
 import {getIndex, getPageProps, renderMdx} from 'lib/utils-node'
 import {enrichFrontMatter, isoDate, shortDate} from 'lib/utils'
 
@@ -12,22 +13,20 @@ export default function Home({frontMatter, mdxSource, posts, ...pageProps}) {
   return (
     <Page {...frontMatter} {...pageProps}>
       <MDXRemote {...mdxSource} components={components} />
-      <ul className="posts-index">
+      <S.Posts>
         {posts.map(post => {
           const matter = enrichFrontMatter(post)
           return (
-            <li key={post.slug} className="post-listing">
-              <header className="post-header">
+            <S.Posts.Item key={post.slug}>
+              <S.Posts.Header>
                 <h1 className="h3">
                   <Link href={`/${post.slug}`}>
                     <a>{matter.title}</a>
                   </Link>
                 </h1>
-              </header>
-              {matter.excerpt && (
-                <p className="post-excerpt">{matter.excerpt}</p>
-              )}
-              <footer className="post-meta">
+              </S.Posts.Header>
+              {matter.excerpt && <S.Posts.Excerpt children={matter.excerpt} />}
+              <S.Posts.Footer>
                 <time dateTime={isoDate(matter.created)}>
                   {shortDate(matter.created)}
                 </time>
@@ -40,11 +39,11 @@ export default function Home({frontMatter, mdxSource, posts, ...pageProps}) {
                     )
                   </>
                 )}
-              </footer>
-            </li>
+              </S.Posts.Footer>
+            </S.Posts.Item>
           )
         })}
-      </ul>
+      </S.Posts>
     </Page>
   )
 }
