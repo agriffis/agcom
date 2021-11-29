@@ -1,7 +1,6 @@
 import {ReactNode} from 'react'
 import Head from 'next/head'
-import Link from 'next/link'
-import {Footer, MyImage, S} from 'components'
+import {Footer, Link, Image, S} from 'components'
 import {useTheme} from '@xstyled/styled-components'
 import * as site from 'lib/site'
 
@@ -72,19 +71,12 @@ export function Page({
       </Head>
 
       <S.Page>
-        <MyImage
-          name={logo}
-          href={logoLink}
-          priority
-          sizes={theme.sizes.logo}
-        />
+        <Link href={logoLink}>
+          <Image name={logo} priority sizes={theme.sizes.logo} />
+        </Link>
         <S.Nav>
-          <Link href="/">
-            <a>Home</a>
-          </Link>
-          <Link href="/about">
-            <a>About</a>
-          </Link>
+          <Link href="/">Home</Link>
+          <Link href="/about">About</Link>
         </S.Nav>
         {heading && <S.Heading>{heading}</S.Heading>}
         {postMeta && <S.PostMeta>{postMeta}</S.PostMeta>}

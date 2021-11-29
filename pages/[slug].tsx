@@ -1,5 +1,5 @@
 import {MDXRemote} from 'next-mdx-remote'
-import * as components from 'components'
+import * as components from 'components/post'
 import {S} from 'components'
 import {Page} from 'components/Page'
 import {getSlugs} from 'lib/slugs'

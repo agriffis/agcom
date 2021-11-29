@@ -1,5 +1,6 @@
 export * from './Footer'
-export * from './MyImage'
+export * from './Image'
+export * from './Link'
 export * as S from './styles'
 
 // Don't export Page, to avoid circular imports.

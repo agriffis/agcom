@@ -1,5 +1,5 @@
 import styled, {css, system, th} from '@xstyled/styled-components'
-import {withProperties} from 'lib/ts-helpers'
+import {withProperties} from 'lib/utils'
 
 export const Page = styled.div`
   padding: pagePadding;
@@ -478,58 +478,6 @@ export const prose = css`
     border-color: note;
     border-radius: 4px;
     box-shadow: 0 0 10px ${th('colors.note')};
-  }
-
-  img,
-  video {
-    max-width: 100%;
-    height: auto;
-  }
-
-  .post-image {
-    margin-top: 6;
-    margin-bottom: 6;
-
-    a,
-    img,
-    video {
-      display: block;
-    }
-
-    img,
-    video {
-      width: auto;
-    }
-
-    @media (min-width: desktop) {
-      margin-left: 3em;
-      margin-right: 2em;
-      max-width: 28em;
-
-      .wide {
-        margin-left: 0em;
-        margin-right: 0em;
-        max-width: none;
-      }
-
-      .bleed {
-        margin-left: 0em;
-        margin-right: 0em;
-        max-width: none;
-        width: 100vw;
-        visibility: hidden;
-      }
-
-      .bled {
-        margin-left: 0em;
-        margin-right: 0em;
-        max-width: none;
-        position: absolute;
-        left: 0;
-        width: 100%;
-        margin-top: 0;
-      }
-    }
   }
 `
 

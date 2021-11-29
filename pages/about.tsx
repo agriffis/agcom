@@ -1,5 +1,5 @@
 import {MDXRemote} from 'next-mdx-remote'
-import * as components from 'components'
+import * as components from 'components/post'
 import matter from 'gray-matter'
 import fs from 'fs'
 import path from 'path'
