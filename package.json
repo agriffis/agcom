@@ -17,6 +17,7 @@
     "normalize.css": "^8.0.1",
     "react": "latest",
     "react-dom": "latest",
+    "react-is": "^17.0.2",
     "rehype-slug": "^4.0.1",
     "remark-smartypants": "^2.0.0",
     "sass": "^1.30.0",
