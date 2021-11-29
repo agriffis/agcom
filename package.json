@@ -9,6 +9,7 @@
     "@jsdevtools/rehype-toc": "^3.0.2",
     "@mapbox/rehype-prism": "^0.6.0",
     "@silvenon/remark-smartypants": "^1.0.0",
+    "@xstyled/styled-components": "^3.1.2",
     "globby": "^11.0.3",
     "gray-matter": "^4.0.2",
     "hast-util-select": "^4.0.2",
@@ -20,11 +21,13 @@
     "react-dom": "latest",
     "rehype-slug": "^4.0.1",
     "sass": "^1.30.0",
+    "styled-components": "^5.3.3",
     "unist-util-visit": "^2.0.3"
   },
   "devDependencies": {
     "@types/node": "^14.14.37",
     "@types/react": "^17.0.33",
+    "@types/styled-components": "^5.1.15",
     "gm": "^1.23.1",
     "next-remote-watch": "^1.0.0",
     "prettier": "^2.4.1",

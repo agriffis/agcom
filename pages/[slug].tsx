@@ -1,5 +1,6 @@
 import {MDXRemote} from 'next-mdx-remote'
-import * as components from 'components'
+import * as components from 'components/post'
+import {S} from 'components'
 import {Page} from 'components/Page'
 import {getSlugs} from 'lib/slugs'
 import {enrichFrontMatter, isoDate, shortDate} from 'lib/utils'
@@ -37,11 +38,13 @@ export default function BlogPost({
   )
   return (
     <Page {...matter} {...props} postMeta={meta}>
-      <article itemScope itemType="http://schema.org/CreativeWork">
-        <div className="post-markdown">
-          <MDXRemote {...mdxSource} components={components} />
-        </div>
-      </article>
+      <S.Markdown
+        as="article"
+        itemScope
+        itemType="https://schema.org/CreativeWork"
+      >
+        <MDXRemote {...mdxSource} components={components} />
+      </S.Markdown>
     </Page>
   )
 }

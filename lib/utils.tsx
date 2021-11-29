@@ -59,3 +59,39 @@ export function escapeCdata(s: string) {
 export function cdata(s: string) {
   return `<![CDATA[${escapeCdata(s)}]]>`
 }
+
+export function partitionProps<A, B>(
+  props: A & B,
+  pred: ((k: string, v: any) => boolean) | Array<keyof A>,
+): [A, B] {
+  if (Array.isArray(pred)) {
+    const a = {} as A
+    const b = {...props} as B
+    for (const k of pred) {
+      if (k in b) {
+        ;(a as any)[k] = (b as any)[k]
+        delete (b as any)[k]
+      }
+    }
+    return [a, b]
+  } else {
+    const a = {} as A
+    const b = {} as B
+    for (const [k, v] of Object.entries(props)) {
+      if (pred(k, v)) {
+        ;(a as any)[k] = v
+      } else {
+        ;(b as any)[k] = v
+      }
+    }
+    return [a, b]
+  }
+}
+
+// https://stackoverflow.com/a/54955624
+export function withProperties<A, B>(component: A, properties: B): A & B {
+  Object.keys(properties).forEach(key => {
+    ;(component as any)[key] = (properties as any)[key]
+  })
+  return component as A & B
+}
