@@ -1,8 +1,9 @@
 import {ReactNode} from 'react'
 import Head from 'next/head'
-import {Footer, Link, Image, S} from 'components'
 import {useTheme} from '@xstyled/styled-components'
+import {Footer, Link, Image, Nav} from 'components'
 import * as site from 'lib/site'
+import * as S from './styles'
 
 interface PageProps {
   children: ReactNode
@@ -74,10 +75,7 @@ export function Page({
         <Link href={logoLink}>
           <Image name={logo} priority sizes={theme.sizes.logo} />
         </Link>
-        <S.Nav>
-          <Link href="/">Home</Link>
-          <Link href="/about">About</Link>
-        </S.Nav>
+        <Nav />
         {heading && <S.Heading>{heading}</S.Heading>}
         {postMeta && <S.PostMeta>{postMeta}</S.PostMeta>}
         <S.Main>{children}</S.Main>
