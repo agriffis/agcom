@@ -2,7 +2,7 @@ import ReactDOMServer from 'react-dom/server'
 import rehypeToc from '@jsdevtools/rehype-toc'
 import rehypePrism from '@mapbox/rehype-prism'
 import remarkPants from 'remark-smartypants'
-import * as components from 'components/post'
+import * as mdx from 'components/mdx'
 import * as fs from 'fs/promises'
 import matter from 'gray-matter'
 import select from 'hast-util-select'
@@ -148,7 +148,7 @@ export async function getRssProps() {
         .then(({mdxSource, ...post}) => ({
           ...post,
           markup: ReactDOMServer.renderToStaticMarkup(
-            <MDXRemote {...mdxSource} components={components} />,
+            <MDXRemote {...mdxSource} components={mdx} />,
           ),
           matter: enrichFrontMatter(post),
         }))
