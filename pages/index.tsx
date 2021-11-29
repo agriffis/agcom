@@ -3,9 +3,8 @@ import * as mdx from 'components/mdx'
 import matter from 'gray-matter'
 import fs from 'fs'
 import path from 'path'
-import Link from 'next/link'
 import {Page} from 'components/Page'
-import {Posts} from 'components'
+import {Link, Posts} from 'components'
 import {getIndex, getPageProps, renderMdx} from 'lib/utils-node'
 import {enrichFrontMatter, isoDate, shortDate} from 'lib/utils'
 
@@ -20,9 +19,7 @@ export default function Home({frontMatter, mdxSource, posts, ...pageProps}) {
             <Posts.Item key={post.slug}>
               <Posts.Header>
                 <h1 className="h3">
-                  <Link href={`/${post.slug}`}>
-                    <a>{matter.title}</a>
-                  </Link>
+                  <Link href={`/${post.slug}`}>{matter.title}</Link>
                 </h1>
               </Posts.Header>
               {matter.excerpt && <Posts.Excerpt children={matter.excerpt} />}
