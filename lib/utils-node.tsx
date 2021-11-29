@@ -1,16 +1,16 @@
-import ReactDOMServer from 'react-dom/server'
 import rehypeToc from '@jsdevtools/rehype-toc'
 import rehypePrism from '@mapbox/rehype-prism'
-import remarkPants from 'remark-smartypants'
-import * as mdx from 'components/mdx'
 import * as fs from 'fs/promises'
 import matter from 'gray-matter'
 import select from 'hast-util-select'
 import {MDXRemote} from 'next-mdx-remote'
 import {serialize} from 'next-mdx-remote/serialize'
+import ReactDOMServer from 'react-dom/server'
 import rehypeSlug from 'rehype-slug'
+import remarkPants from 'remark-smartypants'
 import * as unist from 'unist'
 import visit from 'unist-util-visit'
+import {mdx as mdxComponents} from 'components'
 import * as site from './site'
 import {slugToPath, getSlugs} from './slugs'
 import {enrichFrontMatter} from './utils'
@@ -148,7 +148,7 @@ export async function getRssProps() {
         .then(({mdxSource, ...post}) => ({
           ...post,
           markup: ReactDOMServer.renderToStaticMarkup(
-            <MDXRemote {...mdxSource} components={mdx} />,
+            <MDXRemote {...mdxSource} components={mdxComponents} />,
           ),
           matter: enrichFrontMatter(post),
         }))

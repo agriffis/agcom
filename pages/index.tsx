@@ -1,5 +1,5 @@
 import {MDXRemote} from 'next-mdx-remote'
-import * as mdx from 'components/mdx'
+import {mdx as mdxComponents} from 'components'
 import matter from 'gray-matter'
 import fs from 'fs'
 import path from 'path'
@@ -11,7 +11,7 @@ import {enrichFrontMatter, isoDate, shortDate} from 'lib/utils'
 export default function Home({frontMatter, mdxSource, posts, ...pageProps}) {
   return (
     <Page {...frontMatter} {...pageProps}>
-      <MDXRemote {...mdxSource} components={mdx} />
+      <MDXRemote {...mdxSource} components={mdxComponents} />
       <Posts>
         {posts.map(post => {
           const matter = enrichFrontMatter(post)
