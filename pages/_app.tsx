@@ -1,7 +1,7 @@
 import {
   ColorModeProvider,
   ThemeProvider,
-  Preflight,
+  getPreflightStyles,
   createGlobalStyle,
   defaultTheme,
 } from '@xstyled/styled-components'
@@ -72,6 +72,10 @@ const theme = {
 }
 
 const GlobalStyle = createGlobalStyle`
+  // Load Preflight here instead of using <Preflight /> in App, because when we
+  // do that, somehow Preflight loads *after* our styles and clobbers them.
+  ${getPreflightStyles}
+
   // Fonts
   body {
     font-family: serif;
@@ -145,7 +149,6 @@ const GlobalStyle = createGlobalStyle`
 const App = ({Component, pageProps}: AppProps) => (
   <ThemeProvider theme={theme}>
     <ColorModeProvider>
-      <Preflight />
       <GlobalStyle />
       <Component {...pageProps} />
     </ColorModeProvider>
