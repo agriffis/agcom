@@ -1,5 +1,5 @@
 dev: lib/images.json
-	npm start
+	yarn start
 
 images lib/images.json: $(wildcard public/img/*)
 	json=$$(bin/gen-images.js) && \
