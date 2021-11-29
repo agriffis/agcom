@@ -8,7 +8,6 @@
   "dependencies": {
     "@jsdevtools/rehype-toc": "^3.0.2",
     "@mapbox/rehype-prism": "^0.6.0",
-    "@silvenon/remark-smartypants": "^1.0.0",
     "@xstyled/styled-components": "^3.1.2",
     "globby": "^11.0.3",
     "gray-matter": "^4.0.2",
@@ -19,6 +18,7 @@
     "react": "latest",
     "react-dom": "latest",
     "rehype-slug": "^4.0.1",
+    "remark-smartypants": "^2.0.0",
     "sass": "^1.30.0",
     "styled-components": "^5.3.3",
     "unist-util-visit": "^2.0.3"

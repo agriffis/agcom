@@ -1,7 +1,7 @@
 import ReactDOMServer from 'react-dom/server'
 import rehypeToc from '@jsdevtools/rehype-toc'
 import rehypePrism from '@mapbox/rehype-prism'
-import remarkPants from '@silvenon/remark-smartypants'
+import remarkPants from 'remark-smartypants'
 import * as components from 'components/post'
 import * as fs from 'fs/promises'
 import matter from 'gray-matter'
