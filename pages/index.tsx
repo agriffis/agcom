@@ -1,5 +1,5 @@
 import {MDXRemote} from 'next-mdx-remote'
-import {mdx as mdxComponents} from 'components'
+import {Markdown, mdx as mdxComponents} from 'components'
 import matter from 'gray-matter'
 import fs from 'fs'
 import path from 'path'
@@ -11,7 +11,13 @@ import {enrichFrontMatter, isoDate, shortDate} from 'lib/utils'
 export default function Home({frontMatter, mdxSource, posts, ...pageProps}) {
   return (
     <Page {...frontMatter} {...pageProps}>
-      <MDXRemote {...mdxSource} components={mdxComponents} />
+      <Markdown
+        as="article"
+        itemScope
+        itemType="https://schema.org/CreativeWork"
+      >
+        <MDXRemote {...mdxSource} components={mdxComponents} />
+      </Markdown>
       <Posts>
         {posts.map(post => {
           const matter = enrichFrontMatter(post)

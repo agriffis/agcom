@@ -1,6 +1,7 @@
 export * from './Footer'
 export * from './Image'
 export * from './Link'
+export * from './Markdown'
 export * from './Nav'
 export * from './Posts'
 export * as I from './icons'

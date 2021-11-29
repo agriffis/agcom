@@ -1,5 +1,5 @@
 import {MDXRemote} from 'next-mdx-remote'
-import {mdx as mdxComponents} from 'components'
+import {Markdown, mdx as mdxComponents} from 'components'
 import matter from 'gray-matter'
 import fs from 'fs'
 import path from 'path'
@@ -9,9 +9,13 @@ import {getPageProps, renderMdx} from 'lib/utils-node'
 export default function About({frontMatter, mdxSource, ...pageProps}) {
   return (
     <Page {...frontMatter} {...pageProps}>
-      <article itemScope itemType="https://schema.org/CreativeWork">
+      <Markdown
+        as="article"
+        itemScope
+        itemType="https://schema.org/CreativeWork"
+      >
         <MDXRemote {...mdxSource} components={mdxComponents} />
-      </article>
+      </Markdown>
     </Page>
   )
 }
