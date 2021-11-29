@@ -1,5 +1,5 @@
 import {ComponentProps, forwardRef} from 'react'
-import styled, {system} from '@xstyled/styled-components'
+import styled, {system} from '@agriffis/xstyled-styled-components'
 import NextImage from 'next/image'
 import {IMAGES} from '../lib/site'
 

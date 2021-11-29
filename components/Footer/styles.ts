@@ -1,4 +1,4 @@
-import styled, {system} from '@xstyled/styled-components'
+import styled, {system} from '@agriffis/xstyled-styled-components'
 
 export const Footer = styled.footer`
   margin-top: 6;

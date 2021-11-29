@@ -4,7 +4,7 @@ import {
   getPreflightStyles,
   createGlobalStyle,
   defaultTheme,
-} from '@xstyled/styled-components'
+} from '@agriffis/xstyled-styled-components'
 import {AppProps} from 'next/app'
 
 const containerRem = 36 // 576px

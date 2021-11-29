@@ -5,6 +5,45 @@ __metadata:
   version: 5
   cacheKey: 8
 
+"@agriffis/xstyled-core@npm:^3.1.3-agriffis.0":
+  version: 3.1.3-agriffis.0
+  resolution: "@agriffis/xstyled-core@npm:3.1.3-agriffis.0"
+  dependencies:
+    "@agriffis/xstyled-system": ^3.1.3-agriffis.0
+  checksum: 5a19d852e54477e63ec59d4260ac4ac87a2d71310c1a22f5d7e63e1dabb8018cdcd3a64c7859c7865e2b0bc75f414f5ed05c4ae506decc549d34c992aa195274
+  languageName: node
+  linkType: hard
+
+"@agriffis/xstyled-styled-components@npm:latest":
+  version: 3.1.3-agriffis.0
+  resolution: "@agriffis/xstyled-styled-components@npm:3.1.3-agriffis.0"
+  dependencies:
+    "@agriffis/xstyled-core": ^3.1.3-agriffis.0
+    "@agriffis/xstyled-system": ^3.1.3-agriffis.0
+    "@agriffis/xstyled-util": ^3.1.3-agriffis.0
+  peerDependencies:
+    styled-components: ^4.0.0 || ^5.0.0
+  checksum: f7c60c64f65e98a4167dfca9c7d65825a6132ec45d3ec4fc881cf35690f8d6187603767c457c57eb95acb87c9eb823f293379d6dd25330b653dca69372982092
+  languageName: node
+  linkType: hard
+
+"@agriffis/xstyled-system@npm:^3.1.3-agriffis.0":
+  version: 3.1.3-agriffis.0
+  resolution: "@agriffis/xstyled-system@npm:3.1.3-agriffis.0"
+  dependencies:
+    "@agriffis/xstyled-util": ^3.1.3-agriffis.0
+    csstype: ^3.0.8
+  checksum: a7beeaee6a23635554b9f306c4ecf195d3e5c3863d9dabcbfb2617bb863719f865f32226fe04bc874597e04f1f27846a5e999af25ef4a584cd387b81e0cc7393
+  languageName: node
+  linkType: hard
+
+"@agriffis/xstyled-util@npm:^3.1.3-agriffis.0":
+  version: 3.1.3-agriffis.0
+  resolution: "@agriffis/xstyled-util@npm:3.1.3-agriffis.0"
+  checksum: be4f70e0284705e04360d7822541aaa5cd91fd68bc34636a3593a1ccae8fa0298a3f5cf0b98feb46e062d95f7a4144b0958339674ecde32cfa950a0d16c3a90a
+  languageName: node
+  linkType: hard
+
 "@babel/code-frame@npm:7.12.11":
   version: 7.12.11
   resolution: "@babel/code-frame@npm:7.12.11"
@@ -751,45 +790,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xstyled/core@npm:^3.1.2":
-  version: 3.1.2
-  resolution: "@xstyled/core@npm:3.1.2"
-  dependencies:
-    "@xstyled/system": ^3.1.2
-  checksum: 29a994c18eda2d7365931986db7b234b8011500533613381f126c5ac1c292ca20aaea75c44de9f25995282cf2f185bf7c3b06dc9dcb6584ea8e6791da71e0e71
-  languageName: node
-  linkType: hard
-
-"@xstyled/styled-components@npm:^3.1.2":
-  version: 3.1.2
-  resolution: "@xstyled/styled-components@npm:3.1.2"
-  dependencies:
-    "@xstyled/core": ^3.1.2
-    "@xstyled/system": ^3.1.2
-    "@xstyled/util": ^3.1.0
-  peerDependencies:
-    styled-components: ^4.0.0 || ^5.0.0
-  checksum: 21c429d4ebb7d5b7467d3480bb9f5e03d94d4f71705f4278e17b568e49a961e56de68aa340f9f93b27d9e68d80b32dce7f11b47777506035557d503906b4a327
-  languageName: node
-  linkType: hard
-
-"@xstyled/system@npm:^3.1.2":
-  version: 3.1.2
-  resolution: "@xstyled/system@npm:3.1.2"
-  dependencies:
-    "@xstyled/util": ^3.1.0
-    csstype: ^3.0.8
-  checksum: 654088d789d9766e2b5362a1c8ebf848b64cf697b215c46ae578f7d74b233aed04270d5ee2cd1f5422d210fc8929342b0f375a0d133c23d72e6916b34ef4026c
-  languageName: node
-  linkType: hard
-
-"@xstyled/util@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "@xstyled/util@npm:3.1.0"
-  checksum: e0c3cec2e8eb4f95e2ff5a80799bfc80ae362b337b094b9fc604477a38cdb6ef4012cfa8647d0d76fc5573ecc61f3a981ea1116d68cf53081caa712b7221b6ad
-  languageName: node
-  linkType: hard
-
 "abbrev@npm:1":
   version: 1.1.1
   resolution: "abbrev@npm:1.1.1"
@@ -820,12 +820,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "agcom@workspace:."
   dependencies:
+    "@agriffis/xstyled-styled-components": latest
     "@jsdevtools/rehype-toc": ^3.0.2
     "@mapbox/rehype-prism": ^0.6.0
     "@types/node": ^14.14.37
     "@types/react": ^17.0.33
     "@types/styled-components": ^5.1.15
-    "@xstyled/styled-components": ^3.1.2
     globby: ^11.0.3
     gm: ^1.23.1
     gray-matter: ^4.0.2

@@ -1,7 +1,7 @@
 /**
  * SVG icons from https://simpleicons.org
  */
-import styled, {system} from '@xstyled/styled-components'
+import styled, {system} from '@agriffis/xstyled-styled-components'
 
 const SvgIcon = styled.svg.attrs({
   role: 'img',

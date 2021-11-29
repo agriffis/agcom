@@ -1,6 +1,6 @@
 import {ReactNode} from 'react'
 import Head from 'next/head'
-import {useTheme} from '@xstyled/styled-components'
+import {useTheme} from '@agriffis/xstyled-styled-components'
 import {Footer, Link, Image, Nav} from 'components'
 import * as site from 'lib/site'
 import * as S from './styles'

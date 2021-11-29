@@ -8,7 +8,7 @@ import Document, {
 import {
   getColorModeInitScriptElement,
   ServerStyleSheet,
-} from '@xstyled/styled-components'
+} from '@agriffis/xstyled-styled-components'
 
 export default class MyDocument extends Document {
   /**

@@ -4,7 +4,7 @@
     [
       "styled-components",
       {
-        "topLevelImportPaths": ["@xstyled/styled-components"]
+        "topLevelImportPaths": ["@agriffis/xstyled-styled-components"]
       }
     ]
   ]

@@ -1,4 +1,4 @@
-import styled, {system, th} from '@xstyled/styled-components'
+import styled, {system, th} from '@agriffis/xstyled-styled-components'
 
 export const Heading = styled.h1`
   align-self: end;

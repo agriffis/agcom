@@ -1,4 +1,4 @@
-import styled, {system} from '@xstyled/styled-components'
+import styled, {system} from '@agriffis/xstyled-styled-components'
 
 export const Posts = styled.ul`
   ${system}

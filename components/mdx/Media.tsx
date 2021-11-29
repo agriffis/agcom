@@ -1,4 +1,8 @@
-import styled, {SystemProps, css, system} from '@xstyled/styled-components'
+import styled, {
+  SystemProps,
+  css,
+  system,
+} from '@agriffis/xstyled-styled-components'
 
 interface MediaProps {
   variant?: 'normal' | 'wide'
