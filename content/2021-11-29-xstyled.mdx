@@ -1,0 +1,110 @@
+---
+title: How do I fork xstyled?
+author: Aron
+tags: [javascript, react, styled-components, xstyled]
+excerpt: It's not as hard as I expected
+---
+
+[xstyled](https://xstyled.dev/) is a wrapper for
+[styled-components](https://styled-components.com/) that provides theming and
+props-based styling similar to [styled-system](https://styled-system.com/). I've
+been using it for personal and professional projects, inevitably [sticking my
+nose in upstream
+development](https://github.com/search?l=&q=author%3Aagriffis+repo%3Agregberge%2Fxstyled&type=commits).
+
+I want to spin my own xstyled packages for features that are waiting to be
+merged, or that may never find their way upstream. Because xstyled is a monorepo
+with multiple output packages, it's unfortunately not as simple as just changing
+the name in `package.json`:
+
+```
+xstyled
+└── packages
+    ├── babel-preset-emotion-css-prop
+    ├── core
+    ├── emotion
+    ├── prop-types
+    ├── styled-components
+    ├── system
+    └── util
+```
+
+## Step 1: Prep
+
+Clone and fork. I had to rename the remotes after forking, because
+[Lerna](https://lerna.js.org/) [requires the remote to be named
+`origin`](https://github.com/lerna/lerna/issues/2808).
+
+```bash
+hub clone gregberge/xstyled
+hub fork
+git remote rename origin upstream
+git remote rename agriffis origin
+git checkout -b fork
+git push --set-upstream origin fork
+```
+
+## Step 2: Rename
+
+Change the names of the packages everywhere they appear. The upstream packages
+are in the namespace `@xstyled`--I'm going to take this a step further by using
+my own namespace and adding a prefix, so that `@xstyled/system` becomes
+`@agriffis/xstyled-system` and so forth.
+
+```bash
+rg --hidden -l --null @xstyled/ | \
+  xargs -0 sed -i 's,@xstyled/,@agriffis/xstyled-,g'
+(cd packages && for x in *; do mv $x xstyled-$x; done)
+git add .
+git commit -m "chore: fork"
+```
+
+Here's the new listing of the packages directory:
+
+```
+xstyled
+└── packages
+    ├── xstyled-babel-preset-emotion-css-prop
+    ├── xstyled-core
+    ├── xstyled-emotion
+    ├── xstyled-prop-types
+    ├── xstyled-styled-components
+    ├── xstyled-system
+    └── xstyled-util
+```
+
+## Step 3: Release
+
+I only ever want to make pre-releases from this fork, so I'll update
+`package.json`:
+
+```
+"release": "lerna publish prepatch --preid agriffis",
+```
+
+and then make the release:
+
+```bash
+npm ci  # clean-slate install
+npm release
+```
+
+Here are the [commits on
+GitHub](https://github.com/agriffis/xstyled/commits/fork) and the [resulting
+packages on npm](https://www.npmjs.com/search?q=%40agriffis%2Fxstyled).
+
+### Step 4: Use
+
+Update my project to use my fork:
+
+```bash
+yarn remove @xstyled/styled-components
+yarn add @agriffis/xstyled-styled-components@latest
+rg --hidden -l --null @xstyled/ | \
+  xargs -0 sed -i 's,@xstyled/,@agriffis/xstyled-,g'
+```
+
+Here's [that commit](https://github.com/agriffis/agcom/commit/93016d1dceb55aedd791086362de1cfe06ee19e9).
+
+Now I can make changes to xstyled for my own site, and with any luck, it won't
+be too much effort to merge upstream changes into my fork.
