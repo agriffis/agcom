@@ -8,7 +8,6 @@ import matter from 'gray-matter'
 import select from 'hast-util-select'
 import {MDXRemote} from 'next-mdx-remote'
 import {serialize} from 'next-mdx-remote/serialize'
-import * as R from 'ramda'
 import rehypeSlug from 'rehype-slug'
 import * as unist from 'unist'
 import visit from 'unist-util-visit'
@@ -95,7 +94,7 @@ export async function renderMdx(content, data) {
                       const id = '#' + data.toc.replace(/^#/, '')
                       const ol = select.select(`li > a[href="${id}"] + ol`, toc)
                       if (ol) {
-                        return R.assoc('children', [ol], toc)
+                        return {...toc, children: [ol]}
                       }
                     }
                   },

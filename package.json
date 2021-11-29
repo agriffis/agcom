@@ -16,7 +16,6 @@
     "next": "latest",
     "next-mdx-remote": "^3.0.7",
     "normalize.css": "^8.0.1",
-    "ramda": "^0.27.1",
     "react": "latest",
     "react-dom": "latest",
     "rehype-slug": "^4.0.1",
