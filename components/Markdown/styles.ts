@@ -27,7 +27,7 @@ const syntax = css`
     --visual-fg: #eeeeee;
     --visual-bg: #0087af;
 
-    body.xstyled-color-mode-dark {
+    body.xstyled-color-mode-dark & {
       --color00: #1c1c1c;
       --color01: #af005f;
       --color02: #5faf00;
