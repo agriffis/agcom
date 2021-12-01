@@ -5,42 +5,42 @@ __metadata:
   version: 5
   cacheKey: 8
 
-"@agriffis/xstyled-core@npm:^3.1.3-agriffis.0":
-  version: 3.1.3-agriffis.0
-  resolution: "@agriffis/xstyled-core@npm:3.1.3-agriffis.0"
+"@agriffis/xstyled-core@npm:^3.1.3-agriffis.2":
+  version: 3.1.3-agriffis.2
+  resolution: "@agriffis/xstyled-core@npm:3.1.3-agriffis.2"
   dependencies:
-    "@agriffis/xstyled-system": ^3.1.3-agriffis.0
-  checksum: 5a19d852e54477e63ec59d4260ac4ac87a2d71310c1a22f5d7e63e1dabb8018cdcd3a64c7859c7865e2b0bc75f414f5ed05c4ae506decc549d34c992aa195274
+    "@agriffis/xstyled-system": ^3.1.3-agriffis.2
+  checksum: 523247f280ad26c41dd01e33a725072d5622f82778f7e454c14ba29f187186aaca20f7a37ef3849d91956a5d5e62f1edc2f14ed66287836da2b11f819490146f
   languageName: node
   linkType: hard
 
 "@agriffis/xstyled-styled-components@npm:latest":
-  version: 3.1.3-agriffis.0
-  resolution: "@agriffis/xstyled-styled-components@npm:3.1.3-agriffis.0"
+  version: 3.1.3-agriffis.2
+  resolution: "@agriffis/xstyled-styled-components@npm:3.1.3-agriffis.2"
   dependencies:
-    "@agriffis/xstyled-core": ^3.1.3-agriffis.0
-    "@agriffis/xstyled-system": ^3.1.3-agriffis.0
-    "@agriffis/xstyled-util": ^3.1.3-agriffis.0
+    "@agriffis/xstyled-core": ^3.1.3-agriffis.2
+    "@agriffis/xstyled-system": ^3.1.3-agriffis.2
+    "@agriffis/xstyled-util": ^3.1.3-agriffis.2
   peerDependencies:
     styled-components: ^4.0.0 || ^5.0.0
-  checksum: f7c60c64f65e98a4167dfca9c7d65825a6132ec45d3ec4fc881cf35690f8d6187603767c457c57eb95acb87c9eb823f293379d6dd25330b653dca69372982092
+  checksum: 91b85f5b68a7edc1a0e19412708d8108db8e6a04de64ec5f32d570a06f382cf096a20dbb006b59688bd272cccbd84ece8c572b446dddab216381d27b9ebdde8b
   languageName: node
   linkType: hard
 
-"@agriffis/xstyled-system@npm:^3.1.3-agriffis.0":
-  version: 3.1.3-agriffis.0
-  resolution: "@agriffis/xstyled-system@npm:3.1.3-agriffis.0"
+"@agriffis/xstyled-system@npm:^3.1.3-agriffis.2":
+  version: 3.1.3-agriffis.2
+  resolution: "@agriffis/xstyled-system@npm:3.1.3-agriffis.2"
   dependencies:
-    "@agriffis/xstyled-util": ^3.1.3-agriffis.0
+    "@agriffis/xstyled-util": ^3.1.3-agriffis.2
     csstype: ^3.0.8
-  checksum: a7beeaee6a23635554b9f306c4ecf195d3e5c3863d9dabcbfb2617bb863719f865f32226fe04bc874597e04f1f27846a5e999af25ef4a584cd387b81e0cc7393
+  checksum: 4fcfc0c609002a5250762f85101a6f9f28bfbad26596178113ed04c85f49dff66ab4c0b3c36f7f832bf51b5e6749c55b7d51697c873b33e4508f485b6e327eca
   languageName: node
   linkType: hard
 
-"@agriffis/xstyled-util@npm:^3.1.3-agriffis.0":
-  version: 3.1.3-agriffis.0
-  resolution: "@agriffis/xstyled-util@npm:3.1.3-agriffis.0"
-  checksum: be4f70e0284705e04360d7822541aaa5cd91fd68bc34636a3593a1ccae8fa0298a3f5cf0b98feb46e062d95f7a4144b0958339674ecde32cfa950a0d16c3a90a
+"@agriffis/xstyled-util@npm:^3.1.3-agriffis.2":
+  version: 3.1.3-agriffis.2
+  resolution: "@agriffis/xstyled-util@npm:3.1.3-agriffis.2"
+  checksum: e648d9676bcd6e8990a531415fe9b2a997b63c301f6535dc31b5d39124ae41ec15f0f5175f018dd4d82bc5f4a82fcc8a1ca9c89f05a0df7defa9b90def907247
   languageName: node
   linkType: hard
 
