@@ -20,6 +20,7 @@
     "react-is": "^17.0.2",
     "rehype-slug": "^4.0.1",
     "remark-smartypants": "^2.0.0",
+    "remeda": "^0.0.30",
     "sass": "^1.30.0",
     "styled-components": "^5.3.3",
     "unist-util-visit": "^2.0.3"

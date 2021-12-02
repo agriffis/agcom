@@ -840,6 +840,7 @@ __metadata:
     react-is: ^17.0.2
     rehype-slug: ^4.0.1
     remark-smartypants: ^2.0.0
+    remeda: ^0.0.30
     sass: ^1.30.0
     styled-components: ^5.3.3
     typescript: ^4.4.4
@@ -4447,6 +4448,13 @@ __metadata:
   dependencies:
     mdast-squeeze-paragraphs: ^4.0.0
   checksum: 2071eb74d0ecfefb152c4932690a9fd950c3f9f798a676f1378a16db051da68fb20bf288688cc153ba5019dded35408ff45a31dfe9686eaa7a9f1df9edbb6c81
+  languageName: node
+  linkType: hard
+
+"remeda@npm:^0.0.30":
+  version: 0.0.30
+  resolution: "remeda@npm:0.0.30"
+  checksum: 0abb2aa09895e7d45c369153764994e19e8743790a55b234333eda8a962f3655b289f2b11e28f8aa764df26479a0daf63714f41311735069d54b90ac12325622
   languageName: node
   linkType: hard
 

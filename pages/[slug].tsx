@@ -1,3 +1,4 @@
+import dynamic from 'next/dynamic'
 import {MDXRemote} from 'next-mdx-remote'
 import {Markdown, mdx as mdxComponents} from 'components'
 import {Page} from 'components/Page'
@@ -5,6 +6,10 @@ import {getSlugs} from 'lib/slugs'
 import {enrichFrontMatter, isoDate, shortDate} from 'lib/utils'
 import {getPageProps, getPostProps} from 'lib/utils-node'
 import {ComponentProps} from 'react'
+
+const dynamicMdxComponents = {
+  Advent: dynamic(() => import('components/Advent')),
+}
 
 interface BlogPostProps extends ComponentProps<typeof Page> {
   data: object
@@ -42,7 +47,10 @@ export default function BlogPost({
         itemScope
         itemType="https://schema.org/CreativeWork"
       >
-        <MDXRemote {...mdxSource} components={mdxComponents} />
+        <MDXRemote
+          {...mdxSource}
+          components={{...mdxComponents, ...dynamicMdxComponents}}
+        />
       </Markdown>
     </Page>
   )
