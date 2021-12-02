@@ -1,0 +1,90 @@
+---
+title: Advent of Code 2021 - Day 2
+author: Aron
+tags: [advent-of-code, javascript]
+excerpt: Dive!
+---
+
+> Now, you need to figure out how to pilot this thing.
+
+## Day 2a
+
+My solution:
+
+```typescript
+export const d2a = ({input = inputs.d2, dbg}: DayProps) =>
+  R.pipe(
+    Array.from(input.matchAll(/(\w+)\s+(\d+)/g)),
+    R.map(m => ({dir: m[1], mag: parseInt(m[2])})),
+    R.reduce(
+      ({x, z}, {dir, mag}) => ({
+        x: dir === 'forward' ? x + mag : x,
+        z: dir === 'up' ? z - mag : dir === 'down' ? z + mag : z,
+      }),
+      {x: 0, z: 0},
+    ),
+    dbg,
+    ({x, z}) => x * z,
+  )
+```
+
+I'm really liking how Remeda infers types down the pipe. While working on this
+with Neovim's LSP support, it would highlight red anytime my anticipated input
+didn't match the output of the previous function.
+
+Here's the result with the sample input:
+
+<Advent day={2} part="a" input={`
+forward 5
+down 5
+forward 8
+up 3
+down 8
+forward 2
+`} debug />
+
+and here it is with my input:
+
+<Advent day={2} part="a" debug />
+
+## Day 2b
+
+There's something heartwarmingly familiar about this pattern in Advent of Code:
+
+> The commands also mean something entirely different than you first thought
+
+Minor change to the reduction, nothing more:
+
+```typescript
+export const d2b = ({input = inputs.d2, dbg}: DayProps) =>
+  R.pipe(
+    Array.from(input.matchAll(/(\w+)\s+(\d+)/g)),
+    R.map(m => ({cmd: m[1], n: parseInt(m[2])})),
+    R.reduce(
+      ({x, z, aim}, {cmd, n}) =>
+        cmd === 'forward'
+          ? {x: x + n, z: z + n * aim, aim}
+          : cmd === 'up'
+          ? {aim: aim - n, x, z}
+          : {aim: aim + n, x, z},
+      {x: 0, z: 0, aim: 0},
+    ),
+    dbg,
+    ({x, z}) => x * z,
+  )
+```
+
+Sample result:
+
+<Advent day={2} part="b" input={`
+forward 5
+down 5
+forward 8
+up 3
+down 8
+forward 2
+`} debug />
+
+and my result:
+
+<Advent day={2} part="b" debug />
