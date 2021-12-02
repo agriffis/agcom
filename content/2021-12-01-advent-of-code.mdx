@@ -172,7 +172,7 @@ Finally, debugging! If the calling component passes the `debug` prop then the
 `dbg` function can post back in-progress messages. The component renders those
 messages alongside the result, whenever it deigns to arrive:
 
-```
+```typescript
 const AnyDay: Day = (props: AdventProps) => {
   const [debug, setDebug] = useState<string>('')
   const [result, setResult] = useState<string>('')
