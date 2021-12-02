@@ -52,7 +52,7 @@ Here's the result with the sample input:
 <Advent day={1} part="a" input="199 200 208 210 200 207 240 269 260 263" />
 
 and here's the result with [my own
-input)(https://github.com/agriffis/agcom/blob/4b52572861b4d1273328077bb59770649448c5ba/components/advent-inputs.ts#L1-L125):
+input](https://github.com/agriffis/agcom/blob/4b52572861b4d1273328077bb59770649448c5ba/components/advent-inputs.ts#L1-L125):
 
 <Advent day={1} part="a" />
 
@@ -70,7 +70,7 @@ Window 2: B + C + D
 (B + C + D) - (A + B + C) = D - A
 ```
 
-Apart from `dbg` (will explain below), the only difference in my solution from
+Apart from `dbg` (will explain below), the only difference from
 the first part is the index for comparison:
 
 ```typescript
@@ -98,8 +98,8 @@ and here's the result with my own input:
 ## Worker and debug
 
 Some Advent of Code problems take seconds-to-minutes to run to completion. Two
-things we want to avoid: (1) running the solution in server-side rendering, (2)
-holding up client-side rendering.
+things we want to avoid: (1) running the solution in Next.js server-side
+rendering, (2) holding up client-side rendering.
 
 Kill two render-blockers with one `useEffect()`--it doesn't run on the server,
 and it doesn't hold up the initial render on the client:
