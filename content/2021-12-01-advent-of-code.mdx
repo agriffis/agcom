@@ -15,9 +15,9 @@ The idea is to do it right here, in my blog, built on
 get code and raw answers on the screen; if we're lucky, there'll be graphics.
 
 Want to know what MDX looks like? It's Markdown with React instead of HTML.
-Check out [this post]().
+Check out [this post](https://raw.githubusercontent.com/agriffis/agcom/main/content/2021-12-01-advent-of-code.mdx).
 
-Let's just dive in and we'll loop back to blog mechanics at the end.
+Let's dive in and we'll loop back to blog mechanics at the end.
 
 ## Day 1a
 
@@ -50,7 +50,8 @@ Here's the result with the sample input:
 
 <Advent day={1} part="a" input="199 200 208 210 200 207 240 269 260 263" />
 
-and here's the result with my own input:
+and here's the result with [my own
+input)(https://github.com/agriffis/agcom/blob/4b52572861b4d1273328077bb59770649448c5ba/components/advent-inputs.ts#L1-L125):
 
 <Advent day={1} part="a" />
 
@@ -147,7 +148,7 @@ The hook starts a worker, attaches a listener, sends a message, and prepares to
 fire the poor bastard as soon as the company's squeezed the last ounce of profit
 from his labor.
 
-The worker is just a middleman between the component and the solution
+But work he does, passing messages between the component and the solution
 functions you saw earlier in this post:
 
 ```typescript
@@ -166,9 +167,9 @@ self.addEventListener('message', (event: any) => {
 })
 ```
 
-And to close it out, debugging! If the calling component passes the `debug` prop
-then the `dbg` function will post back messages. The component renders those
-messages under the result, whenever it deigns to arrive:
+Finally, debugging! If the calling component passes the `debug` prop then the
+`dbg` function can post back in-progress messages. The component renders those
+messages alongside the result, whenever it deigns to arrive:
 
 ```
 const AnyDay: Day = (props: AdventProps) => {
@@ -196,3 +197,12 @@ const AnyDay: Day = (props: AdventProps) => {
   )
 }
 ```
+
+Here's the full code:
+[Advent.tsx](https://github.com/agriffis/agcom/blob/4b52572861b4d1273328077bb59770649448c5ba/components/Advent.tsx)
+[advent.worker.ts](https://github.com/agriffis/agcom/blob/4b52572861b4d1273328077bb59770649448c5ba/components/advent.worker.ts)
+[advent.ts](https://github.com/agriffis/agcom/blob/4b52572861b4d1273328077bb59770649448c5ba/components/advent.ts)
+
+- https://github.com/agriffis/agcom/blob/main/components/Advent.tsx
+- https://github.com/agriffis/agcom/blob/main/components/advent.worker.ts
+- https://github.com/agriffis/agcom/blob/main/components/advent.ts
