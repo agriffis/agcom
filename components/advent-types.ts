@@ -6,5 +6,5 @@ export interface AdventProps {
 }
 
 export interface DayProps extends AdventProps {
-  dbg: any
+  dbg: <T>(x: T, ...args: any) => T
 }

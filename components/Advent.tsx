@@ -27,7 +27,7 @@ interface Day {
   (props: AdventProps): ReactElement<any, any>
 }
 
-const AnyDay: Day = (props: AdventProps) => {
+const AnyDayNow: Day = (props: AdventProps) => {
   const [debug, setDebug] = useState<string>('')
   const [result, setResult] = useState<string>('')
 
@@ -58,7 +58,7 @@ const days: {
 
 const Advent = (props: AdventProps) => {
   const {day, part} = props
-  const D = days[`Day${day}${part}`] || AnyDay
+  const D = days[`Day${day}${part}`] || AnyDayNow
   return (
     <pre>
       <D {...props} />
