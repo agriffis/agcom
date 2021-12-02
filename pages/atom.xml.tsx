@@ -43,7 +43,7 @@ function entryXml({blogUrl, post: {markup, matter, slug}}: entryXmlProps) {
   const copyright = (matter.updated || matter.created).getUTCFullYear()
   return `<entry>
       <id>${ex(link)}</id>
-      <title>${ex(matter.title)}</title>
+      <title>${ex(matter.title || '')}</title>
       <link href="${ex(link)}" />
       <published>${ex(created)}</published>
       <rights>Copyright ${copyright} Aron Griffis</rights>
