@@ -60,3 +60,33 @@ export const d2b = ({input = inputs.d2, dbg}: DayProps) =>
     dbg,
     ({x, z}) => x * z,
   )
+
+const bitCounter = (pos: number) =>
+  R.reduce<number, number>((count, n) => count + ((n & (1 << pos)) >> pos), 0)
+
+export const d3a = ({input = inputs.d3, dbg}: DayProps) => {
+  const diags = R.pipe(
+    input.trim().split(/\s+/),
+    R.map(s => parseInt(s, 2)),
+  )
+  const bitLength = input.trim().search(/\s+/)
+  const bitCounts = R.times(bitLength, pos => bitCounter(pos)(diags))
+  const gamma = R.reduce.indexed(
+    bitCounts,
+    (gamma, count, shift) =>
+      gamma | (count > diags.length / 2 ? 1 << shift : 0),
+    0,
+  ) as unknown as number // https://github.com/remeda/remeda/pull/154
+  const epsilon = gamma ^ ((1 << bitLength) - 1)
+  dbg({gamma, epsilon})
+  return `Power consumption: ${gamma * epsilon}`
+}
+
+export const d3b = ({input = inputs.d3, dbg}: DayProps) => {
+  const diags = R.pipe(
+    input.trim().split(/\s+/),
+    R.map(s => parseInt(s, 2)),
+  )
+  const bitLength = input.trim().search(/\s+/)
+  return 0
+}
