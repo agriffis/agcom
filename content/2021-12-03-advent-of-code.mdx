@@ -127,8 +127,8 @@ export const d3b = ({input = inputs.d3}: DayProps) => {
 `bitPositions`. Neither JavaScript nor Remeda offer a [mechanism like
 Clojure's](https://clojuredocs.org/clojure.core/reduced) to terminate early.
 
-So that became the task. Here's new defitions of `reduce` and `reduced` with the
-ability to terminate early using the special `reduced` return value.
+So that became the task. Here's new defitions of `reduce` and `reduce.indexed`
+with the ability to terminate early using the special `reduced` return value.
 
 ```typescript
 class Reduced<T> extends Error {
