@@ -178,3 +178,54 @@ export const d3b = ({input = inputs.d3, dbg}: DayProps) => {
 
   return `Life support rating: ${oxy[0] * co2[0]}`
 }
+
+const is = (x: any) => x !== '' && x !== null && x !== undefined
+const parse10 = (s: string) => parseInt(s, 10)
+const clean = (s: string) => s.trim().replace(/^[^\S\n]+/gm, '')
+const paragraphs = (s: string) => clean(s).split(/\n{2,}/)
+const ints = (s: string) => clean(s).split(/\D+/).map(parse10)
+const max = (ns: number[]) => Math.max.apply(null, ns)
+const min = (ns: number[]) => Math.min.apply(null, ns)
+const sum = (ns: number[]) => reduce(ns, (sum, n) => sum + n, 0)
+
+const ranks = <T>(xs: T[], n: number): T[][] =>
+  R.times(Math.ceil(xs.length / n), i => xs.slice(n * i, n * (i + 1)))
+
+const files = <T>(xs: T[], n: number): T[][] =>
+  R.times(Math.ceil(xs.length / n), i =>
+    R.times(n, j => xs[i + j * n]).filter(is),
+  )
+
+const d4 = ({input = inputs.d4, dbg, pick}: DayProps & {pick: any}) => {
+  const {draws, boards} = R.pipe(paragraphs(input), ([ds, ...bs]) => ({
+    draws: ints(ds),
+    boards: bs.map(ints),
+  }))
+  const order = reduce.indexed(
+    R.uniq(draws),
+    (order, draw, i) => {
+      order[draw] = i
+      return order
+    },
+    [] as number[],
+  )
+  const bingos = R.pipe(
+    boards,
+    R.map.indexed((board, num) => {
+      const rows = [...ranks(board, 5), ...files(board, 5)]
+      const orders = rows.map(r => r.map(draw => order[draw]))
+      const turn = min(orders.map(max))
+      return {board, num, rows, orders, turn}
+    }),
+    R.sort((a, b) => a.turn - b.turn),
+  )
+  const winning = pick(bingos) as typeof bingos[0]
+  const unmarked = sum(winning.board.filter(x => order[x] > winning.turn))
+  const winner = draws[winning.turn]
+  dbg({...R.pick(winning, ['num', 'turn']), unmarked, winner})
+  return `Final score: ${unmarked * winner}`
+}
+
+export const d4a = props => d4({...props, pick: R.first})
+
+export const d4b = props => d4({...props, pick: R.last})
