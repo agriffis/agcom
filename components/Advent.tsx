@@ -1,4 +1,5 @@
-import {ReactElement, useEffect, useState} from 'react'
+import {Button} from './Button'
+import {ReactElement, useEffect, useRef, useState} from 'react'
 
 const useWorker = (message: any, cb: any) => {
   const [worker] = useState(() => {
@@ -59,9 +60,16 @@ const days: {
 const Advent = (props: AdventProps) => {
   const {day, part} = props
   const D = days[`Day${day}${part}`] || AnyDayNow
+  const ref = useRef<HTMLPreElement>()
+  const [running, setRunning] = useState(process.env.NODE_ENV !== 'production')
+  const [minHeight, setMinHeight] = useState<string | undefined>(undefined)
+  const run = () => {
+    setMinHeight(`${ref.current.offsetHeight}px`)
+    setRunning(true)
+  }
   return (
-    <pre>
-      <D {...props} />
+    <pre style={{minHeight}} ref={ref}>
+      {running ? <D {...props} /> : <Button onPress={run}>Run!</Button>}
     </pre>
   )
 }
