@@ -9,6 +9,7 @@
     "@agriffis/xstyled-styled-components": "latest",
     "@jsdevtools/rehype-toc": "^3.0.2",
     "@mapbox/rehype-prism": "^0.6.0",
+    "@react-aria/button": "^3.3.4",
     "globby": "^11.0.3",
     "gray-matter": "^4.0.2",
     "hast-util-select": "^4.0.2",
