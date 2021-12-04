@@ -196,36 +196,49 @@ const files = <T>(xs: T[], n: number): T[][] =>
     R.times(n, j => xs[i + j * n]).filter(is),
   )
 
-const d4 = ({input = inputs.d4, dbg, pick}: DayProps & {pick: any}) => {
+const d4 = ({
+  input = inputs.d4,
+  dbg,
+  pick,
+}: DayProps & {pick: typeof R.last}) => {
   const {draws, boards} = R.pipe(paragraphs(input), ([ds, ...bs]) => ({
     draws: ints(ds),
     boards: bs.map(ints),
   }))
+  const edge = Math.sqrt(boards[0].length)
+
+  // Reverse lookup from a drawn number to its position in line.
   const order = reduce.indexed(
     R.uniq(draws),
-    (order, draw, i) => {
-      order[draw] = i
-      return order
-    },
+    (order, draw, i) => ((order[draw] = i), order),
     [] as number[],
   )
+
+  // Boards sorted in the order they win.
   const bingos = R.pipe(
     boards,
     R.map.indexed((board, num) => {
-      const rows = [...ranks(board, 5), ...files(board, 5)]
+      const rows = [...ranks(board, edge), ...files(board, edge)]
       const orders = rows.map(r => r.map(draw => order[draw]))
       const turn = min(orders.map(max))
       return {board, num, rows, orders, turn}
     }),
     R.sort((a, b) => a.turn - b.turn),
   )
-  const winning = pick(bingos) as typeof bingos[0]
+
+  // Pick the winning (or losing) board.
+  const winning = pick(bingos)
+
+  // Unmarked numbers are those that haven't been called by the winning.turn
   const unmarked = sum(winning.board.filter(x => order[x] > winning.turn))
+
+  // Which number was called on the winning turn?
   const winner = draws[winning.turn]
+
   dbg({...R.pick(winning, ['num', 'turn']), unmarked, winner})
   return `Final score: ${unmarked * winner}`
 }
 
-export const d4a = props => d4({...props, pick: R.first})
+export const d4a = (props: DayProps) => d4({...props, pick: R.first})
 
-export const d4b = props => d4({...props, pick: R.last})
+export const d4b = (props: DayProps) => d4({...props, pick: R.last})
