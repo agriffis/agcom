@@ -10,6 +10,29 @@ excerpt: Binary Diagnostic
 
 ## Day 3a
 
+```typescript
+export const d3a = ({input = inputs.d3, dbg}: DayProps) => {
+  const diags = input
+    .trim()
+    .split(/\s+/)
+    .map(s => parseInt(s, 2))
+  const bitLength = input.trim().search(/\s+/)
+  const bitCounts = R.times(bitLength, pos =>
+    R.reduce(diags, (count, n) => count + ((n & (1 << pos)) >> pos), 0),
+  )
+  const gamma = R.reduce.indexed(
+    bitCounts,
+    (gamma, count, pos) => gamma | (count > diags.length / 2 ? 1 << pos : 0),
+    0,
+  ) as unknown as number // https://github.com/remeda/remeda/pull/154
+  const epsilon = gamma ^ ((1 << bitLength) - 1)
+  dbg({gamma, epsilon})
+  return `Power consumption: ${gamma * epsilon}`
+}
+```
+
+Sample output:
+
 <Advent day={3} part="a" input={`
 00100
 11110
@@ -25,9 +48,190 @@ excerpt: Binary Diagnostic
 01010
 `} debug />
 
+My output:
+
 <Advent day={3} part="a" debug />
 
 ## Day 3b
+
+I wrote this first with for-loops...
+
+```typescript
+export const d3b = ({input = inputs.d3}: DayProps) => {
+  const diags = input
+    .trim()
+    .split(/\s+/)
+    .map(s => parseInt(s, 2))
+
+  const bitLength = input.trim().search(/\s+/)
+
+  let oxy = diags
+  for (let pos = bitLength - 1; oxy.length > 1 && pos >= 0; pos--) {
+    const {'0': zeros, '1': ones} = R.groupBy(oxy, n => n & (1 << pos) && 1)
+    oxy = zeros.length > ones.length ? zeros : ones
+  }
+
+  let co2 = diags
+  for (let pos = bitLength - 1; co2.length > 1 && pos >= 0; pos--) {
+    const {'0': zeros, '1': ones} = R.groupBy(co2, n => n & (1 << pos) && 1)
+    co2 = zeros.length > ones.length ? ones : zeros
+  }
+
+  return `Life support rating: ${oxy[0] * co2[0]}`
+}
+```
+
+...then replaced the for-loops with reductions...
+
+```typescript
+export const d3b = ({input = inputs.d3}: DayProps) => {
+  const diags = input
+    .trim()
+    .split(/\s+/)
+    .map(s => parseInt(s, 2))
+
+  const bitLength = input.trim().search(/\s+/)
+
+  const bitPositions = R.times(bitLength, pos => bitLength - pos - 1)
+
+  const oxy = R.reduce(
+    bitPositions,
+    (oxy, pos) => {
+      if (oxy.length <= 1) {
+        return oxy
+      }
+      const {'0': zeros, '1': ones} = R.groupBy(oxy, n => n & (1 << pos) && 1)
+      return zeros.length > ones.length ? zeros : ones
+    },
+    diags,
+  )
+
+  const co2 = R.reduce(
+    bitPositions,
+    (co2, pos) => {
+      if (co2.length <= 1) {
+        return co2
+      }
+      const {'0': zeros, '1': ones} = R.groupBy(co2, n => n & (1 << pos) && 1)
+      return zeros.length > ones.length ? ones : zeros
+    },
+    diags,
+  )
+
+  return `Life support rating: ${oxy[0] * co2[0]}`
+}
+```
+
+...then stared unhappily at those horrible tests of `oxy.length` and
+`co2.length` just to _continue_ running the remainder of the reduction over
+`bitPositions`. Neither JavaScript nor Remeda offer a [mechanism like
+Clojure's](https://clojuredocs.org/clojure.core/reduced) to terminate early.
+
+So that became the task. Here's new defitions of `reduce` and `reduced` with the
+ability to terminate early using the special `reduced` return value.
+
+```typescript
+class Reduced<T> extends Error {
+  value: T
+  constructor(value: T) {
+    super()
+    this.value = value
+  }
+}
+
+const reduced = <T>(x: T) => new Reduced(x)
+
+interface Reducer {
+  <T, K>(items: T[], fn: (acc: K, item: T) => K | Reduced<K>, initial: K): K
+  indexed: <T, K>(
+    items: T[],
+    fn: (acc: K, item: T, index: number, items: T[]) => K | Reduced<K>,
+    initial: K,
+  ) => K
+}
+
+const reduce: Reducer = (items, fn, initial) => {
+  try {
+    return R.reduce(
+      items,
+      (...args) => {
+        const r = fn(...args)
+        if (r instanceof Reduced) {
+          throw r
+        }
+        return r
+      },
+      initial,
+    )
+  } catch (e) {
+    if (e instanceof Reduced) {
+      return e.value
+    }
+    throw e
+  }
+}
+
+reduce.indexed = (items, fn, initial) => {
+  try {
+    return R.reduce.indexed(
+      items,
+      (...args) => {
+        const r = fn(...args)
+        if (r instanceof Reduced) {
+          throw r
+        }
+        return r
+      },
+      initial,
+    ) as unknown as ReturnType<typeof fn>
+    // https://github.com/remeda/remeda/pull/154
+  } catch (e) {
+    if (e instanceof Reduced) {
+      return e.value
+    }
+    throw e
+  }
+}
+
+export const d3b = ({input = inputs.d3, dbg}: DayProps) => {
+  const diags = input
+    .trim()
+    .split(/\s+/)
+    .map(s => parseInt(s, 2))
+
+  const bitLength = input.trim().search(/\s+/)
+
+  const bitPositions = R.times(bitLength, pos => bitLength - pos - 1)
+
+  const oxy = reduce(
+    bitPositions,
+    (oxy, pos) => {
+      const {'0': zeros, '1': ones} = R.groupBy(oxy, n => n & (1 << pos) && 1)
+      const ret = zeros.length > ones.length ? zeros : ones
+      return ret.length > 1
+        ? ret
+        : (dbg(`terminating oxy at bit position ${pos}`), reduced(ret))
+    },
+    diags,
+  )
+
+  const co2 = reduce(
+    bitPositions,
+    (co2, pos) => {
+      const {'0': zeros, '1': ones} = R.groupBy(co2, n => n & (1 << pos) && 1)
+      const ret = zeros.length > ones.length ? ones : zeros
+      return ret.length > 1
+        ? ret
+        : (dbg(`terminating co2 at bit position ${pos}`), reduced(ret))
+    },
+    diags,
+  )
+
+  return `Life support rating: ${oxy[0] * co2[0]}`
+}
+```
+
+Sample output:
 
 <Advent day={3} part="b" input={`
 00100
@@ -43,5 +247,7 @@ excerpt: Binary Diagnostic
 00010
 01010
 `} debug />
+
+My output:
 
 <Advent day={3} part="b" debug />

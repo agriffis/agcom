@@ -80,6 +80,68 @@ export const d3a = ({input = inputs.d3, dbg}: DayProps) => {
   return `Power consumption: ${gamma * epsilon}`
 }
 
+class Reduced<T> extends Error {
+  value: T
+  constructor(value: T) {
+    super()
+    this.value = value
+  }
+}
+
+const reduced = <T>(x: T) => new Reduced(x)
+
+interface Reducer {
+  <T, K>(items: T[], fn: (acc: K, item: T) => K | Reduced<K>, initial: K): K
+  indexed: <T, K>(
+    items: T[],
+    fn: (acc: K, item: T, index: number, items: T[]) => K | Reduced<K>,
+    initial: K,
+  ) => K
+}
+
+const reduce: Reducer = (items, fn, initial) => {
+  try {
+    return R.reduce(
+      items,
+      (...args) => {
+        const r = fn(...args)
+        if (r instanceof Reduced) {
+          throw r
+        }
+        return r
+      },
+      initial,
+    )
+  } catch (e) {
+    if (e instanceof Reduced) {
+      return e.value
+    }
+    throw e
+  }
+}
+
+reduce.indexed = (items, fn, initial) => {
+  try {
+    return R.reduce.indexed(
+      items,
+      (...args) => {
+        const r = fn(...args)
+        if (r instanceof Reduced) {
+          throw r
+        }
+        return r
+      },
+      initial,
+    ) as unknown as ReturnType<typeof fn>
+    // https://github.com/remeda/remeda/pull/154
+  } catch (e) {
+    if (e instanceof Reduced) {
+      return e.value
+    }
+    throw e
+  }
+}
+
 export const d3b = ({input = inputs.d3, dbg}: DayProps) => {
   const diags = input
     .trim()
@@ -90,26 +152,26 @@ export const d3b = ({input = inputs.d3, dbg}: DayProps) => {
 
   const bitPositions = R.times(bitLength, pos => bitLength - pos - 1)
 
-  const oxy = R.reduce(
+  const oxy = reduce(
     bitPositions,
     (oxy, pos) => {
-      if (oxy.length < 2) {
-        return oxy
-      }
       const {'0': zeros, '1': ones} = R.groupBy(oxy, n => n & (1 << pos) && 1)
-      return zeros.length > ones.length ? zeros : ones
+      const ret = zeros.length > ones.length ? zeros : ones
+      return ret.length > 1
+        ? ret
+        : (dbg(`terminating oxy at bit position ${pos}`), reduced(ret))
     },
     diags,
   )
 
-  const co2 = R.reduce(
+  const co2 = reduce(
     bitPositions,
     (co2, pos) => {
-      if (co2.length < 2) {
-        return co2
-      }
       const {'0': zeros, '1': ones} = R.groupBy(co2, n => n & (1 << pos) && 1)
-      return zeros.length > ones.length ? ones : zeros
+      const ret = zeros.length > ones.length ? ones : zeros
+      return ret.length > 1
+        ? ret
+        : (dbg(`terminating co2 at bit position ${pos}`), reduced(ret))
     },
     diags,
   )
