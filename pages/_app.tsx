@@ -124,7 +124,7 @@ const GlobalStyle = createGlobalStyle`
     margin-bottom: 4;
   }
   pre, code, kbd, samp, tt {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     line-height: 1.4;
   }
   p, pre {
