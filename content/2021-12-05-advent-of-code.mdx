@@ -1,254 +1,16 @@
-import * as R from 'remeda'
-import * as inputs from './advent-inputs'
-import {DayProps} from './advent-types'
+---
+title: Advent of Code 2021 - Days 5-12
+author: Aron
+tags: [advent-of-code, javascript]
+---
 
-export const d1a = ({input = inputs.d1}: {input?: string}) =>
-  R.pipe(
-    input.trim().split(/\s+/),
-    R.map(parseInt),
-    R.reduce.indexed(
-      (count, depth, index, depths) =>
-        count + Number(index && depth > depths[index - 1]),
-      0,
-    ),
-  ).toString()
+I spent _hours_ on day 5 building complex things that didn't work. That left me
+in a mood to hack and golf more, idealize less. Anyway, here's the past week's
+worth:
 
-export const d1b = ({input = inputs.d1}: {input?: string}) =>
-  R.pipe(
-    input.trim().split(/\s+/),
-    R.map(parseInt),
-    R.reduce.indexed(
-      (count, depth, index, depths) =>
-        count +
-        Number(
-          index > 2 &&
-            depth > depths[index - 3] &&
-            (dbg(depth, '(increased)'), true),
-        ),
-      0,
-    ),
-  ).toString()
+## Day 5
 
-export const d2a = ({input = inputs.d2}: {input?: string}) =>
-  R.pipe(
-    Array.from(input.matchAll(/(\w+)\s+(\d+)/g)),
-    R.map(m => ({dir: m[1], mag: parseInt(m[2])})),
-    R.reduce(
-      ({x, z}, {dir, mag}) => ({
-        x: dir === 'forward' ? x + mag : x,
-        z: dir === 'up' ? z - mag : dir === 'down' ? z + mag : z,
-      }),
-      {x: 0, z: 0},
-    ),
-    dbg,
-    ({x, z}) => x * z,
-  )
-
-export const d2b = ({input = inputs.d2}: {input?: string}) =>
-  R.pipe(
-    Array.from(input.matchAll(/(\w+)\s+(\d+)/g)),
-    R.map(m => ({cmd: m[1], n: parseInt(m[2])})),
-    R.reduce(
-      ({x, z, aim}, {cmd, n}) =>
-        cmd === 'forward'
-          ? {x: x + n, z: z + n * aim, aim}
-          : cmd === 'up'
-          ? {aim: aim - n, x, z}
-          : {aim: aim + n, x, z},
-      {x: 0, z: 0, aim: 0},
-    ),
-    dbg,
-    ({x, z}) => x * z,
-  )
-
-export const d3a = ({input = inputs.d3}: {input?: string}) => {
-  const diags = input
-    .trim()
-    .split(/\s+/)
-    .map(s => parseInt(s, 2))
-  const bitLength = input.trim().search(/\s+/)
-  const bitCounts = R.times(bitLength, pos =>
-    R.reduce(diags, (count, n) => count + ((n & (1 << pos)) >> pos), 0),
-  )
-  const gamma = R.reduce.indexed(
-    bitCounts,
-    (gamma, count, pos) => gamma | (count > diags.length / 2 ? 1 << pos : 0),
-    0,
-  ) as unknown as number // https://github.com/remeda/remeda/pull/154
-  const epsilon = gamma ^ ((1 << bitLength) - 1)
-  dbg({gamma, epsilon})
-  return `Power consumption: ${gamma * epsilon}`
-}
-
-class Reduced<T> extends Error {
-  value: T
-  constructor(value: T) {
-    super()
-    this.value = value
-  }
-}
-
-export const reduced = <T>(x: T) => new Reduced(x)
-
-interface Reducer {
-  <T, K>(items: T[], fn: (acc: K, item: T) => K | Reduced<K>, initial: K): K
-  indexed: <T, K>(
-    items: T[],
-    fn: (acc: K, item: T, index: number, items: T[]) => K | Reduced<K>,
-    initial: K,
-  ) => K
-}
-
-export const reduce: Reducer = (items, fn, initial) => {
-  try {
-    return R.reduce(
-      items,
-      (...args) => {
-        const r = fn(...args)
-        if (r instanceof Reduced) {
-          throw r
-        }
-        return r
-      },
-      initial,
-    )
-  } catch (e) {
-    if (e instanceof Reduced) {
-      return e.value
-    }
-    throw e
-  }
-}
-
-reduce.indexed = (items, fn, initial) => {
-  try {
-    return R.reduce.indexed(
-      items,
-      (...args) => {
-        const r = fn(...args)
-        if (r instanceof Reduced) {
-          throw r
-        }
-        return r
-      },
-      initial,
-    ) as unknown as ReturnType<typeof fn>
-    // https://github.com/remeda/remeda/pull/154
-  } catch (e) {
-    if (e instanceof Reduced) {
-      return e.value
-    }
-    throw e
-  }
-}
-
-export const d3b = ({input = inputs.d3}: {input?: string}) => {
-  const diags = input
-    .trim()
-    .split(/\s+/)
-    .map(s => parseInt(s, 2))
-
-  const bitLength = input.trim().search(/\s+/)
-
-  const bitPositions = R.times(bitLength, pos => bitLength - pos - 1)
-
-  const oxy = reduce(
-    bitPositions,
-    (oxy, pos) => {
-      const {'0': zeros, '1': ones} = R.groupBy(oxy, n => n & (1 << pos) && 1)
-      const ret = zeros.length > ones.length ? zeros : ones
-      return ret.length > 1
-        ? ret
-        : (dbg(`terminating oxy at bit position ${pos}`), reduced(ret))
-    },
-    diags,
-  )
-
-  const co2 = reduce(
-    bitPositions,
-    (co2, pos) => {
-      const {'0': zeros, '1': ones} = R.groupBy(co2, n => n & (1 << pos) && 1)
-      const ret = zeros.length > ones.length ? ones : zeros
-      return ret.length > 1
-        ? ret
-        : (dbg(`terminating co2 at bit position ${pos}`), reduced(ret))
-    },
-    diags,
-  )
-
-  return `Life support rating: ${oxy[0] * co2[0]}`
-}
-
-export const is = (x: any) => x !== '' && x !== null && x !== undefined
-export const parse10 = (s: string) => parseInt(s, 10)
-export const clean = (s: string) => s.trim().replace(/^[^\S\n]+/gm, '')
-export const paragraphs = (s: string) => clean(s).split(/\n{2,}/)
-export const ints = (s: string) => clean(s).split(/\D+/).map(parse10)
-export const max = (ns: number[]) => Math.max.apply(null, ns)
-export const min = (ns: number[]) => Math.min.apply(null, ns)
-export const sum = (ns: number[]) => reduce(ns, (sum, n) => sum + n, 0)
-export const mult = (ns: number[]) =>
-  reduce(ns.slice(1), (sum, n) => sum * n, ns[0])
-export const inRange = (n: number, bounds: [number, number]) =>
-  n >= min(bounds) && n <= max(bounds)
-
-export const ranks = <T>(xs: T[], n: number): T[][] =>
-  R.times(Math.ceil(xs.length / n), i => xs.slice(n * i, n * (i + 1)))
-
-export const files = <T>(xs: T[], n: number): T[][] =>
-  R.times(Math.ceil(xs.length / n), i =>
-    R.times(n, j => xs[i + j * n]).filter(is),
-  )
-
-const d4 = ({
-  input = inputs.d4,
-  pick,
-}: {
-  input?: string
-  pick: typeof R.last
-}) => {
-  const {draws, boards} = R.pipe(paragraphs(input), ([ds, ...bs]) => ({
-    draws: ints(ds),
-    boards: bs.map(ints),
-  }))
-  const edge = Math.sqrt(boards[0].length)
-
-  // Reverse lookup from a drawn number to its position in line.
-  const order = reduce.indexed(
-    R.uniq(draws),
-    (order, draw, i) => ((order[draw] = i), order),
-    [] as number[],
-  )
-
-  // Boards sorted in the order they win.
-  const bingos = R.pipe(
-    boards,
-    R.map.indexed((board, num) => {
-      const rows = [...ranks(board, edge), ...files(board, edge)]
-      const orders = rows.map(r => r.map(draw => order[draw]))
-      const turn = min(orders.map(max))
-      return {board, num, rows, orders, turn}
-    }),
-    R.sort((a, b) => a.turn - b.turn),
-  )
-
-  // Pick the winning (or losing) board.
-  const winning = pick(bingos)
-
-  // Unmarked numbers are those that haven't been called by the winning.turn
-  const unmarked = sum(winning.board.filter(x => order[x] > winning.turn))
-
-  // Which number was called on the winning turn?
-  const winner = draws[winning.turn]
-
-  dbg({...R.pick(winning, ['num', 'turn']), unmarked, winner})
-  return `Final score: ${unmarked * winner}`
-}
-
-export const d4a = (props: DayProps) => d4({...props, pick: R.first})
-
-export const d4b = (props: DayProps) => d4({...props, pick: R.last})
-
+```typescript
 interface Point {
   x: number
   y: number
@@ -295,7 +57,49 @@ export const d5 = ({
   )
   return Object.values(seen).filter(n => n > 1).length
 }
+```
 
+Day 5a sample:
+
+<Advent day={5} part="a" input={`
+0,9 -> 5,9
+8,0 -> 0,8
+9,4 -> 3,4
+2,2 -> 2,1
+7,0 -> 7,4
+6,4 -> 2,0
+0,9 -> 2,9
+3,4 -> 1,4
+0,0 -> 8,8
+5,5 -> 8,2
+`} debug />
+
+Day 5a mine:
+
+<Advent day={5} part="a" debug />
+
+Day 5b sample:
+
+<Advent day={5} part="b" input={`
+0,9 -> 5,9
+8,0 -> 0,8
+9,4 -> 3,4
+2,2 -> 2,1
+7,0 -> 7,4
+6,4 -> 2,0
+0,9 -> 2,9
+3,4 -> 1,4
+0,0 -> 8,8
+5,5 -> 8,2
+`} debug />
+
+Day 5b mine:
+
+<Advent day={5} part="b" debug />
+
+## Day 6
+
+```typescript
 export const d6 = ({
   input = inputs.d6,
   part,
@@ -316,7 +120,27 @@ export const d6 = ({
   }
   return sum(state)
 }
+```
 
+Day 6a sample:
+
+<Advent day={6} part="a" input="3,4,3,1,2" debug />
+
+Day 6a mine:
+
+<Advent day={6} part="a" debug />
+
+Day 6b sample:
+
+<Advent day={6} part="b" input="3,4,3,1,2" debug />
+
+Day 6b mine:
+
+<Advent day={6} part="b" debug />
+
+## Day 7a
+
+```typescript
 export const d7a = ({input = inputs.d7}: {input?: string}) => {
   const ns = ints(input)
   const costs = R.range(min(ns), max(ns)).map(pos =>
@@ -324,7 +148,19 @@ export const d7a = ({input = inputs.d7}: {input?: string}) => {
   )
   return min(costs)
 }
+```
 
+Day 7a sample:
+
+<Advent day={7} part="a" input="16,1,2,0,4,2,7,1,2,14" debug />
+
+Day 7a mine:
+
+<Advent day={7} part="a" debug />
+
+## Day 7b
+
+```typescript
 export const d7b = ({input = inputs.d7}: {input?: string}) => {
   const ns = ints(input)
   // cost-per-distance lookup table
@@ -341,50 +177,53 @@ export const d7b = ({input = inputs.d7}: {input?: string}) => {
   )
   return min(costs)
 }
+```
 
+Day 7b sample:
+
+<Advent day={7} part="b" input="16,1,2,0,4,2,7,1,2,14" debug />
+
+Day 7b mine:
+
+<Advent day={7} part="b" debug />
+
+## Day 8a
+
+```typescript
 export const d8a = ({input = inputs.d8}: {input?: string}) => {
   const digs = ranks(clean(input).split(/\W+/), 14).flatMap(xs => xs.slice(10))
   return sum(digs.map(dig => Number([2, 3, 4, 7].includes(dig.length))))
 }
+```
 
-function isSuperset(set: Set<any>, subset: Set<any>) {
-  for (let x of subset) {
-    if (!set.has(x)) {
-      return false
-    }
-  }
-  return true
-}
+Day 8a short:
 
-function difference<T = any>(a: Set<T>, b: Set<any> | any[] | string): Set<T> {
-  let d = new Set(a)
-  for (let x of b) {
-    d.delete(x as unknown as T)
-  }
-  return d
-}
+<Advent day={8} part="a" input={`
+acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf
+`} debug />
 
-function sole<T = any>(xs: Set<T> | Array<T>): T {
-  if (Array.isArray(xs)) {
-    if (xs.length !== 1) {
-      throw new TypeError(
-        `can't determine sole member of array length ${xs.length}`,
-      )
-    }
-    return xs[0]
-  }
-  if (xs.size !== 1) {
-    throw new TypeError(`can't determine sole member of set size ${xs.size}`)
-  }
-  for (let member of xs) {
-    return member
-  }
-}
+Day 8a long:
 
-function equals(a: Set<any>, b: Set<any>) {
-  return a.size === b.size && difference(a, b).size === 0
-}
+<Advent day={8} part="a" input={`
+be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe
+edbfga begcd cbg gc gcadebf fbgde acbgfd abcde gfcbed gfec | fcgedb cgb dgebacf gc
+fgaebd cg bdaec gdafb agbcfd gdcbef bgcad gfac gcb cdgabef | cg cg fdcagb cbg
+fbegcd cbd adcefb dageb afcb bc aefdc ecdab fgdeca fcdbega | efabcd cedba gadfec cb
+aecbfdg fbg gf bafeg dbefa fcge gcbea fcaegb dgceab fcbdga | gecf egdcabf bgf bfgea
+fgeab ca afcebg bdacfeg cfaedg gcfdb baec bfadeg bafgc acf | gebdcfa ecba ca fadegcb
+dbcfg fgd bdegcaf fgec aegbdf ecdfab fbedc dacgb gdcebf gf | cefg dcbef fcge gbcadfe
+bdfegc cbegaf gecbf dfcage bdacg ed bedf ced adcbefg gebcd | ed bcgafe cdgba cbgef
+egadfb cdbfeg cegd fecab cgb gbdefca cg fgcdab egfdb bfceg | gbdfcae bgc cg cgb
+gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce
+`} debug />
 
+Day 8a mine:
+
+<Advent day={8} part="a" debug />
+
+## Day 8b
+
+```typescript
 export const d8b = ({input = inputs.d8}: {input?: string}) => {
   const eight = new Set('abcdefg')
   const signals = ranks(clean(input).split(/\W+/), 14).map(xs => ({
@@ -431,8 +270,76 @@ export const d8b = ({input = inputs.d8}: {input?: string}) => {
   )
 }
 
-// Day 9 ------------------------------------------------------------
+function isSuperset(set: Set<any>, subset: Set<any>) {
+  for (let x of subset) {
+    if (!set.has(x)) {
+      return false
+    }
+  }
+  return true
+}
 
+function difference<T = any>(a: Set<T>, b: Set<any> | any[] | string): Set<T> {
+  let d = new Set(a)
+  for (let x of b) {
+    d.delete(x as unknown as T)
+  }
+  return d
+}
+
+function sole<T = any>(xs: Set<T> | Array<T>): T {
+  if (Array.isArray(xs)) {
+    if (xs.length !== 1) {
+      throw new TypeError(
+        `can't determine sole member of array length ${xs.length}`,
+      )
+    }
+    return xs[0]
+  }
+  if (xs.size !== 1) {
+    throw new TypeError(`can't determine sole member of set size ${xs.size}`)
+  }
+  for (let member of xs) {
+    return member
+  }
+}
+
+function equals(a: Set<any>, b: Set<any>) {
+  return a.size === b.size && difference(a, b).size === 0
+}
+```
+
+Day 8b short:
+
+<Advent day={8} part="b" input={`
+acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf
+`} debug />
+
+Day 8b long:
+
+<Advent day={8} part="b" input={`
+be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe
+edbfga begcd cbg gc gcadebf fbgde acbgfd abcde gfcbed gfec | fcgedb cgb dgebacf gc
+fgaebd cg bdaec gdafb agbcfd gdcbef bgcad gfac gcb cdgabef | cg cg fdcagb cbg
+fbegcd cbd adcefb dageb afcb bc aefdc ecdab fgdeca fcdbega | efabcd cedba gadfec cb
+aecbfdg fbg gf bafeg dbefa fcge gcbea fcaegb dgceab fcbdga | gecf egdcabf bgf bfgea
+fgeab ca afcebg bdacfeg cfaedg gcfdb baec bfadeg bafgc acf | gebdcfa ecba ca fadegcb
+dbcfg fgd bdegcaf fgec aegbdf ecdfab fbedc dacgb gdcebf gf | cefg dcbef fcge gbcadfe
+bdfegc cbegaf gecbf dfcage bdacg ed bedf ced adcbefg gebcd | ed bcgafe cdgba cbgef
+egadfb cdbfeg cegd fecab cgb gbdefca cg fgcdab egfdb bfceg | gbdfcae bgc cg cgb
+gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce
+`} debug />
+
+Day 8b mine:
+
+<Advent day={8} part="b" debug />
+
+## Day 9a
+
+Feeling a bit more idealistic, I guess, wrote a lib function to reduce over
+a two-dimensional grid:
+
+```typescript
 interface GridReduce {
   <T = any, R = any>(grid: T[][], fn: (r: R, v: T) => R, init: R): R
   indexed: <T = any, R = any>(
@@ -451,7 +358,11 @@ gridReduce.indexed = (grid, fn, init) =>
     (r, vs, y) => reduce.indexed(vs, (r, v, x) => fn(r, v, {x, y}), r),
     init,
   )
+```
 
+Here's my solution for day 9a using `gridReduce`:
+
+```typescript
 export const d9a = ({input = inputs.d9}: {input?: string}) => {
   const width = clean(input).indexOf('\n')
   const depths = ranks(Array.from(input.replace(/\D/g, '')).map(parse10), width)
@@ -477,7 +388,25 @@ export const d9a = ({input = inputs.d9}: {input?: string}) => {
     0,
   )
 }
+```
 
+Day 9a sample:
+
+<Advent day={9} part="a" debug input={`
+2199943210
+3987894921
+9856789892
+8767896789
+9899965678
+`} />
+
+Day 9a mine:
+
+<Advent day={9} part="a" debug />
+
+## Day 9b
+
+```typescript
 const setAdd = <T = any>(set: Set<T>, x: T) => {
   const sizeBefore = set.size
   set.add(x)
@@ -529,7 +458,25 @@ export const d9b = ({input = inputs.d9}: {input?: string}) => {
     mult,
   )
 }
+```
 
+Day 9b sample:
+
+<Advent day={9} part="b" debug input={`
+2199943210
+3987894921
+9856789892
+8767896789
+9899965678
+`} />
+
+Day 9b mine:
+
+<Advent day={9} part="b" debug />
+
+## Day 10a
+
+```typescript
 export const d10a = ({input = inputs.d10}: {input?: string}) => {
   const lines = clean(input).split(/\n/)
   const pairs = {'(': ')', '[': ']', '{': '}', '<': '>'}
@@ -552,7 +499,30 @@ export const d10a = ({input = inputs.d10}: {input?: string}) => {
     )[1]
   return sum(lines.map(lineScore))
 }
+```
 
+Sample:
+
+<Advent day={10} part="a" debug input={`
+[({(<(())[]>[[{[]{<()<>>
+[(()[<>])]({[<{<<[]>>(
+{([(<[<>[]}>{[]{[(<()>
+(((({<>}<{<{<>}{[]{[]
+[[<[([]))<([[[[()]]]
+[{[{(]{}}([{[{{{}}([]
+{<[[]]>}<{[{[{[]{()[[[]
+[<(<(<(<))><([]([]()
+<{([([[(<>())]>(<<{{
+<{([{}[<[[[<>{}]]]>[]]
+`} />
+
+Mine:
+
+<Advent day={10} part="a" debug />
+
+## Day 10b
+
+```typescript
 export const d10b = ({input = inputs.d10}: {input?: string}) => {
   const lines = clean(input).split(/\n/)
   const pairs = {'(': ')', '[': ']', '{': '}', '<': '>'}
@@ -584,9 +554,30 @@ export const d10b = ({input = inputs.d10}: {input?: string}) => {
   const scores = lines.map(lineScore).filter(Boolean)
   return scores.sort((a, b) => a - b)[(scores.length + 1) / 2 - 1]
 }
+```
 
-// Day 11
+Sample:
 
+<Advent day={10} part="b" debug input={`
+[({(<(())[]>[[{[]{<()<>>
+[(()[<>])]({[<{<<[]>>(
+{([(<[<>[]}>{[]{[(<()>
+(((({<>}<{<{<>}{[]{[]
+[[<[([]))<([[[[()]]]
+[{[{(]{}}([{[{{{}}([]
+{<[[]]>}<{[{[{[]{()[[[]
+[<(<(<(<))><([]([]()
+<{([([[(<>())]>(<<{{
+<{([{}[<[[[<>{}]]]>[]]
+`} />
+
+Mine:
+
+<Advent day={10} part="b" debug />
+
+## Day 11a
+
+```typescript
 const flash = (vs: number[], i: number) => {
   vs[i] = 0
   const x = i % 10
@@ -619,7 +610,30 @@ export const d11a = ({input = inputs.d11}: {input?: string}) => {
   }
   return flashes
 }
+```
 
+Sample:
+
+<Advent day={11} part="a" debug input={`
+5483143223
+2745854711
+5264556173
+6141336146
+6357385478
+4167524645
+2176841721
+6882881134
+4846848554
+5283751526
+`} />
+
+Mine:
+
+<Advent day={11} part="a" debug />
+
+## Day 11b
+
+```typescript
 export const d11b = ({input = inputs.d11}: {input?: string}) => {
   const vs = Array.from(input.replace(/\D/g, '')).map(x => parseInt(x))
   for (let step = 1; ; step++) {
@@ -636,7 +650,30 @@ export const d11b = ({input = inputs.d11}: {input?: string}) => {
     }
   }
 }
+```
 
+Sample:
+
+<Advent day={11} part="b" debug input={`
+5483143223
+2745854711
+5264556173
+6141336146
+6357385478
+4167524645
+2176841721
+6882881134
+4846848554
+5283751526
+`} />
+
+Mine:
+
+<Advent day={11} part="b" debug />
+
+## Day 12a
+
+```typescript
 export const d12 = ({
   input = inputs.d12,
   pre,
@@ -683,7 +720,65 @@ export const d12a = props => {
     post: (node: string) => (v[node] = false),
   })
 }
+```
 
+Example:
+
+<Advent day={12} part="a" debug input={`
+start-A
+start-b
+A-c
+A-b
+b-d
+A-end
+b-end
+`} />
+
+Slightly larger example:
+
+<Advent day={12} part="a" debug input={`
+dc-end
+HN-start
+start-kj
+dc-start
+dc-HN
+LN-dc
+HN-end
+kj-sa
+kj-HN
+kj-dc
+`} />
+
+Even larger example:
+
+<Advent day={12} part="a" debug input={`
+fs-end
+he-DX
+fs-he
+start-DX
+pj-DX
+end-zg
+zg-sl
+zg-pj
+pj-he
+RW-he
+fs-DX
+pj-RW
+zg-RW
+start-pj
+he-WI
+zg-he
+pj-fs
+start-RW
+`} />
+
+Mine:
+
+<Advent day={12} part="a" debug />
+
+## Day 12b
+
+```typescript
 export const d12b = props => {
   const sm = (s: string) => s.charCodeAt(0) >= 97
   const v = {}
@@ -700,3 +795,58 @@ export const d12b = props => {
       twice === node ? (twice = null) : (v[node] = false),
   })
 }
+```
+
+Example:
+
+<Advent day={12} part="b" debug input={`
+start-A
+start-b
+A-c
+A-b
+b-d
+A-end
+b-end
+`} />
+
+Slightly larger example:
+
+<Advent day={12} part="b" debug input={`
+dc-end
+HN-start
+start-kj
+dc-start
+dc-HN
+LN-dc
+HN-end
+kj-sa
+kj-HN
+kj-dc
+`} />
+
+Even larger example:
+
+<Advent day={12} part="b" debug input={`
+fs-end
+he-DX
+fs-he
+start-DX
+pj-DX
+end-zg
+zg-sl
+zg-pj
+pj-he
+RW-he
+fs-DX
+pj-RW
+zg-RW
+start-pj
+he-WI
+zg-he
+pj-fs
+start-RW
+`} />
+
+Mine:
+
+<Advent day={12} part="b" debug />

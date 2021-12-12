@@ -34,9 +34,9 @@ const AnyDayNow: Day = (props: AdventProps) => {
 
   useWorker(props, data => {
     console.log('received from worker', data)
-    if (data.result) {
-      setResult(data.result)
-    } else if (data.debug) {
+    if ('result' in data) {
+      setResult(`${data.result}`)
+    } else if ('debug' in data) {
       setDebug(debug => debug + '\n' + data.debug)
     }
   })
