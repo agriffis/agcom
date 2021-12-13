@@ -1,6 +1,6 @@
 import * as R from 'remeda'
-import {AdventProps} from './advent-types'
-import * as days from './advent'
+import {AdventProps} from './types'
+import * as days from '.'
 
 self.addEventListener('message', (event: any) => {
   console.log('worker received:', event.data)

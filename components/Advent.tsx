@@ -4,7 +4,7 @@ import {ReactElement, useEffect, useRef, useState} from 'react'
 const useWorker = (message: any, cb: any) => {
   const [worker] = useState(() => {
     if (typeof Worker !== 'undefined') {
-      const worker = new Worker(new URL('./advent.worker.ts', import.meta.url))
+      const worker = new Worker(new URL('./advent/worker.ts', import.meta.url))
       worker.addEventListener('message', (event: any) => cb(event.data))
       worker.postMessage(message)
       return worker

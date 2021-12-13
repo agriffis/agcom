@@ -1,0 +1,126 @@
+---
+title: Advent of Code 2021 - Day 13
+author: Aron
+tags: [advent-of-code, javascript]
+excerpt: Transparent Origami
+---
+
+> Congratulations on your purchase!
+
+## Day 13a
+
+```typescript
+const parseDots = (input: string) =>
+  ranks(ints(input), 2).map(([x, y]) => ({x, y} as Point))
+
+const parseFolds = (input: string) =>
+  Array.from(input.matchAll(/([xy])=(\d+)/g)).map(
+    ([_, xy, n]) => ({x: 0, y: 0, [xy]: n} as Point),
+  )
+
+const fold = (dots: Point[], f: Point) =>
+  R.pipe(
+    dots.map(({x, y}) => ({
+      x: f.x && x > f.x ? x - (x - f.x) * 2 : x,
+      y: f.y && y > f.y ? y - (y - f.y) * 2 : y,
+    })),
+    R.uniqBy(({x, y}) => `${x},${y}`),
+  )
+
+export const d13a = ({input = inputs.d13}: {input: string}) => {
+  const dots = parseDots(paras(input)[0])
+  const folds = parseFolds(paras(input)[1])
+  return fold(dots, folds[0]).length
+}
+```
+
+Example:
+
+<Advent day={13} part="a" input={`
+6,10
+0,14
+9,10
+0,3
+10,4
+4,11
+6,0
+6,12
+4,1
+0,13
+10,12
+3,4
+3,0
+8,4
+1,10
+2,14
+8,10
+9,0
+.
+fold along y=7
+fold along x=5
+`.replace(/^\./gm, '')} debug />
+
+Mine:
+
+<Advent day={13} part="a" debug />
+
+## Day 13b
+
+```typescript
+const draw = (dots: Point[]) => {
+  const ds = dots.reduce((o, {x, y}) => {
+    o[y] = o[y] || {}
+    o[y][x] = true
+    return o
+  }, {})
+  const [[minx, maxx], [miny, maxy]] = ['x', 'y']
+    .map(a => dots.map(p => p[a]))
+    .map(ds => juxt(ds, [min, max]))
+  return (
+    '\n' +
+    R.range(miny, maxy + 1)
+      .map(y =>
+        R.range(minx, maxx + 1)
+          .map(x => (ds[y]?.[x] ? '#' : '.'))
+          .join(''),
+      )
+      .join('\n')
+  )
+}
+
+export const d13b = ({input = inputs.d13}: {input: string}) => {
+  const dots = parseDots(paras(input)[0])
+  const folds = parseFolds(paras(input)[1])
+  return draw(folds.reduce(fold, dots))
+}
+```
+
+Example:
+
+<Advent day={13} part="b" input={`
+6,10
+0,14
+9,10
+0,3
+10,4
+4,11
+6,0
+6,12
+4,1
+0,13
+10,12
+3,4
+3,0
+8,4
+1,10
+2,14
+8,10
+9,0
+.
+fold along y=7
+fold along x=5
+`.replace(/^\./gm, '')} debug />
+
+Mine:
+
+<Advent day={13} part="b" debug />

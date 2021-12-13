@@ -1,4 +1,4 @@
-import * as advent from './advent'
+import * as advent from '.'
 
 const run = props =>
   (advent[`d${props.day}${props.part}`] || advent[`d${props.day}`])(props)
@@ -188,4 +188,48 @@ start-RW
   test('b evenLarger', () =>
     expect(run({day: 12, part: 'b', input: evenLarger})).toEqual(3509))
   test('b input', () => expect(run({day: 12, part: 'b'})).toEqual(93686))
+})
+
+describe('d13', () => {
+  const example = `
+6,10
+0,14
+9,10
+0,3
+10,4
+4,11
+6,0
+6,12
+4,1
+0,13
+10,12
+3,4
+3,0
+8,4
+1,10
+2,14
+8,10
+9,0
+
+fold along y=7
+fold along x=5
+`
+  test('a example', () =>
+    expect(run({day: 13, part: 'a', input: example})).toEqual(17))
+  test('a input', () => expect(run({day: 13, part: 'a'})).toEqual(790))
+  test('b example', () =>
+    expect(run({day: 13, part: 'b', input: example})).toEqual(`\
+#####
+#...#
+#...#
+#...#
+#####`))
+  test('b input', () =>
+    expect(run({day: 13, part: 'b'})).toEqual(`\
+###...##..#..#.####.###..####...##..##.
+#..#.#..#.#..#....#.#..#.#.......#.#..#
+#..#.#....####...#..###..###.....#.#...
+###..#.##.#..#..#...#..#.#.......#.#...
+#....#..#.#..#.#....#..#.#....#..#.#..#
+#.....###.#..#.####.###..#.....##...##.`))
 })
