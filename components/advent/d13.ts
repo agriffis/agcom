@@ -38,13 +38,19 @@ const draw = (dots: Point[]) => {
 }
 
 export const d13a = ({input = inputs.d13}: {input: string}) => {
-  const dots = parseDots(paras(input)[0])
-  const folds = parseFolds(paras(input)[1])
+  const [dots, folds] = R.zipWith(
+    [parseDots, parseFolds],
+    paras(input),
+    (f, s) => f(s),
+  )
   return fold(dots, folds[0]).length
 }
 
 export const d13b = ({input = inputs.d13}: {input: string}) => {
-  const dots = parseDots(paras(input)[0])
-  const folds = parseFolds(paras(input)[1])
+  const [dots, folds] = R.zipWith(
+    [parseDots, parseFolds],
+    paras(input),
+    (f, s) => f(s),
+  )
   return draw(folds.reduce(fold, dots))
 }
