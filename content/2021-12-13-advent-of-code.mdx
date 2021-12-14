@@ -18,6 +18,9 @@ const parseFolds = (input: string) =>
     ([_, xy, n]) => ({x: 0, y: 0, [xy]: n} as Point),
   )
 
+const parse = (input: string) =>
+  R.zipWith([parseDots, parseFolds], paras(input), (f, s) => f(s))
+
 const fold = (dots: Point[], f: Point) =>
   R.pipe(
     dots.map(({x, y}) => ({
@@ -28,8 +31,7 @@ const fold = (dots: Point[], f: Point) =>
   )
 
 export const d13a = ({input = inputs.d13}: {input: string}) => {
-  const dots = parseDots(paras(input)[0])
-  const folds = parseFolds(paras(input)[1])
+  const [dots, folds] = parse(input)
   return fold(dots, folds[0]).length
 }
 ```
@@ -89,8 +91,7 @@ const draw = (dots: Point[]) => {
 }
 
 export const d13b = ({input = inputs.d13}: {input: string}) => {
-  const dots = parseDots(paras(input)[0])
-  const folds = parseFolds(paras(input)[1])
+  const [dots, folds] = parse(input)
   return draw(folds.reduce(fold, dots))
 }
 ```
