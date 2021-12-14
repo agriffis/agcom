@@ -233,3 +233,33 @@ fold along x=5
 #....#..#.#..#.#....#..#.#....#..#.#..#
 #.....###.#..#.####.###..#.....##...##.`))
 })
+
+describe('d14', () => {
+  const example = `
+NNCB
+
+CH -> B
+HH -> N
+CB -> H
+NH -> C
+HB -> C
+HC -> B
+HN -> C
+NN -> C
+BH -> H
+NC -> B
+NB -> B
+BN -> B
+BB -> N
+BC -> B
+CC -> N
+CN -> C
+`
+  test('a example', () =>
+    expect(run({day: 14, part: 'a', input: example})).toEqual(1588))
+  test('a input', () => expect(run({day: 14, part: 'a'})).toEqual(2874))
+  test('b example', () =>
+    expect(run({day: 14, part: 'b', input: example})).toEqual(2188189693529))
+  test('a input', () =>
+    expect(run({day: 14, part: 'b'})).toEqual(5208377027195))
+})

@@ -631,3 +631,4 @@ export const d12b = props => {
 // P.prototype.equals = function(that){ return  this.x === that.x && this.y === that.y }
 
 export * from './d13'
+export * from './d14'

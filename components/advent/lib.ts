@@ -101,3 +101,20 @@ export const files = <T>(xs: T[], n: number): T[][] =>
   R.times(Math.ceil(xs.length / n), i =>
     R.times(n, j => xs[i + j * n]).filter(is),
   )
+
+function _dissoc({...o}: object, ks: string | string[]) {
+  for (const k of typeof ks === 'string' ? [ks] : ks) {
+    delete o[k]
+  }
+  return o
+}
+
+// data-first
+export function dissoc<T extends object>(o: T, ks: string | string[]): T
+
+// data-last
+export function dissoc<T extends object>(ks: string | string[]): (o: T) => T
+
+export function dissoc() {
+  return R.purry(_dissoc, arguments)
+}
