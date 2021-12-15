@@ -1,0 +1,116 @@
+---
+title: Advent of Code 2021 - Day 15
+author: Aron
+tags: [advent-of-code, javascript]
+excerpt: Chiton
+---
+
+## Day 15a
+
+```typescript
+const measure = (grid: number[]) => {
+  const size = Math.sqrt(grid.length)
+  const left = (i: number) => (i % size ? i - 1 : undefined)
+  const up = (i: number) => (i >= size ? i - size : undefined)
+  const right = (i: number) => ((i + 1) % size ? i + 1 : undefined)
+  const down = (i: number) => i + size
+  const cost = [grid[0], ...Array(grid.length - 1).fill(Infinity)]
+  while (true) {
+    let changed = false
+    for (let i = 1; i < grid.length; i++) {
+      const c = Math.min(
+        (cost[left(i)] || Infinity) + grid[i],
+        (cost[up(i)] || Infinity) + grid[i],
+      )
+      if (c < cost[i]) {
+        cost[i] = c
+        changed = true
+      }
+    }
+    for (let i = grid.length - 2; i; i--) {
+      const c = Math.min(
+        (cost[right(i)] || Infinity) + grid[i],
+        (cost[down(i)] || Infinity) + grid[i],
+      )
+      if (c < cost[i]) {
+        cost[i] = c
+        changed = true
+      }
+    }
+    if (!changed) {
+      break
+    }
+  }
+  return cost[cost.length - 1] - cost[0]
+}
+
+export const d15a = ({input = inputs.d15}: {input: string}) => {
+  const grid = input.match(/\S/g).map(parse10)
+  return measure(grid)
+}
+```
+
+Example:
+
+<Advent day={15} part="a" input={`
+1163751742
+1381373672
+2136511328
+3694931569
+7463417111
+1319128137
+1359912421
+3125421639
+1293138521
+2311944581
+`.replace(/^\./gm, '')} />
+
+Mine:
+
+<Advent day={15} part="a" />
+
+## Day 15b
+
+```typescript
+const expand = (grid: number[], z: number) => {
+  const size = Math.sqrt(grid.length)
+  const big = []
+  for (let gy = 0; gy < z; gy++) {
+    for (let gx = 0; gx < z; gx++) {
+      for (let y = 0; y < size; y++) {
+        for (let x = 0; x < size; x++) {
+          const i = y * size + x
+          const j = gy * size * size * z + y * size * z + gx * size + x
+          const c = grid[i] + gy + gx
+          big[j] = c % 9 || 9
+        }
+      }
+    }
+  }
+  return big
+}
+
+export const d15b = ({input = inputs.d15}: {input: string}) => {
+  const grid = input.match(/\S/g).map(parse10)
+  return measure(expand(grid, 5))
+}
+```
+
+Example:
+
+<Advent day={15} part="b" input={`
+1163751742
+1381373672
+2136511328
+3694931569
+7463417111
+1319128137
+1359912421
+3125421639
+1293138521
+2311944581
+`.replace(/^\./gm, '')} debug />
+
+Mine:
+
+<Advent day={15} part="b" debug />
