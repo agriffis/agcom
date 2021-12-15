@@ -27,7 +27,7 @@ const measure = (grid: number[]): number => {
   const cost = [0, ...Array(grid.length - 1).fill(Infinity)]
 
   for (let settled; !settled && (settled = true); ) {
-    // Scan top-to-bottom, left-to-right.
+    // Scan left-to-right, top-to-bottom.
     for (let i = 1; i < grid.length; i++) {
       const c = Math.min(
         (cost[left(i)] ?? Infinity) + grid[i],
@@ -39,7 +39,7 @@ const measure = (grid: number[]): number => {
       }
     }
 
-    // Scan bottom-to-top, right-to-left. This is an optimization over putting
+    // Scan right-to-left, bottom-to-top. This is an optimization over putting
     // the right/down checks in the first loop, for the domino effect.
     for (let i = grid.length - 2; i; i--) {
       const c = Math.min(
