@@ -1,5 +1,4 @@
-import {min, parse10} from './lib'
-import * as R from 'remeda'
+import {parse10} from './lib'
 import * as inputs from './inputs'
 
 const measure = (grid: number[]) => {
@@ -35,7 +34,7 @@ const measure = (grid: number[]) => {
       break
     }
   }
-  return R.last(cost) - cost[0]
+  return cost[cost.length - 1] - cost[0]
 }
 
 export const d15a = ({input = inputs.d15}: {input: string}) => {
@@ -53,7 +52,7 @@ const expand = (grid: number[], z: number) => {
           const i = y * size + x
           const j = gy * size * size * z + y * size * z + gx * size + x
           const c = grid[i] + gy + gx
-          big[j] = c > 9 ? c - 9 : c
+          big[j] = c % 9 || 9
         }
       }
     }
