@@ -8,8 +8,7 @@ const measure = (grid: number[]) => {
   const right = (i: number) => ((i + 1) % size ? i + 1 : undefined)
   const down = (i: number) => i + size
   const cost = [grid[0], ...Array(grid.length - 1).fill(Infinity)]
-  while (true) {
-    let changed = false
+  for (let stable; !stable && (stable = true); ) {
     for (let i = 1; i < grid.length; i++) {
       const c = Math.min(
         (cost[left(i)] || Infinity) + grid[i],
@@ -17,7 +16,7 @@ const measure = (grid: number[]) => {
       )
       if (c < cost[i]) {
         cost[i] = c
-        changed = true
+        stable = false
       }
     }
     for (let i = grid.length - 2; i; i--) {
@@ -27,11 +26,8 @@ const measure = (grid: number[]) => {
       )
       if (c < cost[i]) {
         cost[i] = c
-        changed = true
+        stable = false
       }
-    }
-    if (!changed) {
-      break
     }
   }
   return cost[cost.length - 1] - cost[0]
