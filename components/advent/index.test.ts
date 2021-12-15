@@ -263,3 +263,24 @@ CN -> C
   test('a input', () =>
     expect(run({day: 14, part: 'b'})).toEqual(5208377027195))
 })
+
+describe('d15', () => {
+  const example = `
+1163751742
+1381373672
+2136511328
+3694931569
+7463417111
+1319128137
+1359912421
+3125421639
+1293138521
+2311944581
+`
+  test('a example', () =>
+    expect(run({day: 15, part: 'a', input: example})).toEqual(40))
+  test('a input', () => expect(run({day: 15, part: 'a'})).toEqual(415))
+  test('b example', () =>
+    expect(run({day: 15, part: 'b', input: example})).toEqual(315))
+  test.skip('b input', () => expect(run({day: 15, part: 'b'})).toEqual(2864))
+})

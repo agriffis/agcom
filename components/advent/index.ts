@@ -632,3 +632,4 @@ export const d12b = props => {
 
 export * from './d13'
 export * from './d14'
+export * from './d15'
