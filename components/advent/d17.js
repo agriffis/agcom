@@ -12,37 +12,8 @@ import {
   takeWhile,
   zip,
 } from 'iter-tools-es'
+import {iterate, min, max, reiterable} from './iter-lib'
 import {juxt} from './lib'
-
-const min = reduce((best, x) => (x < best ? x : best))
-const max = reduce((best, x) => (x > best ? x : best))
-
-function* iterate(fn, x) {
-  while (true) {
-    yield x
-    x = fn(x)
-  }
-}
-
-function reiterable(iterable) {
-  let arr = []
-  let next = {}
-  const iter = iterable[Symbol.iterator]()
-  return {
-    [Symbol.iterator]: function* () {
-      for (let i = 0; i < arr.length || !next.done; ) {
-        if (i < arr.length) {
-          yield arr[i++]
-        } else {
-          next = iter.next()
-          if (!next.done) {
-            arr.push(next.value)
-          }
-        }
-      }
-    },
-  }
-}
 
 export function d17({input = inputs.d17, part}) {
   const [left, right, top, bottom] = juxt(
