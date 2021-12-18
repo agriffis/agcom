@@ -86,13 +86,19 @@ export const parse10 = (s: string) => parseInt(s, 10)
 export const clean = (s: string) => s.trim().replace(/^[^\S\n]+/gm, '')
 export const paras = (s: string) => clean(s).split(/\n{2,}/)
 export const ints = (s: string) => clean(s).split(/\D+/).map(parse10)
-export const max = (ns: number[]) => Math.max.apply(null, ns)
-export const min = (ns: number[]) => Math.min.apply(null, ns)
-export const sum = (ns: number[]) => reduce(ns, (sum, n) => sum + n, 0)
-export const mult = (ns: number[]) =>
-  reduce(ns.slice(1), (sum, n) => sum * n, ns[0])
-export const inRange = (n: number, bounds: [number, number]) =>
-  n >= min(bounds) && n <= max(bounds)
+export const inRange = (x: number, bounds: [number, number]) =>
+  x >= min(bounds) && x <= max(bounds)
+
+// Generic so these work on BigInt
+export const max = <T>(xs: T[]) => xs.reduce((prev, x) => (x > prev ? x : prev))
+export const min = <T>(xs: T[]) => xs.reduce((prev, x) => (x < prev ? x : prev))
+export const sum = <T>(xs: T[]): T =>
+  reduce(xs.slice(1), (sum: any, x: any) => sum + x, xs[0])
+export const product = <T>(xs: T[]): T =>
+  reduce(xs.slice(1), (product: any, x: any) => product * x, xs[0])
+export const gt = <T>(xs: T[]) => xs.every((x, i) => !i || x < xs[i - 1])
+export const lt = <T>(xs: T[]) => xs.every((x, i) => !i || x > xs[i - 1])
+export const eq = <T>(xs: T[]) => xs.every(x => x === xs[0])
 
 export const ranks = <T>(xs: T[], n: number): T[][] =>
   R.times(Math.ceil(xs.length / n), i => xs.slice(n * i, n * (i + 1)))

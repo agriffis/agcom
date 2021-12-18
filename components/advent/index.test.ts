@@ -284,3 +284,96 @@ describe('d15', () => {
     expect(run({day: 15, part: 'b', input: example})).toEqual(315))
   test.skip('b input', () => expect(run({day: 15, part: 'b'})).toEqual(2864))
 })
+
+describe('d16', () => {
+  const {
+    d16: {bitstr, parse},
+  } = advent
+
+  const [value, oper, one, two, three, four] = [
+    `D2FE28`,
+    `38006F45291200`,
+    `8A004A801A8002F478`,
+    `620080001611562C8802118E34`,
+    `C0015000016115A2E0802F182340`,
+    `A0016C880162017C3686B18A3D4780`,
+  ]
+
+  test('parse', () => {
+    expect(parse(bitstr(value))).toEqual({
+      version: 6,
+      type: 4,
+      length: 21,
+      value: 2021n,
+    })
+    expect(parse(bitstr(oper))).toEqual({
+      version: 1,
+      type: 6,
+      length: 49,
+      lengthType: 0,
+      subpacketsLength: 27,
+      children: [
+        {length: 11, type: 4, value: 10n, version: 6},
+        {length: 16, type: 4, value: 20n, version: 2},
+      ],
+    })
+    expect(parse(bitstr(one))).toEqual({
+      version: 4,
+      type: 2,
+      length: 69,
+      lengthType: 1,
+      subpacketsCount: 1,
+      children: [
+        {
+          version: 1,
+          type: 2,
+          length: 51,
+          lengthType: 1,
+          subpacketsCount: 1,
+          children: [
+            {
+              version: 5,
+              type: 2,
+              length: 33,
+              lengthType: 0,
+              subpacketsLength: 11,
+              children: [{length: 11, type: 4, value: 15n, version: 6}],
+            },
+          ],
+        },
+      ],
+    })
+  })
+
+  test('part a', () => {
+    expect(run({day: 16, part: 'a', input: one})).toBe(16)
+    expect(run({day: 16, part: 'a', input: two})).toBe(12)
+    expect(run({day: 16, part: 'a', input: three})).toBe(23)
+    expect(run({day: 16, part: 'a', input: four})).toBe(31)
+    expect(run({day: 16, part: 'a'})).toBe(901)
+  })
+
+  test('part b', () => {
+    expect(run({day: 16, part: 'b', input: 'C200B40A82'})).toBe(3n)
+    expect(run({day: 16, part: 'b', input: '04005AC33890'})).toBe(54n)
+    expect(run({day: 16, part: 'b', input: '880086C3E88112'})).toBe(7n)
+    expect(run({day: 16, part: 'b', input: 'CE00C43D881120'})).toBe(9n)
+    expect(run({day: 16, part: 'b', input: 'D8005AC2A8F0'})).toBe(1n)
+    expect(run({day: 16, part: 'b', input: 'F600BC2D8F'})).toBe(0n)
+    expect(run({day: 16, part: 'b', input: '9C005AC2F8F0'})).toBe(0n)
+    expect(run({day: 16, part: 'b', input: '9C0141080250320F1802104A08'})).toBe(
+      1n,
+    )
+    expect(run({day: 16, part: 'b'})).toBe(110434737925n)
+  })
+})
+
+describe('d17', () => {
+  const sample = 'target area: x=20..30, y=-10..-5'
+  test('part a', () => {
+    expect(run({day: 17, part: 'a', input: sample})).toBe(45)
+    expect(run({day: 17, part: 'a'})).toBe(2701)
+    expect(run({day: 17, part: 'b', input: sample})).toMatchObject({count: 112})
+    expect(run({day: 17, part: 'b'})).toMatchObject({count: 1070})
+  })
+})
