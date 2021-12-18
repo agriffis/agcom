@@ -47,6 +47,7 @@ function split(s: string): string | undefined {
   }
 }
 
+// aka reduce, but that name is taken
 function snail(s: string): string {
   return execPipe(
     iterate(s => explode(s) ?? split(s), s),
