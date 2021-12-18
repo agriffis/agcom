@@ -1,4 +1,4 @@
-import {reduce} from 'iter-tools-es'
+import {drop, first, pipe, reduce} from 'iter-tools-es'
 
 export function* iterate(fn, x) {
   while (true) {
@@ -30,3 +30,22 @@ export function reiterable(iterable) {
 export const min = reduce((best, x) => (x < best ? x : best))
 
 export const max = reduce((best, x) => (x > best ? x : best))
+
+export function combinations(...arrs) {
+  function* _combinations([arr, ...arrs], xs: any[]) {
+    if (arrs.length) {
+      for (let x of arr) {
+        yield* _combinations(arrs as [any, ...any[]], [...xs, x])
+      }
+    } else {
+      for (let x of arr) {
+        yield [...xs, x]
+      }
+    }
+  }
+  return arrs.length === 0 ? [] : _combinations(arrs as [any, ...any[]], [])
+}
+
+export const denumerate = ([_, x]) => x
+
+export const second = pipe(drop(1), first)

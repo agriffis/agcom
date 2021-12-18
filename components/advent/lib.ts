@@ -124,3 +124,11 @@ export function dissoc<T extends object>(ks: string | string[]): (o: T) => T
 export function dissoc() {
   return R.purry(_dissoc, arguments)
 }
+
+export function countSubstr(s: string, c: string): number {
+  let num = 0
+  for (let pos = 0; (pos = s.indexOf(c, pos)) > -1; pos += c.length, num++) {}
+  return num
+}
+
+export const int = x => parseInt(x)
