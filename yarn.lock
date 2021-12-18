@@ -1554,6 +1554,7 @@ __metadata:
     gm: ^1.23.1
     gray-matter: ^4.0.2
     hast-util-select: ^4.0.2
+    iter-tools-es: ^7.1.4
     jest: ^27.4.3
     next: latest
     next-mdx-remote: ^3.0.7
@@ -4426,6 +4427,13 @@ __metadata:
     html-escaper: ^2.0.0
     istanbul-lib-report: ^3.0.0
   checksum: a9940767ee960fd21d4c9b24c417c15d38725be2f3517a72070e962e088fdf7b813f50985f660cd48436690237fdc5640bab10a1a91e0e94b0e400c212c85f3c
+  languageName: node
+  linkType: hard
+
+"iter-tools-es@npm:^7.1.4":
+  version: 7.1.4
+  resolution: "iter-tools-es@npm:7.1.4"
+  checksum: 43a952c1f6cd0bce152ae5f2c32b8f8cfe832ac407fc4253835ce496d4249584be046dc0699c6475eb12f29d1f1d9e147ce09122ef8696601f19bb6f9b499294
   languageName: node
   linkType: hard
 
