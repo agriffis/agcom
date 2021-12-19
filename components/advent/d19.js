@@ -70,7 +70,7 @@ const PointType = $.NullaryType
   ('Point')
   ('https://arongriffis.com/advent2021#Point')
   ([])
-  (x => Array.isArray(x) && x.every(n => typeof n === 'number'))
+  (x => type(x) === pointTypeIdent)
 
 //----------------------------------------------------------------------
 // Segment
@@ -245,6 +245,8 @@ function candidates(spaces) {
 }
 
 export function d19({input = inputs.d19, part}) {
+  const points = [Point([1, 1, 1]), Point([0, 0, 0])]
+  return S.sort(points)
   let spaces = paras(input)
     .map(s => s.match(/-?\d+/g).map(int))
     .map(ns => ranks(ns.slice(1), 3).map(Point))
