@@ -6,10 +6,6 @@ import {create, env} from 'sanctuary'
 import $ from 'sanctuary-def'
 import type from 'sanctuary-type-identifiers'
 
-//----------------------------------------------------------------------
-// Point
-//----------------------------------------------------------------------
-
 const memoize = fn => {
   const memo = {}
   return x => (memo[x] ||= fn(x))
@@ -25,6 +21,10 @@ const rotations = memoize(n => {
   }
   return rots
 })
+
+//----------------------------------------------------------------------
+// Point
+//----------------------------------------------------------------------
 
 // pointTypeIdent :: String
 const pointTypeIdent = 'advent/Point@1'
