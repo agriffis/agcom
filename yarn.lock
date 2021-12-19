@@ -1560,13 +1560,15 @@ __metadata:
     next-mdx-remote: ^3.0.7
     next-remote-watch: ^1.0.0
     normalize.css: ^8.0.1
-    prettier: ^2.5.0
+    prettier: ^2.5.1
+    ramda: ^0.27.1
     react: latest
     react-dom: latest
     react-is: ^17.0.2
     rehype-slug: ^4.0.1
     remark-smartypants: ^2.0.0
     remeda: ^0.0.30
+    sanctuary: ^3.1.0
     sass: ^1.30.0
     styled-components: ^5.3.3
     typescript: ^4.4.4
@@ -6116,12 +6118,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^2.5.0":
-  version: 2.5.0
-  resolution: "prettier@npm:2.5.0"
+"prettier@npm:^2.5.1":
+  version: 2.5.1
+  resolution: "prettier@npm:2.5.1"
   bin:
     prettier: bin-prettier.js
-  checksum: aad1b35b73e7c14596d389d90977a83dad0db689ba5802a0ef319c357b7867f55b885db197972aa6a56c30f53088c9f8e0d7f7930ae074c275a4e9cbe091d21d
+  checksum: 21b9408476ea1c544b0e45d51ceb94a84789ff92095abb710942d780c862d0daebdb29972d47f6b4d0f7ebbfb0ffbf56cc2cfa3e3e9d1cca54864af185b15b66
   languageName: node
   linkType: hard
 
@@ -6259,6 +6261,13 @@ __metadata:
   dependencies:
     inherits: ~2.0.3
   checksum: ebc23639248e4fe40a789f713c20548e513e053b3dc4924b6cb0ad741e3f264dcff948225c8737834dd4f9ec286dbc06a1a7c13858ea382d9379f4303bcc0916
+  languageName: node
+  linkType: hard
+
+"ramda@npm:^0.27.1":
+  version: 0.27.1
+  resolution: "ramda@npm:0.27.1"
+  checksum: 31a0c0ef739b2525d7615f84cbb5d3cb89ee0c795469b711f729ea1d8df0dccc3cd75d3717a1e9742d42315ce86435680b7c87743eb7618111c60c144a5b8059
   languageName: node
   linkType: hard
 
@@ -6663,6 +6672,86 @@ __metadata:
   version: 2.1.2
   resolution: "safer-buffer@npm:2.1.2"
   checksum: cab8f25ae6f1434abee8d80023d7e72b598cf1327164ddab31003c51215526801e40b66c5e65d658a0af1e9d6478cadcb4c745f4bd6751f97d8644786c0978b0
+  languageName: node
+  linkType: hard
+
+"sanctuary-def@npm:0.22.0":
+  version: 0.22.0
+  resolution: "sanctuary-def@npm:0.22.0"
+  dependencies:
+    sanctuary-either: 2.1.0
+    sanctuary-show: 2.0.0
+    sanctuary-type-classes: 12.1.0
+    sanctuary-type-identifiers: 3.0.0
+  checksum: 3bbfa4e144d8f1cc1be1fedad06548e088b9fa28f0cf91e209933bf4910f5a0cc049f5adfd27b10e5ca875f9557e319e5690f4ad744b217b9b14fe47506fa7a5
+  languageName: node
+  linkType: hard
+
+"sanctuary-either@npm:2.1.0":
+  version: 2.1.0
+  resolution: "sanctuary-either@npm:2.1.0"
+  dependencies:
+    sanctuary-show: 2.0.0
+    sanctuary-type-classes: 12.1.0
+  checksum: 710e480e4c200488d60b2a250857c7d0d99c352c08ad809f1bdf0d36e5412fe82a37775d0778febf167d951d13c972588e911ff401039e66a7639e81ae5e3915
+  languageName: node
+  linkType: hard
+
+"sanctuary-maybe@npm:2.1.0":
+  version: 2.1.0
+  resolution: "sanctuary-maybe@npm:2.1.0"
+  dependencies:
+    sanctuary-show: 2.0.0
+    sanctuary-type-classes: 12.1.0
+  checksum: a64e5c5395e0007b1850a3f0d28595ca7f2666b5c5bbbadc0bd121ee44184616be30412ba755cc321d49dee8950c38c230f0d50c1494c974268bb2be0db72686
+  languageName: node
+  linkType: hard
+
+"sanctuary-pair@npm:2.1.0":
+  version: 2.1.0
+  resolution: "sanctuary-pair@npm:2.1.0"
+  dependencies:
+    sanctuary-show: 2.0.0
+    sanctuary-type-classes: 12.1.0
+  checksum: 28c016054445ef55624f972fd2b865994855035cb0b0fa2e15fe446dc53edca7e013dd389f5a682fb02fdc4198988d7f0e6108004796358c095f722e37cd225f
+  languageName: node
+  linkType: hard
+
+"sanctuary-show@npm:2.0.0":
+  version: 2.0.0
+  resolution: "sanctuary-show@npm:2.0.0"
+  checksum: 1513fc71060b4dfc4773d7cee9567b22c7b415bf1f36ae194f33f671fdf3ec55f52c5a053ab41238e24d24bae48db7386b64cf6d275dfb48feac6caa24fb7488
+  languageName: node
+  linkType: hard
+
+"sanctuary-type-classes@npm:12.1.0":
+  version: 12.1.0
+  resolution: "sanctuary-type-classes@npm:12.1.0"
+  dependencies:
+    sanctuary-type-identifiers: 3.0.0
+  checksum: c424e0b054373c70d535d2bb8053d216959ee8202beb7ac83b9c82ca2aac6d092a39e63acfbc9ad7e0388d0363c86da0278726c1f495b5fe91074fc4bbd50297
+  languageName: node
+  linkType: hard
+
+"sanctuary-type-identifiers@npm:3.0.0":
+  version: 3.0.0
+  resolution: "sanctuary-type-identifiers@npm:3.0.0"
+  checksum: b31937f36d42ee3c6d41d52b4e39b12d4d7cc81fc1383909a338e7c5960dee1629473083a25831aab000d15b7eecfbc8e3e5a6b1ba0d20063027b4fc43e84be9
+  languageName: node
+  linkType: hard
+
+"sanctuary@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "sanctuary@npm:3.1.0"
+  dependencies:
+    sanctuary-def: 0.22.0
+    sanctuary-either: 2.1.0
+    sanctuary-maybe: 2.1.0
+    sanctuary-pair: 2.1.0
+    sanctuary-show: 2.0.0
+    sanctuary-type-classes: 12.1.0
+    sanctuary-type-identifiers: 3.0.0
+  checksum: fc513c0b79b3ca63aa83bbca41246bcad72d0559385a8e999611febb5b48848922c1b51f2331aad452237907ca85b11b92f283bb47d6a3ff184f0b4f94a2d37b
   languageName: node
   linkType: hard
 
