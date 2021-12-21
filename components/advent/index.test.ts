@@ -848,7 +848,7 @@ describe('d19', () => {
 30,-46,-14
 `
 
-  test.skip('merge 3d', () => {
+  test('merge 3d', () => {
     const [a, b] = parse(example3d)
     expect(merge(a, b, 2)).toStrictEqual({
       dimensions: 3,
@@ -896,8 +896,11 @@ describe('d19', () => {
     })
   })
 
-  test('part a', () => {
-    //expect(run({day: 19, part: 'a', input: example3d})).toBe(79)
-    expect(run({day: 19, part: 'a'})).toBe(0)
+  test('parts a and b', () => {
+    expect(run({day: 19, part: 'a', input: example3d})).toEqual({
+      'part a': 79,
+      'part b': 3621,
+    })
+    expect(run({day: 19, part: 'a'})).toEqual({'part a': 398, 'part b': 10965})
   })
 })

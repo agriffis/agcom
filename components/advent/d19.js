@@ -25,6 +25,7 @@ const groupByObj = fn => {
     R.values,
     // [[[ko, item], ...], ...]
     R.map(pairs => [pairs[0][0], pairs.map(([_, v]) => v)]),
+    // [[ko, [item, ...]], ...]
   )
 }
 
@@ -94,7 +95,13 @@ const Point$prototype = {
   'fantasy-land/lte': function (other) {
     return S.lte(other.coords)(this.coords)
   },
+  translate_: function (translation) {
+    for (let i = 0; i < this.coords.length; i++) {
+      this.coords[i] += translation[i]
+    }
+  },
   translate: function (translation) {
+    // return Point(this.coords).translate_(translation)
     return Point(this.coords.map((coord, i) => coord + translation[i]))
   },
   rotate: function (rfn) {
@@ -105,9 +112,6 @@ const Point$prototype = {
       (rfn, i) => (i ? this.rotate(rfn) : this),
       rotations[this.coords.length],
     )
-  },
-  fromOrigin: function (origin) {
-    return this.translate(origin.coords.map(x => -x))
   },
 }
 
@@ -172,6 +176,10 @@ const Space$prototype = {
   '@@show': function () {
     return `Space`
   },
+  translate_: function (translation) {
+    this.scanners.forEach(scanner => scanner.translate_(translation))
+    this.points.forEach(point => point.translate_(translation))
+  },
   translate: function (translation) {
     return Space(
       S.map(p => p.translate(translation))(this.scanners),
@@ -183,19 +191,6 @@ const Space$prototype = {
       S.map(p => p.rotate(rfn))(this.scanners),
       S.map(p => p.rotate(rfn))(this.points),
     )
-  },
-  fromOrigin: function (origin) {
-    return Space(
-      S.map(p => p.fromOrigin(origin))(this.scanners),
-      S.map(p => p.fromOrigin(origin))(this.points),
-    )
-  },
-  segmentsIter: function* () {
-    for (let i = 0; i < this.points.length; i++) {
-      for (let j = i + 1; j < this.points.length; j++) {
-        yield Segment(this.points[i], this.points[j])
-      }
-    }
   },
   rotationsIter: function* () {
     yield* map(
@@ -213,6 +208,20 @@ const Space$prototype = {
     )
   },
 }
+
+Object.defineProperty(Space$prototype, 'segments', {
+  get() {
+    if (!this._segments) {
+      this._segments = []
+      for (let i = 0; i < this.points.length; i++) {
+        for (let j = i + 1; j < this.points.length; j++) {
+          this._segments.push(Segment(this.points[i], this.points[j]))
+        }
+      }
+    }
+    return this._segments
+  },
+})
 
 // Space :: (Point[], Point[]) -> Space
 function Space(scanners, points) {
@@ -244,52 +253,12 @@ const S = create({
 // Problems
 //----------------------------------------------------------------------
 
-function countMatching(a, b) {
-  let count = 0
-  for (let i = 0, j = 0; i < a.length && j < b.length; ) {
-    if (S.equals(a[i])(b[j])) {
-      count++
-      i++
-      j++
-    } else if (S.lt(b[j])(a[i])) {
-      i++
-    } else {
-      j++
-    }
-  }
-  return count
-}
-
-const pick = props => obj => {
-  const result = {}
-  for (const p of props) {
-    result[p] = obj[p]
-  }
-  return result
-}
-
-function lengths(space) {
-  return Array.from(space.segmentsIter())
-    .map(segment => segment.length)
-    .sort()
-}
-
-function combinations(xs) {
-  return xs.flatMap((a, i) => xs.slice(i + 1).map(b => [a, b]))
-}
-
 function candidateMergePoints(a, b, required = 12) {
   const segmentsByLength = R.pipe(
     R.groupBy(R.prop('length')), // segment.length, not segments.length
-    R.toPairs,
-    // Less common segment lengths are more interesting because they yield fewer
-    // points to try. This will get resorted further down, but it will be
-    // a stable sort.
-    R.sortBy(([_, segments]) => segments.length),
-    R.fromPairs,
   )
-  const asbl = segmentsByLength(Array.from(a.segmentsIter()))
-  const bsbl = segmentsByLength(Array.from(b.segmentsIter()))
+  const asbl = segmentsByLength(a.segments)
+  const bsbl = segmentsByLength(b.segments)
 
   for (let done = false; !done && (done = true); ) {
     // Eliminate any that are unique to space a or b.
@@ -330,6 +299,8 @@ function candidateMergePoints(a, b, required = 12) {
     // [[length, asegs], ...]
     R.map(([length, asegs]) => [asegs, bsbl[length]]),
     // [[asegs, bsegs], ...]
+    R.sortBy(([asegs, bsegs]) => asegs.length + bsegs.length),
+    // fewer segments for a given length means higher probability point matches
     R.map(R.map(R.chain(({a, b}) => [a, b]))),
     // [[aps, bps], ...]
     R.chain(([aps, bps]) => aps.map(ap => [ap, bps])),
@@ -340,21 +311,17 @@ function candidateMergePoints(a, b, required = 12) {
     // [[ap, bps with dups]]
     R.map(([ap, bps]) => [ap, uniqueObjs(bps)]),
     // [[ap, bps unique]]
-    R.sortBy(([_, bps]) => bps.length),
-    // shorter RHS
   )(asbl)
 
   return candidatePairs
 }
 
 function merge(a, b, required = 12) {
-  for (const br of b.rotationsIter()) {
-    for (const [ap, bps] of candidateMergePoints(a, br, required)) {
+  for (const bb of b.rotationsIter()) {
+    for (const [ap, bps] of candidateMergePoints(a, bb, required)) {
       for (const bp of bps) {
-        const bt = br.translate(
-          bp.coords.map((coord, i) => ap.coords[i] - coord),
-        )
-        const c = S.concat(a)(bt)
+        bb.translate_(bp.coords.map((coord, i) => ap.coords[i] - coord))
+        const c = S.concat(a)(bb)
         if (c.points.length <= a.points.length + b.points.length - required) {
           return c
         }
@@ -394,10 +361,13 @@ export function d19({input = inputs.d19, part}) {
       }
     }
   }
+  const {points, scanners} = spaces[0]
   return {
-    'part a': spaces[0].points.length,
+    'part a': points.length,
     'part b': Math.max(
-      ...spaces[0].scanners.flatMap(a => scanners.map(b => manhattan(a, b))),
+      ...scanners.flatMap(a =>
+        scanners.map(b => manhattan(a.coords, b.coords)),
+      ),
     ),
   }
 }
