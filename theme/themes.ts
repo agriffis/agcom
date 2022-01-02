@@ -7,6 +7,11 @@ const mapObj = R.curry((fn, obj) =>
 
 const compressFractionalKeys = mapObj(([k, v]) => [k.replace(/[.]/g, ''), v])
 
+const fromXstyled = R.compose(
+  compressFractionalKeys,
+  R.filter(v => v !== undefined),
+)
+
 const containerRem = 36 // 576px
 
 export const _light = {
@@ -37,15 +42,15 @@ export const _light = {
       metaSm: '0.75rem',
     },
     fontWeights: {
-      ...xstyled.fontWeights,
+      ...fromXstyled(xstyled.fontWeights),
     },
     sizes: {
-      ...compressFractionalKeys(xstyled.sizes),
+      ...fromXstyled(xstyled.sizes),
       container: `${containerRem}rem`,
       logo: '100px',
     },
     space: {
-      ...compressFractionalKeys(xstyled.space),
+      ...fromXstyled(xstyled.space),
       pagePadding: '$4',
       gutter: '$8',
     },
