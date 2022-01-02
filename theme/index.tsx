@@ -1,7 +1,7 @@
-import {useEffect, useLayoutEffect, useState} from 'react'
+import {ThemeProvider as NextThemeProvider} from 'next-themes'
+import {useState} from 'react'
 import {_global} from './global'
-import {_light, _dark} from './theme'
-import {usePrefersColorScheme} from './usePrefersColorScheme'
+import {_light, _dark} from './themes'
 import {createStitches} from '@stitches/react'
 
 export const {
@@ -22,14 +22,12 @@ export const useGlobalStyles = (styles = globalStyles) => {
   process.env.NODE_ENV === 'production' ? useState(styles) : styles()
 }
 
-const useIsomorphicLayoutEffect =
-  typeof window === 'undefined' ? useEffect : useLayoutEffect
-
-export const useDarkMode = () => {
-  const scheme = usePrefersColorScheme()
-  useIsomorphicLayoutEffect(() => {
-    document.body.classList[scheme === 'dark' ? 'add' : 'remove'](
-      `${darkTheme}`,
-    )
-  }, [scheme])
-}
+export const ThemeProvider = props => (
+  <NextThemeProvider
+    attribute="class"
+    defaultTheme="system"
+    disableTransitionOnChange
+    value={{light: lightTheme.className, dark: darkTheme.className}}
+    {...props}
+  />
+)

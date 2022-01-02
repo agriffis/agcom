@@ -1569,6 +1569,7 @@ __metadata:
     next: latest
     next-mdx-remote: ^3.0.7
     next-remote-watch: ^1.0.0
+    next-themes: ^0.0.15
     normalize-stitches: ^0.1.2
     normalize.css: ^8.0.1
     prettier: ^2.5.1
@@ -5534,6 +5535,17 @@ __metadata:
   bin:
     next-remote-watch: bin/next-remote-watch
   checksum: a67b15c2556e380c7dfbe8651d8a89fe34f42f439fa910ece5585e988a7c23116f3e432eef93984bb3bba9683798f2f757642652883288550bf613357cc67ea3
+  languageName: node
+  linkType: hard
+
+"next-themes@npm:^0.0.15":
+  version: 0.0.15
+  resolution: "next-themes@npm:0.0.15"
+  peerDependencies:
+    next: "*"
+    react: "*"
+    react-dom: "*"
+  checksum: c85793fa07e08bb060993d4ad8b3a79a9db83d16a0256d3852676621e0ab1b8a013ef984216581d24f29b8c47da2ebfbe456229564e73edd50e89b64f307f174
   languageName: node
   linkType: hard
 
