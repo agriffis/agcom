@@ -1,5 +1,5 @@
 import {ComponentProps, forwardRef} from 'react'
-import {styled} from 'stitches.config'
+import {styled} from 'theme'
 import NextImage from 'next/image'
 import {IMAGES} from '../lib/site'
 
@@ -23,7 +23,7 @@ export type ImageProps = ImagePropsPoly &
   Omit<ComponentProps<typeof StyledImage>, keyof ImagePropsPoly>
 
 export const Image = forwardRef<any, ImageProps>(
-  ({post = false, wide = false, name, src, ...props}, ref) => (
+  ({name, src, ...props}, ref) => (
     <StyledImage {...IMAGES[name]} {...props} ref={ref} />
   ),
 )

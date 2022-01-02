@@ -1,4 +1,4 @@
-import {styled} from 'stitches.config'
+import {styled} from 'theme'
 
 export const Footer = styled('footer', {
   marginTop: '$6',

@@ -1,5 +1,5 @@
 import {mergeDeepRight} from 'ramda'
-import {styled} from 'stitches.config'
+import {styled} from 'theme'
 
 /**
  * https://github.com/NLKNguyen/papercolor-theme

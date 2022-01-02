@@ -1,7 +1,7 @@
 /**
  * SVG icons from https://simpleicons.org
  */
-import {styled} from 'stitches.config'
+import {styled} from 'theme'
 
 const SvgIcon = props => (
   <svg

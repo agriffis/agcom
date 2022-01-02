@@ -1,9 +1,8 @@
 import {defaultTheme as xstyled} from '@agriffis/xstyled-styled-components'
-import {createStitches} from '@stitches/react'
 
 const containerRem = 36 // 576px
 
-export const {getCssText, globalCss, styled, theme} = createStitches({
+export const _theme = {
   media: {
     container: `(min-width: ${containerRem * 16}px)`,
     desktop: '(min-width: 740px)',
@@ -48,4 +47,4 @@ export const {getCssText, globalCss, styled, theme} = createStitches({
       gutter: '$8',
     },
   },
-})
+}

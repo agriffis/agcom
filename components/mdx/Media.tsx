@@ -1,4 +1,4 @@
-import {styled} from 'stitches.config'
+import {styled} from 'theme'
 
 export const Media = styled('div', {
   marginTop: '$6',

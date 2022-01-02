@@ -1,6 +1,6 @@
 import {ReactNode} from 'react'
 import Head from 'next/head'
-import {theme} from 'stitches.config'
+import {theme} from 'theme'
 import {Footer, Link, Image, Nav} from 'components'
 import * as site from 'lib/site'
 import * as S from './styles'

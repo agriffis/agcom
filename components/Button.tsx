@@ -1,4 +1,4 @@
-import {styled} from 'stitches.config'
+import {styled} from 'theme'
 import {ComponentProps, useRef} from 'react'
 import {useButton} from '@react-aria/button'
 
