@@ -1,4 +1,11 @@
+import * as R from 'ramda'
 import {defaultTheme as xstyled} from '@agriffis/xstyled-styled-components'
+
+const mapObj = R.curry((fn, obj) =>
+  R.compose(R.fromPairs, R.map(fn), R.toPairs)(obj),
+)
+
+const compressFractionalKeys = mapObj(([k, v]) => [k.replace(/[.]/g, ''), v])
 
 const containerRem = 36 // 576px
 
@@ -33,16 +40,12 @@ export const _light = {
       ...xstyled.fontWeights,
     },
     sizes: {
-      ...xstyled.sizes,
+      ...compressFractionalKeys(xstyled.sizes),
       container: `${containerRem}rem`,
       logo: '100px',
     },
     space: {
-      ...xstyled.space,
-      '05': '$0.5',
-      15: '$1.5',
-      25: '$2.5',
-      35: '$3.5',
+      ...compressFractionalKeys(xstyled.space),
       pagePadding: '$4',
       gutter: '$8',
     },
