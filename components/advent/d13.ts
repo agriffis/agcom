@@ -30,7 +30,7 @@ const draw = (dots: Point[]) => {
   }, {})
   const [[minx, maxx], [miny, maxy]] = ['x', 'y']
     .map(a => dots.map(p => p[a]))
-    .map(ds => juxt(ds, [min, max]))
+    .map(ds => juxt(ds, [min, max])) as [[number, number], [number, number]]
   return R.range(miny, maxy + 1)
     .map(y =>
       R.range(minx, maxx + 1)
