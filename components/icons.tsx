@@ -13,7 +13,7 @@ const SvgIcon = props => (
 )
 
 const StyledIcon = styled(SvgIcon, {
-  fill: 'icon',
+  fill: '$colors$icon',
   display: 'inline',
   verticalAlign: 'unset', // so align-items: baseline works
 })
