@@ -1,4 +1,4 @@
-import {ThemeProvider as NextThemeProvider} from 'next-themes'
+import * as NextThemes from 'next-themes'
 import {useState} from 'react'
 import {_global} from './global'
 import {_light, _dark} from './themes'
@@ -23,7 +23,7 @@ export const useGlobalStyles = (styles = globalStyles) => {
 }
 
 export const ThemeProvider = props => (
-  <NextThemeProvider
+  <NextThemes.ThemeProvider
     attribute="class"
     defaultTheme="system"
     disableTransitionOnChange
@@ -31,3 +31,6 @@ export const ThemeProvider = props => (
     {...props}
   />
 )
+
+export const useTheme = () =>
+  NextThemes.useTheme().theme === 'dark' ? darkTheme : lightTheme
