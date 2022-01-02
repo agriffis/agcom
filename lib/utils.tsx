@@ -6,7 +6,7 @@ export function enrichFrontMatter({data, slug}: {data: any; slug: string}) {
     slug,
     created: slug.startsWith('2')
       ? new Date(slug.match(slugDateRe)[0])
-      : new Date(),
+      : new Date('1976-01-24'),
     ...(data.updated && {
       updated: new Date(data.updated),
     }),
