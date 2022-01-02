@@ -14,7 +14,7 @@ const fromXstyled = R.compose(
 
 const containerRem = 36 // 576px
 
-export const _light = {
+export const _defaultTheme = {
   media: {
     container: `(min-width: ${containerRem * 16}px)`,
     desktop: '(min-width: 740px)',
@@ -57,7 +57,7 @@ export const _light = {
   },
 }
 
-export const _dark = {
+export const _darkTheme = {
   colors: {
     background: '#111',
     text: '#ccc',

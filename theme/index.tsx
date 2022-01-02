@@ -1,7 +1,7 @@
 import * as NextThemes from 'next-themes'
 import {useState} from 'react'
-import {_global} from './global'
-import {_light, _dark} from './themes'
+import {_globalStyles} from './global'
+import {_defaultTheme, _darkTheme} from './themes'
 import {createStitches} from '@stitches/react'
 
 export const {
@@ -10,11 +10,11 @@ export const {
   globalCss,
   styled,
   theme: lightTheme,
-} = createStitches(_light)
+} = createStitches(_defaultTheme)
 
-export const darkTheme = createTheme(_dark)
+export const darkTheme = createTheme(_darkTheme)
 
-const globalStyles = globalCss(..._global)
+const globalStyles = globalCss(..._globalStyles)
 
 export const useGlobalStyles = (styles = globalStyles) => {
   // stitches does its own detection but it's based on hashing JSON.stringify.

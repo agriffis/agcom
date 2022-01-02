@@ -110,4 +110,4 @@ const colors = {
   },
 }
 
-export const _global = [normalize, preflight, fonts, typography, colors]
+export const _globalStyles = [normalize, preflight, fonts, typography, colors]
