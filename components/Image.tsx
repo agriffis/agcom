@@ -1,11 +1,9 @@
 import {ComponentProps, forwardRef} from 'react'
-import styled, {system} from '@agriffis/xstyled-styled-components'
+import {styled} from 'stitches.config'
 import NextImage from 'next/image'
 import {IMAGES} from '../lib/site'
 
-const StyledImage = styled(NextImage)`
-  ${system}
-`
+const StyledImage = styled(NextImage)
 
 interface ImagePropsBase {}
 

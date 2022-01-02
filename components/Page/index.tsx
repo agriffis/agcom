@@ -1,6 +1,6 @@
 import {ReactNode} from 'react'
 import Head from 'next/head'
-import {useTheme} from '@agriffis/xstyled-styled-components'
+import {theme} from 'stitches.config'
 import {Footer, Link, Image, Nav} from 'components'
 import * as site from 'lib/site'
 import * as S from './styles'
@@ -28,7 +28,6 @@ export function Page({
   heading = title,
   postMeta = null,
 }: PageProps) {
-  const theme = useTheme()
   return (
     <>
       <Head>
@@ -73,7 +72,7 @@ export function Page({
 
       <S.Page>
         <Link href={logoLink}>
-          <Image name={logo} priority sizes={theme.sizes.logo} />
+          <Image name={logo} priority sizes={theme.sizes.logo.value} />
         </Link>
         <Nav />
         {heading && <S.Heading>{heading}</S.Heading>}

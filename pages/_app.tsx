@@ -1,158 +1,129 @@
-import {
-  ColorModeProvider,
-  ThemeProvider,
-  getPreflightStyles,
-  createGlobalStyle,
-  defaultTheme,
-} from '@agriffis/xstyled-styled-components'
+import {useState} from 'react'
 import {AppProps} from 'next/app'
+import {globalCss} from 'stitches.config'
+import 'modern-normalize/modern-normalize.css'
 
-const containerRem = 36 // 576px
+/**
+ * CSS reset portions from xstyled's preflight, from
+ * https://github.com/gregberge/xstyled/blob/af578429c453aa8445c55a87e984ebaca1d899e7/packages/system/src/preflight.ts
+ *
+ * This should be installed after modern-normalize, but before site styles.
+ */
+const preflight = {
+  // Role button pointer
+  '[role=button], button': {
+    cursor: 'pointer',
+  },
+
+  // Remove default margins
+  'blockquote, dl, dd, h1, h2, h3, h4, h5, h6, hr, figure, p, pre': {
+    margin: '0',
+  },
+
+  // Remove headings styles
+  'h1, h2, h3, h4, h5, h6': {
+    fontSize: 'inherit',
+    fontWeight: 'inherit',
+  },
+
+  // Unstyle lists
+  'ol, ul': {
+    listStyle: 'none',
+    margin: '0',
+    padding: '0',
+  },
+
+  // Image are block-level
+  'img, svg, video, canvas, audio, iframe, embed, object': {
+    display: 'block',
+    verticalAlign: 'middle',
+  },
+
+  // Reset border styles
+  '*, ::before, ::after': {
+    borderWidth: '0',
+    borderStyle: 'solid',
+    borderColor: 'currentColor',
+  },
+}
 
 const fonts = {
-  mono: '"Roboto Mono", monospace',
-  sans: '"Roboto Condensed", sans-serif',
-  serif: '"Crimson Pro", serif',
-}
-
-const {space} = defaultTheme
-
-const theme = {
-  ...defaultTheme,
-  colors: {
-    background: '#fff',
-    text: '#555',
-    heading: '#444',
-    icon: '#333',
-    accent: '#246eb9',
-    link: '#246eb9',
-    note: '#ddd',
-    modes: {
-      dark: {
-        background: '#111',
-        text: '#ccc',
-        heading: '#ddd',
-        accent: '#76c2fb',
-        icon: '#ccc',
-        link: '#76c2fb',
-        note: '#444',
-      },
-    },
+  body: {
+    fontFamily: '$serif',
+    fontWeight: '$normal',
   },
-  fonts: {
-    ...fonts,
-    meta: fonts.sans,
+  'h1, h2, h3': {
+    fontFamily: '$sans',
+    fontWeight: '$bold',
   },
-  fontSizes: {
-    metaLg: '1.25rem',
-    metaSm: '0.75rem',
-  },
-  screens: {
-    _: 0,
-    container: `${containerRem * 16}px`,
-    desktop: '740px',
-    bigger: '820px',
-    biggest: '900px',
-  },
-  sizes: {
-    ...defaultTheme.sizes,
-    container: `${containerRem}rem`,
-    logo: '100px',
-  },
-  space: {
-    ...space,
-    // margin-top: 1.5 doesn't work in styled.div, only x.div
-    '05': space['0.5'],
-    15: space['1.5'],
-    25: space['2.5'],
-    35: space['3.5'],
-    pagePadding: space['4'],
-    gutter: space['8'],
+  'pre, code, kbd, samp, tt': {
+    fontFamily: '$mono',
   },
 }
 
-const GlobalStyle = createGlobalStyle`
-  // Load Preflight here instead of using <Preflight /> in App, because when we
-  // do that, somehow Preflight loads *after* our styles and clobbers them.
-  ${getPreflightStyles}
+const typography = {
+  html: {
+    fontSize: '18px',
+    '@desktop': {fontSize: '16px'},
+    '@bigger': {fontSize: '18px'},
+    '@biggest': {fontSize: '20px'},
+  },
+  body: {
+    lineHeight: '1.5',
+  },
+  'h1, .h1': {
+    fontSize: '2rem',
+    lineHeight: '1.125',
+    marginTop: '0',
+    marginBottom: '$4',
+  },
+  'h2, .h2': {
+    fontSize: '1.5rem',
+    lineHeight: '1.25',
+    marginTop: '$10',
+    marginBottom: '$4',
+  },
+  'h3, .h3': {
+    fontSize: '1.25rem',
+    lineHeight: '1.375',
+    marginTop: '$6',
+    marginBottom: '$4',
+  },
+  'pre, code, kbd, samp, tt': {
+    fontSize: '0.7rem',
+    lineHeight: '1.4',
+  },
+  'p, pre': {
+    marginTop: '0',
+    marginBottom: '$4',
+  },
+}
 
-  // Fonts
-  body {
-    font-family: serif;
-    font-weight: normal;
-  }
-  h1, h2, h3, h4 {
-    font-family: sans;
-    font-weight: bold;
-  }
-  pre, code, kbd, samp, tt {
-    font-family: mono;
-  }
+const colors = {
+  body: {
+    backgroundColor: '$background',
+    color: '$text',
+  },
+  'h1, h2, h3': {
+    color: '$heading',
+  },
+  a: {
+    color: '$link',
+    textDecoration: 'none',
+  },
+}
 
-  // Typography
-  html {
-    font-size: 18px;
-    @media (min-width: desktop) {
-      font-size: 16px;
-    }
-    @media (min-width: bigger) {
-      font-size: 18px;
-    }
-    @media (min-width: biggest) {
-      font-size 20px;
-    }
-  }
-  body {
-    line-height: 1.5;
-  }
-  h1, .h1 {
-    font-size: 2rem;
-    line-height: 1.125;
-    margin-top: 0;
-    margin-bottom: 4;
-  }
-  h2, .h2 {
-    font-size: 1.5rem;
-    line-height: 1.25;
-    margin-top: 10;
-    margin-bottom: 4;
-  }
-  h3, .h3 {
-    font-size: 1.25rem;
-    line-height: 1.375;
-    margin-top: 6;
-    margin-bottom: 4;
-  }
-  pre, code, kbd, samp, tt {
-    font-size: 0.7rem;
-    line-height: 1.4;
-  }
-  p, pre {
-    margin-top: 0;
-    margin-bottom: 4;
-  }
+const globalStyles = globalCss(preflight, fonts, typography, colors)
 
-  // Colors
-  body {
-    background-color: background;
-    color: text;
-  }
-  h1, h2, h3 {
-    color: heading;
-  }
-  a {
-    color: link;
-    text-decoration: none;
-  }
-  `
+const useGlobalStyles = styles => {
+  // stitches does its own detection but it's based on hashing JSON.stringify.
+  // In production, just avoid ever calling the function twice.
+  process.env.NODE_ENV === 'production' ? useState(styles) : styles()
+}
 
-const App = ({Component, pageProps}: AppProps) => (
-  <ThemeProvider theme={theme}>
-    <ColorModeProvider>
-      <GlobalStyle />
-      <Component {...pageProps} />
-    </ColorModeProvider>
-  </ThemeProvider>
-)
+const App = ({Component, pageProps}: AppProps) => {
+  useGlobalStyles(globalStyles)
+  return <Component {...pageProps} />
+}
 
 export default App

@@ -1,28 +1,27 @@
-import styled, {system} from '@agriffis/xstyled-styled-components'
+import {styled} from 'stitches.config'
 
-export const Footer = styled.footer`
-  margin-top: 6;
-  padding-top: 4;
-  padding-bottom: 8;
-  border-top: 3px solid;
-  border-top-color: accent;
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  font-family: meta;
-  ${system}
-`
+export const Footer = styled('footer', {
+  marginTop: '$6',
+  paddingTop: '$4',
+  paddingBottom: '$8',
+  borderTop: '3px solid',
+  borderTopColor: '$accent',
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'baseline',
+  fontFamily: '$meta',
+})
 
-export const Site = styled.div`
-  margin-bottom: 4;
-  font-size: metaSm;
-`
+export const Site = styled('div', {
+  marginBottom: '$4',
+  fontSize: '$metaSm',
+})
 
-export const Social = styled.div`
-  a {
-    margin-left: 0.5em;
-  }
-  svg {
-    width: 20px;
-  }
-`
+export const Social = styled('div', {
+  a: {
+    marginLeft: '0.5em',
+  },
+  svg: {
+    width: '20px',
+  },
+})

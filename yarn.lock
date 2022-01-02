@@ -1246,6 +1246,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@stitches/react@npm:^1.2.6":
+  version: 1.2.6
+  resolution: "@stitches/react@npm:1.2.6"
+  peerDependencies:
+    react: ">= 16.3.0"
+  checksum: 416088cdde17a22d6cdb04cf1cf756c6e5fc291dd7e41f82ce422bb95432ad32b6d990e7264d996d367c40bbc674d61be087e4e1f7b23eea7f81ef6266373a9c
+  languageName: node
+  linkType: hard
+
 "@tootallnate/once@npm:1":
   version: 1.1.2
   resolution: "@tootallnate/once@npm:1.1.2"
@@ -1545,6 +1554,7 @@ __metadata:
     "@jsdevtools/rehype-toc": ^3.0.2
     "@mapbox/rehype-prism": ^0.6.0
     "@react-aria/button": ^3.3.4
+    "@stitches/react": ^1.2.6
     "@types/jest": ^27.0.3
     "@types/node": ^14.14.37
     "@types/react": ^17.0.33
@@ -1556,6 +1566,7 @@ __metadata:
     hast-util-select: ^4.0.2
     iter-tools-es: ^7.1.4
     jest: ^27.4.3
+    modern-normalize: ^1.1.0
     next: latest
     next-mdx-remote: ^3.0.7
     next-remote-watch: ^1.0.0
@@ -5442,6 +5453,13 @@ __metadata:
   bin:
     mkdirp: bin/cmd.js
   checksum: a96865108c6c3b1b8e1d5e9f11843de1e077e57737602de1b82030815f311be11f96f09cce59bd5b903d0b29834733e5313f9301e3ed6d6f6fba2eae0df4298f
+  languageName: node
+  linkType: hard
+
+"modern-normalize@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "modern-normalize@npm:1.1.0"
+  checksum: edfd40650bd7250eb4761651886a02ca3c524effca41b9832932eab9ccf9f2cfa7e5da8491c7c8bc2d58e1696e5e765adebeaf90cd9d3376444bd6bc0b0f2c99
   languageName: node
   linkType: hard
 

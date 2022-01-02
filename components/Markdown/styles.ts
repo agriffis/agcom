@@ -1,32 +1,33 @@
-import styled, {css, th} from '@agriffis/xstyled-styled-components'
+import {mergeDeepRight} from 'ramda'
+import {styled} from 'stitches.config'
 
 /**
  * https://github.com/NLKNguyen/papercolor-theme
  */
-const syntax = css`
-  pre,
-  code {
-    --color00: #eeeeee;
-    --color01: #af0000;
-    --color02: #008700;
-    --color03: #5f8700;
-    --color04: #0087af;
-    --color05: #878787;
-    --color06: #005f87;
-    --color07: #444444;
-    --color08: #bcbcbc;
-    --color09: #d70000;
-    --color10: #d70087;
-    --color11: #8700af;
-    --color12: #d75f00;
-    --color13: #d75f00;
-    --color14: #005faf;
-    --color15: #005f87;
-    --color16: #0087af;
-    --color17: #008700;
-    --visual-fg: #eeeeee;
-    --visual-bg: #0087af;
+const syntax = {
+  'pre, code': {
+    '--color00': '#eeeeee',
+    '--color01': '#af0000',
+    '--color02': '#008700',
+    '--color03': '#5f8700',
+    '--color04': '#0087af',
+    '--color05': '#878787',
+    '--color06': '#005f87',
+    '--color07': '#444444',
+    '--color08': '#bcbcbc',
+    '--color09': '#d70000',
+    '--color10': '#d70087',
+    '--color11': '#8700af',
+    '--color12': '#d75f00',
+    '--color13': '#d75f00',
+    '--color14': '#005faf',
+    '--color15': '#005f87',
+    '--color16': '#0087af',
+    '--color17': '#008700',
+    '--visual-fg': '#eeeeee',
+    '--visual-bg': '#0087af',
 
+    /* TODO
     body.xstyled-color-mode-dark & {
       --color00: #1c1c1c;
       --color01: #af005f;
@@ -47,92 +48,81 @@ const syntax = css`
       --visual-fg: #000000;
       --visual-bg: #8787af;
     }
+    */
 
-    --background: var(--color00);
-    --negative: var(--color01);
-    --positive: var(--color02);
-    --olive: var(--color03);
-    --neutral: var(--color04);
-    --comment: var(--color05);
-    --navy: var(--color06);
-    --foreground: var(--color07);
-    --nontext: var(--color08);
-    --red: var(--color09);
-    --pink: var(--color10);
-    --purple: var(--color11);
-    --accent: var(--color12);
-    --orange: var(--color13);
-    --blue: var(--color14);
-    --highlight: var(--color15);
-    --aqua: var(--color16);
-    --green: var(--color17);
-    --wine: var(--color18);
+    '--background': 'var(--color00)',
+    '--negative': 'var(--color01)',
+    '--positive': 'var(--color02)',
+    '--olive': 'var(--color03)',
+    '--neutral': 'var(--color04)',
+    '--comment': 'var(--color05)',
+    '--navy': 'var(--color06)',
+    '--foreground': 'var(--color07)',
+    '--nontext': 'var(--color08)',
+    '--red': 'var(--color09)',
+    '--pink': 'var(--color10)',
+    '--purple': 'var(--color11)',
+    '--accent': 'var(--color12)',
+    '--orange': 'var(--color13)',
+    '--blue': 'var(--color14)',
+    '--highlight': 'var(--color15)',
+    '--aqua': 'var(--color16)',
+    '--green': 'var(--color17)',
+    '--wine': 'var(--color18)',
 
-    background: var(--background);
-    color: var(--foreground);
-  }
+    background: 'var(--background)',
+    color: 'var(--foreground)',
+  },
 
-  code {
-    &::selection,
-    & ::selection {
-      color: var(--visual-fg);
-      background: var(--visual-bg);
-    }
+  code: {
+    '&::selection, & ::selection': {
+      color: 'var(--visual-fg)',
+      background: 'var(--visual-bg)',
+    },
 
-    .token.comment,
-    .token.prolog,
-    .token.doctype,
-    .token.cdata {
-      color: var(--comment);
-      font-style: italic;
-    }
+    '.token.comment, .token.prolog, .token.doctype, .token.cdata': {
+      color: 'var(--comment)',
+      fontStyle: 'italic',
+    },
 
-    .token.punctuation {
-      color: var(--pink);
-    }
+    '.token.punctuation': {
+      color: 'var(--pink)',
+    },
 
-    .token.variable,
-    .token.operator {
-      color: var(--aqua);
-    }
+    '.token.variable, .token.operator': {
+      color: 'var(--aqua)',
+    },
 
-    .token.selector,
-    .token.keyword,
-    .token.tag {
-      color: var(--blue);
-    }
+    '.token.selector, .token.keyword, .token.tag': {
+      color: 'var(--blue)',
+    },
 
-    .token.class-name,
-    .token.constant,
-    .token.number,
-    .token.symbol,
-    .token.function {
-      color: var(--orange);
-    }
+    '.token.class-name, .token.constant, .token.number, .token.symbol, .token.function':
+      {
+        color: 'var(--orange)',
+      },
 
-    .token.boolean {
-      color: var(--green);
-      font-weight: bold;
-    }
+    '.token.boolean': {
+      color: 'var(--green)',
+      fontWeight: '$bold',
+    },
 
-    .token.string,
-    .token.char {
-      color: var(--olive);
-    }
+    '.token.string, .token.char': {
+      color: 'var(--olive)',
+    },
 
-    /* don't surround blue tags with pink angle brackets */
-    .language-html .token.punctuation,
-    .language-xml .token.punctuation {
-      color: inherit;
-    }
+    // don't surround blue tags with pink angle brackets
+    '.language-html .token.punctuation, .language-xml .token.punctuation': {
+      color: 'inherit',
+    },
 
-    .token.bold {
-      font-weight: bold;
-    }
+    '.token.bold': {
+      fontWeight: '$bold',
+    },
 
-    .token.italic {
-      font-style: italic;
-    }
+    '.token.italic': {
+      fontStyle: 'italic',
+    },
 
     /*
   .token.namespace {
@@ -189,117 +179,107 @@ const syntax = css`
     cursor: help;
   }
   */
-  }
-`
+  },
+}
 
-const styles = css`
-  p.note {
-    padding: 1em;
-    border: thin solid;
-    border-color: note;
-    border-radius: 4px;
-    box-shadow: 0 0 10px ${th('colors.note')};
-  }
+const prose = {
+  'p.note': {
+    padding: '1em',
+    border: 'thin solid',
+    borderColor: 'note',
+    borderRadius: '4px',
+    'box-shadow': '0 0 10px $colors$note',
+  },
 
-  blockquote {
-    font-style: italic;
-    margin-left: 4;
-    padding-left: 4;
-    border-left: 2px solid;
-    border-left-color: accent;
-    margin-right: 8;
-  }
+  blockquote: {
+    fontStyle: 'italic',
+    marginLeft: '$4',
+    paddingLeft: '$4',
+    borderLeft: '2px solid',
+    borderLeftColor: '$accent',
+    marginRight: '$8',
+  },
 
   /**
    * https://searchfox.org/mozilla-central/source/layout/style/res/html.css
    */
-  ol,
-  ul {
-    margin-block-start: ${th('space.4')};
-    margin-block-end: ${th('space.4')};
-    padding-inline-start: 40px;
-  }
-  ol {
-    list-style-type: decimal;
-  }
-  ul {
-    list-style-type: disc;
-  }
+  'ol, ul': {
+    marginBlockStart: '$4',
+    marginBlockEnd: '$4',
+    paddingInlineStart: '40px',
+  },
+  ol: {
+    listStyleType: 'decimal',
+  },
+  ul: {
+    listStyleType: 'disc',
+  },
 
-  code {
-    padding: 2px 3px;
-    border-radius: 3px;
-  }
-  pre {
-    border-radius: 4px;
-    max-width: 100%;
-    padding: 4;
-    overflow-x: auto;
-    > code {
-      padding: 0;
-      border-radius: unset;
-    }
-  }
+  code: {
+    padding: '2px 3px',
+    'border-radius': '3px',
+  },
+  pre: {
+    borderRadius: '4px',
+    maxWidth: '100%',
+    padding: '$4',
+    overflowX: 'auto',
+    '& > code': {
+      padding: '0',
+      borderRadius: 'unset',
+    },
+  },
 
-  table {
-    font-family: sans;
-    font-size: 0.75rem;
-    margin-bottom: 4;
-    border-collapse: collapse;
-  }
-  thead {
-    tr:first-child {
-      th,
-      td {
-        padding-top: 0.5em;
-      }
-    }
-    tr:last-child {
-      th,
-      td {
-        padding-bottom: 1em;
-      }
-    }
-  }
-  tbody {
-    border-top: thin solid;
-    border-top-color: accent;
-    tr:first-child {
-      th,
-      td {
-        padding-top: 1em;
-      }
-    }
-    tr:last-child {
-      th,
-      td {
-        padding-bottom: 0.5em;
-      }
-    }
-  }
-  th,
-  td {
-    text-align: left;
-    padding-left: 6;
-    padding-right: 6;
-    border-left: thin solid;
-    border-left-color: accent;
-    &:first-child {
-      border-left: none;
-    }
-  }
-  th {
-    font-weight: bold;
-  }
+  table: {
+    fontFamily: 'sans',
+    fontSize: '0.75rem',
+    marginBottom: '$4',
+    borderCollapse: 'collapse',
+  },
+  thead: {
+    'tr:first-child': {
+      'th, td': {
+        paddingTop: '0.5em',
+      },
+    },
+    'tr:last-child': {
+      'th, td': {
+        paddingBottom: '1em',
+      },
+    },
+  },
+  tbody: {
+    borderTop: 'thin solid',
+    borderTopColor: '$accent',
+    'tr:first-child': {
+      'th, td': {
+        paddingTop: '1em',
+      },
+    },
+    'tr:last-child': {
+      'th, td': {
+        paddingBottom: '0.5em',
+      },
+    },
+  },
+  'th, td': {
+    textAlign: 'left',
+    paddingLeft: '$6',
+    paddingRight: '$6',
+    borderLeft: 'thin solid',
+    borderLeftColor: 'accent',
+    '&:first-child': {
+      borderLeft: 'none',
+    },
+  },
+  th: {
+    fontWeight: '$bold',
+  },
+  hr: {
+    border: 'none',
+    borderTop: '3px solid',
+    borderTopColor: '$accent',
+  },
+}
 
-  hr {
-    border: none;
-    border-top: 3px solid;
-    border-top-color: accent;
-  }
-`
-
-export const Markdown = styled.div`
-  ${styles}
-  ${syntax}
-`
+export const Markdown = styled('div', mergeDeepRight(prose, syntax))

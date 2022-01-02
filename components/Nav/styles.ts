@@ -1,24 +1,20 @@
-import styled, {system} from '@agriffis/xstyled-styled-components'
+import {styled} from 'stitches.config'
 
-export const Nav = styled.nav`
-  display: flex;
-  font-family: meta;
-  font-size: metaLg;
+export const Nav = styled('nav', {
+  display: 'flex',
+  fontFamily: '$meta',
+  fontSize: '$metaLg',
+  '& > *:not(:first-child)': {
+    marginLeft: '$6',
+  },
 
-  > *:not(:first-child) {
-    margin-left: 6;
-  }
-
-  @media (min-width: desktop) {
-    margin-top: 4;
-    margin-left: 1;
-    flex-direction: column;
-
-    > *:not(:first-child) {
-      margin-left: 0;
-      margin-top: 2;
-    }
-  }
-
-  ${system}
-`
+  '@desktop': {
+    marginTop: '$4',
+    marginLeft: '$1',
+    flexDirection: 'column',
+    '& > *:not(:first-child)': {
+      marginLeft: '0',
+      marginTop: '$2',
+    },
+  },
+})
