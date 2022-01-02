@@ -2,7 +2,7 @@ import {defaultTheme as xstyled} from '@agriffis/xstyled-styled-components'
 
 const containerRem = 36 // 576px
 
-export const _theme = {
+export const _light = {
   media: {
     container: `(min-width: ${containerRem * 16}px)`,
     desktop: '(min-width: 740px)',
@@ -46,5 +46,17 @@ export const _theme = {
       pagePadding: '$4',
       gutter: '$8',
     },
+  },
+}
+
+export const _dark = {
+  colors: {
+    background: '#111',
+    text: '#ccc',
+    heading: '#ddd',
+    accent: '#76c2fb',
+    icon: '#ccc',
+    link: '#76c2fb',
+    note: '#444',
   },
 }

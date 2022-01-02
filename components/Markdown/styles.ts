@@ -1,5 +1,5 @@
 import {mergeDeepRight} from 'ramda'
-import {styled} from 'theme'
+import {darkTheme, styled} from 'theme'
 
 /**
  * https://github.com/NLKNguyen/papercolor-theme
@@ -27,28 +27,26 @@ const syntax = {
     '--visual-fg': '#eeeeee',
     '--visual-bg': '#0087af',
 
-    /* TODO
-    body.xstyled-color-mode-dark & {
-      --color00: #1c1c1c;
-      --color01: #af005f;
-      --color02: #5faf00;
-      --color03: #d7af5f;
-      --color04: #5fafd7;
-      --color05: #808080;
-      --color06: #d7875f;
-      --color07: #d0d0d0;
-      --color08: #585858;
-      --color09: #5faf5f;
-      --color10: #afd700;
-      --color11: #af87d7;
-      --color12: #ffaf00;
-      --color13: #ff5faf;
-      --color14: #00afaf;
-      --color15: #5f8787;
-      --visual-fg: #000000;
-      --visual-bg: #8787af;
-    }
-    */
+    [`.${darkTheme} &`]: {
+      '--color00': '#1c1c1c',
+      '--color01': '#af005f',
+      '--color02': '#5faf00',
+      '--color03': '#d7af5f',
+      '--color04': '#5fafd7',
+      '--color05': '#808080',
+      '--color06': '#d7875f',
+      '--color07': '#d0d0d0',
+      '--color08': '#585858',
+      '--color09': '#5faf5f',
+      '--color10': '#afd700',
+      '--color11': '#af87d7',
+      '--color12': '#ffaf00',
+      '--color13': '#ff5faf',
+      '--color14': '#00afaf',
+      '--color15': '#5f8787',
+      '--visual-fg': '#000000',
+      '--visual-bg': '#8787af',
+    },
 
     '--background': 'var(--color00)',
     '--negative': 'var(--color01)',
