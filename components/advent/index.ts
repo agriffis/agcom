@@ -12,7 +12,7 @@ import {
   max,
   min,
   sum,
-  mult,
+  product,
   inRange,
   ranks,
   files,
@@ -451,7 +451,7 @@ export const d9b = ({input = inputs.d9}: {input?: string}) => {
   return R.pipe(
     basins.map(b => b.size).sort((a, b) => b - a),
     R.take(3),
-    mult,
+    product,
   )
 }
 

@@ -1246,6 +1246,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@stitches/react@npm:^1.2.6":
+  version: 1.2.6
+  resolution: "@stitches/react@npm:1.2.6"
+  peerDependencies:
+    react: ">= 16.3.0"
+  checksum: 416088cdde17a22d6cdb04cf1cf756c6e5fc291dd7e41f82ce422bb95432ad32b6d990e7264d996d367c40bbc674d61be087e4e1f7b23eea7f81ef6266373a9c
+  languageName: node
+  linkType: hard
+
 "@tootallnate/once@npm:1":
   version: 1.1.2
   resolution: "@tootallnate/once@npm:1.1.2"
@@ -1545,6 +1554,7 @@ __metadata:
     "@jsdevtools/rehype-toc": ^3.0.2
     "@mapbox/rehype-prism": ^0.6.0
     "@react-aria/button": ^3.3.4
+    "@stitches/react": ^1.2.6
     "@types/jest": ^27.0.3
     "@types/node": ^14.14.37
     "@types/react": ^17.0.33
@@ -1559,6 +1569,8 @@ __metadata:
     next: latest
     next-mdx-remote: ^3.0.7
     next-remote-watch: ^1.0.0
+    next-themes: ^0.0.15
+    normalize-stitches: ^0.1.2
     normalize.css: ^8.0.1
     prettier: ^2.5.1
     ramda: ^0.27.1
@@ -5526,6 +5538,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"next-themes@npm:^0.0.15":
+  version: 0.0.15
+  resolution: "next-themes@npm:0.0.15"
+  peerDependencies:
+    next: "*"
+    react: "*"
+    react-dom: "*"
+  checksum: c85793fa07e08bb060993d4ad8b3a79a9db83d16a0256d3852676621e0ab1b8a013ef984216581d24f29b8c47da2ebfbe456229564e73edd50e89b64f307f174
+  languageName: node
+  linkType: hard
+
 "next@npm:latest":
   version: 12.0.4
   resolution: "next@npm:12.0.4"
@@ -5727,6 +5750,13 @@ __metadata:
   version: 3.0.0
   resolution: "normalize-path@npm:3.0.0"
   checksum: 88eeb4da891e10b1318c4b2476b6e2ecbeb5ff97d946815ffea7794c31a89017c70d7f34b3c2ebf23ef4e9fc9fb99f7dffe36da22011b5b5c6ffa34f4873ec20
+  languageName: node
+  linkType: hard
+
+"normalize-stitches@npm:^0.1.2":
+  version: 0.1.2
+  resolution: "normalize-stitches@npm:0.1.2"
+  checksum: 86fe4db9bb84d4714c42517d97d5601a86c828f6d62161a3a5ccf244f00159729815880c479d54ab405c517f0ff8ed0c9f93b8da0fd0e89a6f3488caa6306451
   languageName: node
   linkType: hard
 

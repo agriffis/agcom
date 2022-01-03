@@ -1,11 +1,9 @@
 import {ComponentProps, forwardRef} from 'react'
-import styled, {system} from '@agriffis/xstyled-styled-components'
+import {styled} from 'theme'
 import NextImage from 'next/image'
 import {IMAGES} from '../lib/site'
 
-const StyledImage = styled(NextImage)`
-  ${system}
-`
+const StyledImage = styled(NextImage)
 
 interface ImagePropsBase {}
 
@@ -25,7 +23,7 @@ export type ImageProps = ImagePropsPoly &
   Omit<ComponentProps<typeof StyledImage>, keyof ImagePropsPoly>
 
 export const Image = forwardRef<any, ImageProps>(
-  ({post = false, wide = false, name, src, ...props}, ref) => (
+  ({name, src, ...props}, ref) => (
     <StyledImage {...IMAGES[name]} {...props} ref={ref} />
   ),
 )

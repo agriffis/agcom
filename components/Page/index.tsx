@@ -1,6 +1,6 @@
 import {ReactNode} from 'react'
 import Head from 'next/head'
-import {useTheme} from '@agriffis/xstyled-styled-components'
+import {useTheme} from 'theme'
 import {Footer, Link, Image, Nav} from 'components'
 import * as site from 'lib/site'
 import * as S from './styles'
@@ -73,7 +73,12 @@ export function Page({
 
       <S.Page>
         <Link href={logoLink}>
-          <Image name={logo} priority sizes={theme.sizes.logo} />
+          <Image
+            name={logo}
+            priority
+            // @ts-ignore
+            sizes={theme.sizes.logo.value}
+          />
         </Link>
         <Nav />
         {heading && <S.Heading>{heading}</S.Heading>}

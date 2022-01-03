@@ -1,37 +1,27 @@
-import styled, {
-  SystemProps,
-  css,
-  system,
-} from '@agriffis/xstyled-styled-components'
+import {styled} from 'theme'
 
-interface MediaProps {
-  variant?: 'normal' | 'wide'
-}
+export const Media = styled('div', {
+  marginTop: '$6',
+  marginBottom: '$6',
 
-export const Media = styled.div<MediaProps & SystemProps>(
-  ({variant = 'normal'}) => css`
-    margin-top: 6;
-    margin-bottom: 6;
+  'img, video': {
+    display: 'block',
+    width: 'auto',
+  },
 
-    img,
-    video {
-      display: block;
-      width: auto;
-    }
+  '@desktop': {
+    marginLeft: '3em',
+    marginRight: '2em',
+    maxWidth: '28em',
+  },
 
-    @media (min-width: desktop) {
-      margin-left: 3em;
-      margin-right: 2em;
-      max-width: 28em;
-
-      ${variant === 'wide' &&
-      css`
-        margin-left: 0;
-        margin-right: 0;
-        max-width: none;
-      `}
-    }
-
-    ${system}
-  `,
-)
+  variants: {
+    wide: {
+      true: {
+        marginLeft: '0',
+        marginRight: '0',
+        maxWidth: 'none',
+      },
+    },
+  },
+})
