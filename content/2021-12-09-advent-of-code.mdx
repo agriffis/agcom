@@ -1,0 +1,151 @@
+---
+title: Advent of Code 2021 - Day 9
+author: Aron
+tags: [advent-of-code, javascript]
+excerpt: Smoke Basin
+index: false
+---
+
+> If you can model how the smoke flows through the caves, you might be able to
+> avoid it and be that much safer. The submarine generates a heightmap of the
+> floor of the nearby caves for you (your puzzle input).
+
+## Day 9a
+
+Feeling a bit more idealistic, I guess, wrote a lib function to reduce over
+a two-dimensional grid:
+
+```typescript
+interface GridReduce {
+  <T = any, R = any>(grid: T[][], fn: (r: R, v: T) => R, init: R): R
+  indexed: <T = any, R = any>(
+    grid: T[][],
+    fn: (r: R, v: T, p: Point) => R,
+    init: R,
+  ) => R
+}
+
+const gridReduce: GridReduce = (grid, fn, init) =>
+  reduce(grid, (r, vs) => reduce(vs, (r, v) => fn(r, v), r), init)
+
+gridReduce.indexed = (grid, fn, init) =>
+  reduce.indexed(
+    grid,
+    (r, vs, y) => reduce.indexed(vs, (r, v, x) => fn(r, v, {x, y}), r),
+    init,
+  )
+```
+
+Here's my solution for day 9a using `gridReduce`:
+
+```typescript
+export const d9a = ({input = inputs.d9}: {input?: string}) => {
+  const width = clean(input).indexOf('\n')
+  const depths = ranks(Array.from(input.replace(/\D/g, '')).map(parse10), width)
+  const deltas = [-1, 1].flatMap(d => [
+    {dx: d, dy: 0},
+    {dx: 0, dy: d},
+  ])
+  const nearby = ({x, y}: Point): Point[] =>
+    R.pipe(
+      deltas,
+      R.map(({dx, dy}) => ({x: x + dx, y: y + dy})),
+      R.filter(({x, y}) => x >= 0 && x < width && y >= 0 && y < depths.length),
+    )
+  const depthAt = ({x, y}: Point) => depths[y][x]
+  return gridReduce.indexed(
+    depths,
+    (risk, d, p) =>
+      nearby(p)
+        .map(depthAt)
+        .every(s => s > d)
+        ? risk + d + 1
+        : risk,
+    0,
+  )
+}
+```
+
+Day 9a sample:
+
+<Advent day={9} part="a" debug input={`
+2199943210
+3987894921
+9856789892
+8767896789
+9899965678
+`} />
+
+Day 9a mine:
+
+<Advent day={9} part="a" debug />
+
+## Day 9b
+
+```typescript
+const setAdd = <T = any>(set: Set<T>, x: T) => {
+  const sizeBefore = set.size
+  set.add(x)
+  return set.size > sizeBefore
+}
+
+export const d9b = ({input = inputs.d9}: {input?: string}) => {
+  const width = clean(input).indexOf('\n')
+  const depths = ranks(Array.from(input.replace(/\D/g, '')).map(parse10), width)
+  const deltas = [-1, 1].flatMap(d => [
+    {dx: d, dy: 0},
+    {dx: 0, dy: d},
+  ])
+  const nearby = (
+    {x, y}: Point,
+    {w, h}: {w: number; h: number} = {w: width, h: depths.length},
+  ): Point[] =>
+    R.pipe(
+      deltas,
+      R.map(({dx, dy}) => ({x: x + dx, y: y + dy})),
+      R.filter(({x, y}) => x >= 0 && x < w && y >= 0 && y < h),
+    )
+  const depthAt = ({x, y}: Point) => depths[y][x]
+  const lows = gridReduce.indexed(
+    depths,
+    (lows, d, p) => (
+      nearby(p)
+        .map(depthAt)
+        .every(s => s > d) && lows.push(p),
+      lows
+    ),
+    [] as Point[],
+  )
+  const basinAt = (
+    here: Point,
+    found: Set<string> = new Set(),
+  ): Set<string> => {
+    for (const there of nearby(here)) {
+      if (depthAt(there) < 9 && setAdd(found, `${there.x},${there.y}`)) {
+        basinAt(there, found)
+      }
+    }
+    return found
+  }
+  const basins = lows.map(low => basinAt(low))
+  return R.pipe(
+    basins.map(b => b.size).sort((a, b) => b - a),
+    R.take(3),
+    mult,
+  )
+}
+```
+
+Day 9b sample:
+
+<Advent day={9} part="b" debug input={`
+2199943210
+3987894921
+9856789892
+8767896789
+9899965678
+`} />
+
+Day 9b mine:
+
+<Advent day={9} part="b" debug />

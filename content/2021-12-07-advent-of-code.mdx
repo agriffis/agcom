@@ -1,0 +1,59 @@
+---
+title: Advent of Code 2021 - Day 7
+author: Aron
+tags: [advent-of-code, javascript]
+excerpt: The Treachery of Whales
+index: false
+---
+
+> A giant whale has decided your submarine is its next meal, and it's much
+> faster than you are. There's nowhere to run!
+
+## Day 7a
+
+```typescript
+export const d7a = ({input = inputs.d7}: {input?: string}) => {
+  const ns = ints(input)
+  const costs = R.range(min(ns), max(ns)).map(pos =>
+    sum(ns.map(n => Math.abs(n - pos))),
+  )
+  return min(costs)
+}
+```
+
+Day 7a sample:
+
+<Advent day={7} part="a" input="16,1,2,0,4,2,7,1,2,14" debug />
+
+Day 7a mine:
+
+<Advent day={7} part="a" debug />
+
+## Day 7b
+
+```typescript
+export const d7b = ({input = inputs.d7}: {input?: string}) => {
+  const ns = ints(input)
+  // cost-per-distance lookup table
+  const {cpd} = R.range(0, max(ns) - min(ns) + 1).reduce(
+    ({cpd, rate}, d) => {
+      cpd[d + 1] = cpd[d] + rate
+      return {cpd, rate: rate + 1}
+    },
+    {cpd: [0], rate: 0},
+  )
+  cpd.shift() // avoids needing (cpd[d] || 0) in the reduction
+  const costs = R.range(min(ns), max(ns)).map(pos =>
+    sum(ns.map(n => cpd[Math.abs(n - pos)])),
+  )
+  return min(costs)
+}
+```
+
+Day 7b sample:
+
+<Advent day={7} part="b" input="16,1,2,0,4,2,7,1,2,14" debug />
+
+Day 7b mine:
+
+<Advent day={7} part="b" debug />

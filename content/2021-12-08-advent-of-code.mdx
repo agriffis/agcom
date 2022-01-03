@@ -1,0 +1,158 @@
+---
+title: Advent of Code 2021 - Day 8
+author: Aron
+tags: [advent-of-code, javascript]
+excerpt: Seven Segment Search
+index: false
+---
+
+> You barely reach the safety of the cave when the whale smashes into the cave
+> mouth, collapsing it. Sensors indicate another exit to this cave at a much
+> greater depth, so you have no choice but to press on.
+
+## Day 8a
+
+```typescript
+export const d8a = ({input = inputs.d8}: {input?: string}) => {
+  const digs = ranks(clean(input).split(/\W+/), 14).flatMap(xs => xs.slice(10))
+  return sum(digs.map(dig => Number([2, 3, 4, 7].includes(dig.length))))
+}
+```
+
+Day 8a short:
+
+<Advent day={8} part="a" input={`
+acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf
+`} debug />
+
+Day 8a long:
+
+<Advent day={8} part="a" input={`
+be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe
+edbfga begcd cbg gc gcadebf fbgde acbgfd abcde gfcbed gfec | fcgedb cgb dgebacf gc
+fgaebd cg bdaec gdafb agbcfd gdcbef bgcad gfac gcb cdgabef | cg cg fdcagb cbg
+fbegcd cbd adcefb dageb afcb bc aefdc ecdab fgdeca fcdbega | efabcd cedba gadfec cb
+aecbfdg fbg gf bafeg dbefa fcge gcbea fcaegb dgceab fcbdga | gecf egdcabf bgf bfgea
+fgeab ca afcebg bdacfeg cfaedg gcfdb baec bfadeg bafgc acf | gebdcfa ecba ca fadegcb
+dbcfg fgd bdegcaf fgec aegbdf ecdfab fbedc dacgb gdcebf gf | cefg dcbef fcge gbcadfe
+bdfegc cbegaf gecbf dfcage bdacg ed bedf ced adcbefg gebcd | ed bcgafe cdgba cbgef
+egadfb cdbfeg cegd fecab cgb gbdefca cg fgcdab egfdb bfceg | gbdfcae bgc cg cgb
+gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce
+`} debug />
+
+Day 8a mine:
+
+<Advent day={8} part="a" debug />
+
+## Day 8b
+
+```typescript
+export const d8b = ({input = inputs.d8}: {input?: string}) => {
+  const eight = new Set('abcdefg')
+  const signals = ranks(clean(input).split(/\W+/), 14).map(xs => ({
+    sigs: xs.slice(0, 10).map(x => new Set(x)),
+    one: new Set(xs.find(x => x.length === 2)),
+    four: new Set(xs.find(x => x.length === 4)),
+    seven: new Set(xs.find(x => x.length === 3)),
+    ins: xs.slice(10).map(x => new Set(x)),
+  }))
+  return sum(
+    signals.map(({one, four, seven, sigs, ins}) => {
+      const nine = sole(sigs.filter(x => x.size === 6 && isSuperset(x, four)))
+      const e = sole(difference(eight, nine))
+      const two = sole(sigs.filter(x => x.size === 5 && x.has(e)))
+      const f = sole(difference(one, two))
+      const c = sole(difference(one, f))
+      const three = sole(
+        sigs.filter(x => x.size === 5 && x !== two && x.has(c)),
+      )
+      const five = sole(
+        sigs.filter(x => x.size === 5 && x !== two && x !== three),
+      )
+      const zero = sole(
+        sigs.filter(x => x.size === 6 && x !== nine && x.has(c)),
+      )
+      const six = sole(
+        sigs.filter(x => x.size === 6 && x !== nine && x !== zero),
+      )
+      const numbers = [
+        zero,
+        one,
+        two,
+        three,
+        four,
+        five,
+        six,
+        seven,
+        eight,
+        nine,
+      ]
+      const outs = ins.map(i => numbers.findIndex(n => equals(i, n)))
+      return parseInt(outs.join(''))
+    }),
+  )
+}
+
+function isSuperset(set: Set<any>, subset: Set<any>) {
+  for (let x of subset) {
+    if (!set.has(x)) {
+      return false
+    }
+  }
+  return true
+}
+
+function difference<T = any>(a: Set<T>, b: Set<any> | any[] | string): Set<T> {
+  let d = new Set(a)
+  for (let x of b) {
+    d.delete(x as unknown as T)
+  }
+  return d
+}
+
+function sole<T = any>(xs: Set<T> | Array<T>): T {
+  if (Array.isArray(xs)) {
+    if (xs.length !== 1) {
+      throw new TypeError(
+        `can't determine sole member of array length ${xs.length}`,
+      )
+    }
+    return xs[0]
+  }
+  if (xs.size !== 1) {
+    throw new TypeError(`can't determine sole member of set size ${xs.size}`)
+  }
+  for (let member of xs) {
+    return member
+  }
+}
+
+function equals(a: Set<any>, b: Set<any>) {
+  return a.size === b.size && difference(a, b).size === 0
+}
+```
+
+Day 8b short:
+
+<Advent day={8} part="b" input={`
+acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf
+`} debug />
+
+Day 8b long:
+
+<Advent day={8} part="b" input={`
+be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe
+edbfga begcd cbg gc gcadebf fbgde acbgfd abcde gfcbed gfec | fcgedb cgb dgebacf gc
+fgaebd cg bdaec gdafb agbcfd gdcbef bgcad gfac gcb cdgabef | cg cg fdcagb cbg
+fbegcd cbd adcefb dageb afcb bc aefdc ecdab fgdeca fcdbega | efabcd cedba gadfec cb
+aecbfdg fbg gf bafeg dbefa fcge gcbea fcaegb dgceab fcbdga | gecf egdcabf bgf bfgea
+fgeab ca afcebg bdacfeg cfaedg gcfdb baec bfadeg bafgc acf | gebdcfa ecba ca fadegcb
+dbcfg fgd bdegcaf fgec aegbdf ecdfab fbedc dacgb gdcebf gf | cefg dcbef fcge gbcadfe
+bdfegc cbegaf gecbf dfcage bdacg ed bedf ced adcbefg gebcd | ed bcgafe cdgba cbgef
+egadfb cdbfeg cegd fecab cgb gbdefca cg fgcdab egfdb bfceg | gbdfcae bgc cg cgb
+gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce
+`} debug />
+
+Day 8b mine:
+
+<Advent day={8} part="b" debug />

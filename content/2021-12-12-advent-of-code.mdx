@@ -1,0 +1,191 @@
+---
+title: Advent of Code 2021 - Day 12
+author: Aron
+tags: [advent-of-code, javascript]
+excerpt: Passage Pathing
+index: false
+---
+
+> With your submarine's subterranean subsystems subsisting suboptimally, the
+> only way you're getting out of this cave anytime soon is by finding a path
+> yourself.
+
+## Day 12a
+
+```typescript
+export const d12 = ({
+  input = inputs.d12,
+  pre,
+  post,
+}: {
+  input?: string
+  pre: (node: string) => boolean
+  post: (node: string) => void
+}) => {
+  const graph = clean(input)
+    .split(/\n/)
+    .map(s => s.split('-'))
+    .reduce((graph, [k, v]) => {
+      if (v !== 'start') {
+        graph[k] = graph[k] || []
+        graph[k].push(v)
+      }
+      if (k !== 'start') {
+        graph[v] = graph[v] || []
+        graph[v].push(k)
+      }
+      return graph
+    }, {})
+  let n = 0
+  const walk = (node: string) => {
+    if (node === 'end') {
+      n++
+    } else {
+      for (const next of graph[node]) {
+        pre(next) && (walk(next), post(next))
+      }
+    }
+  }
+  walk('start')
+  return n
+}
+
+export const d12a = props => {
+  const sm = (s: string) => s.charCodeAt(0) >= 97
+  const v = {}
+  return d12({
+    ...props,
+    pre: (node: string) => (v[node] ? false : ((v[node] = sm(node)), true)),
+    post: (node: string) => (v[node] = false),
+  })
+}
+```
+
+Example:
+
+<Advent day={12} part="a" debug input={`
+start-A
+start-b
+A-c
+A-b
+b-d
+A-end
+b-end
+`} />
+
+Slightly larger example:
+
+<Advent day={12} part="a" debug input={`
+dc-end
+HN-start
+start-kj
+dc-start
+dc-HN
+LN-dc
+HN-end
+kj-sa
+kj-HN
+kj-dc
+`} />
+
+Even larger example:
+
+<Advent day={12} part="a" debug input={`
+fs-end
+he-DX
+fs-he
+start-DX
+pj-DX
+end-zg
+zg-sl
+zg-pj
+pj-he
+RW-he
+fs-DX
+pj-RW
+zg-RW
+start-pj
+he-WI
+zg-he
+pj-fs
+start-RW
+`} />
+
+Mine:
+
+<Advent day={12} part="a" debug />
+
+## Day 12b
+
+```typescript
+export const d12b = props => {
+  const sm = (s: string) => s.charCodeAt(0) >= 97
+  const v = {}
+  let twice = null
+  return d12({
+    ...props,
+    pre: (node: string) =>
+      v[node] && twice
+        ? false
+        : v[node]
+        ? ((twice = node), true)
+        : ((v[node] = sm(node)), true),
+    post: (node: string) =>
+      twice === node ? (twice = null) : (v[node] = false),
+  })
+}
+```
+
+Example:
+
+<Advent day={12} part="b" debug input={`
+start-A
+start-b
+A-c
+A-b
+b-d
+A-end
+b-end
+`} />
+
+Slightly larger example:
+
+<Advent day={12} part="b" debug input={`
+dc-end
+HN-start
+start-kj
+dc-start
+dc-HN
+LN-dc
+HN-end
+kj-sa
+kj-HN
+kj-dc
+`} />
+
+Even larger example:
+
+<Advent day={12} part="b" debug input={`
+fs-end
+he-DX
+fs-he
+start-DX
+pj-DX
+end-zg
+zg-sl
+zg-pj
+pj-he
+RW-he
+fs-DX
+pj-RW
+zg-RW
+start-pj
+he-WI
+zg-he
+pj-fs
+start-RW
+`} />
+
+Mine:
+
+<Advent day={12} part="b" debug />

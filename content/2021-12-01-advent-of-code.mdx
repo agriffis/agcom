@@ -3,30 +3,18 @@ title: Advent of Code 2021 - Day 1
 author: Aron
 tags: [advent-of-code, javascript]
 excerpt: Sonar Sweep
+index: false
 ---
 
-> Your instincts tell you that in order to save Christmas, you'll need to get
-> all fifty stars by December 25th.
-
-This year I'm tackling [Advent of Code](https://adventofcode.com/) again, after
-taking last year off. Two years ago, [I used
-Clojure](https://github.com/agriffis/adventofcode2019); this time I'll tilt
-pedestrian and use TypeScript.
-
-The idea is to do it right here, in my blog, built on
-[Next.js](https://nextjs.org/) and [MDX](https://mdxjs.com/). At a minimum we'll
-get code and raw answers on the screen; if we're lucky, there'll be graphics.
-
-Want to know what MDX looks like? It's Markdown with React instead of HTML.
-Check out [this post](https://raw.githubusercontent.com/agriffis/agcom/main/content/2021-12-01-advent-of-code.mdx).
-
-Let's dive in and we'll loop back to blog mechanics at the end.
-
-## Day 1a
+> As the submarine drops below the surface of the ocean, it automatically
+> performs a sonar sweep of the nearby sea floor. On a small screen, the sonar
+> sweep report (your puzzle input) appears: each line is a measurement of the
+> sea floor depth as the sweep looks further and further away from the
+> submarine.
 
 The problem is [here](https://adventofcode.com/2021/day/1).
 
-My solution:
+## Day 1a
 
 ```typescript
 export const d1a = ({input}: DayProps) =>
@@ -97,112 +85,3 @@ Here's the result with the sample input, with debugging enabled:
 and here's the result with my own input:
 
 <Advent day={1} part="b" />
-
-## Worker and debug
-
-Some Advent of Code problems take seconds-to-minutes to run to completion. Two
-things we want to avoid: (1) running the solution in Next.js server-side
-rendering, (2) holding up client-side rendering.
-
-Kill two render-blockers with one `useEffect()`--it doesn't run on the server,
-and it doesn't hold up the initial render on the client:
-
-```typescript
-import {useEffect, useState} from 'react'
-
-const Component = () => {
-  const [result, setResult] = useState<string>('')
-
-  useEffect(() => {
-    const result = longRunningFunction()
-    setResult(result)
-  }, [])
-
-  return <p>Result: {result}</p>
-}
-```
-
-But... what about debug? We could `console.log` but where's the fun in that?
-If we want the client to rerender while the function runs, without waiting for
-the end, then we need to move computation off the main thread. Put your hands
-together and give a warm welcome to [web
-workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers).
-
-So we start with a React hook:
-
-```typescript
-const useWorker = (message: any, cb: any) => {
-  const [worker] = useState(() => {
-    if (typeof Worker !== 'undefined') {
-      const worker = new Worker(new URL('./advent.worker.ts', import.meta.url))
-      worker.addEventListener('message', (event: any) => cb(event.data))
-      worker.postMessage(message)
-      return worker
-    }
-  })
-
-  // Terminate on unmount
-  useEffect(() => () => worker.terminate(), [worker])
-
-  return worker
-}
-```
-
-The hook starts a worker, attaches a listener, sends a message, and prepares to
-fire the poor bastard as soon as the company's squeezed the last ounce of profit
-from his labor.
-
-But work he does, passing messages between the component and the solution
-functions you saw earlier in this post:
-
-```typescript
-self.addEventListener('message', (event: any) => {
-  console.log('worker received:', event.data)
-  const props = event.data as AdventProps
-  const result = days[`d${event.data.day}${event.data.part}`]({
-    ...(event.data as AdventProps),
-    dbg: props.debug
-      ? (...args: any) => {
-          self.postMessage({debug: args.join(' ')})
-        }
-      : () => {},
-  })
-  self.postMessage({result})
-})
-```
-
-Finally, debugging! If the calling component passes the `debug` prop then the
-`dbg` function can post back in-progress messages. The component renders those
-messages alongside the result, whenever it deigns to arrive:
-
-```typescript
-const AnyDay: Day = (props: AdventProps) => {
-  const [debug, setDebug] = useState<string>('')
-  const [result, setResult] = useState<string>('')
-
-  useWorker(props, data => {
-    console.log('received from worker', data)
-    if (data.result) {
-      setResult(data.result)
-    } else if (data.debug) {
-      setDebug(debug => debug + '\n' + data.debug)
-    }
-  })
-
-  return (
-    <>
-      {result}
-      {debug && (
-        <>
-          {'\n\n'}DEBUG:{debug}
-        </>
-      )}
-    </>
-  )
-}
-```
-
-Here's the full code:
-[Advent.tsx](https://github.com/agriffis/agcom/blob/4b52572861b4d1273328077bb59770649448c5ba/components/Advent.tsx) |
-[advent.worker.ts](https://github.com/agriffis/agcom/blob/4b52572861b4d1273328077bb59770649448c5ba/components/advent.worker.ts) |
-[advent.ts](https://github.com/agriffis/agcom/blob/4b52572861b4d1273328077bb59770649448c5ba/components/advent.ts)

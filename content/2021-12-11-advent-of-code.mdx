@@ -1,0 +1,109 @@
+---
+title: Advent of Code 2021 - Day 11
+author: Aron
+tags: [advent-of-code, javascript]
+excerpt: Dumbo Octopus
+index: false
+---
+
+> There are 100 octopuses arranged neatly in a 10 by 10 grid. Each octopus
+> slowly gains energy over time and flashes brightly for a moment when its
+> energy is full. Although your lights are off, maybe you could navigate through
+> the cave without disturbing the octopuses if you could predict when the
+> flashes of light will happen.
+
+## Day 11a
+
+```typescript
+const flash = (vs: number[], i: number) => {
+  vs[i] = 0
+  const x = i % 10
+  const y = (i - x) / 10
+  for (const dx of [-1, 0, 1]) {
+    for (const dy of [-1, 0, 1]) {
+      if (dx || dy) {
+        const xx = x + dx
+        const yy = y + dy
+        if (xx >= 0 && xx < 10 && yy >= 0 && yy < 10) {
+          const j = yy * 10 + xx
+          vs[j] = vs[j] && vs[j] + 1
+        }
+      }
+    }
+  }
+}
+
+export const d11a = ({input = inputs.d11}: {input?: string}) => {
+  const vs = Array.from(input.replace(/\D/g, '')).map(x => parseInt(x))
+  let flashes = 0
+  for (let step = 0; step < 100; step++) {
+    vs.forEach((_, i) => vs[i]++)
+    for (let fs = flashes; ; flashes = fs) {
+      vs.forEach((v, i) => v > 9 && (flash(vs, i), fs++))
+      if (fs === flashes) {
+        break
+      }
+    }
+  }
+  return flashes
+}
+```
+
+Sample:
+
+<Advent day={11} part="a" debug input={`
+5483143223
+2745854711
+5264556173
+6141336146
+6357385478
+4167524645
+2176841721
+6882881134
+4846848554
+5283751526
+`} />
+
+Mine:
+
+<Advent day={11} part="a" debug />
+
+## Day 11b
+
+```typescript
+export const d11b = ({input = inputs.d11}: {input?: string}) => {
+  const vs = Array.from(input.replace(/\D/g, '')).map(x => parseInt(x))
+  for (let step = 1; ; step++) {
+    vs.forEach((_, i) => vs[i]++)
+    let flashes = 0
+    for (let fs = flashes; ; flashes = fs) {
+      vs.forEach((v, i) => v > 9 && (flash(vs, i), fs++))
+      if (fs === flashes) {
+        break
+      }
+    }
+    if (flashes === vs.length) {
+      return step
+    }
+  }
+}
+```
+
+Sample:
+
+<Advent day={11} part="b" debug input={`
+5483143223
+2745854711
+5264556173
+6141336146
+6357385478
+4167524645
+2176841721
+6882881134
+4846848554
+5283751526
+`} />
+
+Mine:
+
+<Advent day={11} part="b" debug />

@@ -1,0 +1,101 @@
+---
+title: Advent of Code 2021
+author: Aron
+tags: [advent-of-code, javascript]
+excerpt: Your instincts tell you that in order to save Christmas, you'll need to get all fifty stars by December 25th.
+---
+
+> Your instincts tell you that in order to save Christmas, you'll need to get
+> all fifty stars by December 25th.
+
+This year I'm tackling [Advent of Code](https://adventofcode.com/) again, after
+taking last year off. Two years ago, [I used
+Clojure](https://github.com/agriffis/adventofcode2019); this time I'll tilt
+pedestrian and use TypeScript.
+
+The idea is to do it right here, in my blog, built on
+[Next.js](https://nextjs.org/) and [MDX](https://mdxjs.com/). What this means is
+that my solutions will run in your browser, directly in the individual blog
+posts, rather than running on the server in advance.
+
+Here are the days I've finished so far:
+
+- <Link href="/2021-12-01-advent-of-code">Day 1: Sonar Sweep</Link>
+- <Link href="/2021-12-02-advent-of-code">Day 2: Dive!</Link>
+- <Link href="/2021-12-03-advent-of-code">Day 3: Binary Diagnostic</Link>
+- <Link href="/2021-12-04-advent-of-code">Day 4: Giant Squid</Link>
+- <Link href="/2021-12-05-advent-of-code">Day 5: Hydrothermal Venture</Link>
+- <Link href="/2021-12-06-advent-of-code">Day 6: Lanternfish</Link>
+- <Link href="/2021-12-07-advent-of-code">Day 7: The Treachery of Whales</Link>
+- <Link href="/2021-12-08-advent-of-code">Day 8: Seven Segment Search</Link>
+- <Link href="/2021-12-09-advent-of-code">Day 9: Smoke Basin</Link>
+- <Link href="/2021-12-10-advent-of-code">Day 10: Syntax Scoring</Link>
+- <Link href="/2021-12-11-advent-of-code">Day 11: Dumbo Octopus</Link>
+- <Link href="/2021-12-12-advent-of-code">Day 12: Passage Pathing</Link>
+- <Link href="/2021-12-13-advent-of-code">Day 13: Transparent Origami</Link>
+- <Link href="/2021-12-15-advent-of-code">Day 15: Chiton</Link>
+
+## How it works
+
+Some Advent of Code problems take seconds-to-minutes to run to completion. Two
+misbehaviors we need to avoid: (1) running the solution in Next.js server-side
+rendering, (2) holding up client-side rendering of the post content.
+
+We can solve both of these with a React effect. Effects don't run on the server,
+instead they wait until after the initial render on the client. For example,
+here's a React component that starts with an empty result, then runs the
+function in an effect on the client browser:
+
+```typescript
+import {useEffect, useState} from 'react'
+
+const Component = () => {
+  const [result, setResult] = useState('')
+
+  useEffect(() => {
+    const result = longRunningFunction()
+    setResult(result)
+  }, [])
+
+  return <p>Result: {result}</p>
+}
+```
+
+However there is a third misbehavior we would like to avoid: taking the browser
+hostage while the function runs. If we want the client free to rerender while
+the function runs, without waiting for the end, then we need to move computation
+off the main thread. For this we can use a [web
+worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers).
+
+So we start with a React hook that will load our worker and simultaneously send
+it a message to get started:
+
+```typescript
+const useWorker = (message: any, cb: any) => {
+  const [worker] = useState(() => {
+    if (typeof Worker !== 'undefined') {
+      const worker = new Worker(new URL('./advent.worker.ts', import.meta.url))
+      worker.addEventListener('message', (event: any) => cb(event.data))
+      worker.postMessage(message)
+      return worker
+    }
+  })
+
+  // Terminate on unmount
+  useEffect(() => () => worker.terminate(), [worker])
+
+  return worker
+}
+```
+
+The worker listens for messages and runs the appropriate day's function with the
+given input:
+
+```typescript
+self.addEventListener('message', (event: any) => {
+  const props = event.data as AdventProps
+  const fn = days[`d${props.day}${props.part}`] || days[`d${props.day}`]
+  const result = fn(props)
+  self.postMessage({result})
+})
+```

@@ -22,10 +22,12 @@ export async function getPostSource(slug: string) {
 export async function getIndex() {
   const slugs = await getSlugs()
   const sources = await Promise.all(slugs.map(getPostSource))
-  return slugs.map((slug, i) => {
-    const {data} = matter(sources[i])
-    return {data, slug}
-  })
+  return slugs
+    .map((slug, i) => {
+      const {data} = matter(sources[i])
+      return {data, slug}
+    })
+    .filter(({data: {index = true}}) => index)
 }
 
 /**
@@ -145,18 +147,25 @@ export async function getRssProps() {
   const posts = await Promise.all(
     slugs.map(slug =>
       getPostProps(slug)
-        .then(({mdxSource, ...post}) => ({
-          ...post,
-          markup: ReactDOMServer.renderToStaticMarkup(
-            <MDXRemote {...mdxSource} components={mdxComponents} />,
-          ),
-          matter: enrichFrontMatter(post),
-        }))
+        .then(
+          ({mdxSource, ...post}) =>
+            // Omit posts that have "index: false" in their top matter.
+            post.data.index !== false && {
+              ...post,
+              markup: ReactDOMServer.renderToStaticMarkup(
+                <MDXRemote {...mdxSource} components={mdxComponents} />,
+              ),
+              matter: enrichFrontMatter(post),
+            },
+        )
         .catch(e => {
           console.error(`Failed rendering ${slug}`)
           throw e
         }),
     ),
+  ).then(posts =>
+    // Omit posts that have "index: false" in their top matter.
+    posts.filter(Boolean),
   )
 
   const lastUpdated = posts

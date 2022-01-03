@@ -1,0 +1,22 @@
+---
+title: CSS-in-JS
+author: Aron
+tags: [javascript, css-in-js, react, styled-components, xstyled]
+excerpt:
+---
+
+I first learned web development with [Django](https://www.djangoproject.com/).
+The Python server generated HTML from
+[templates](https://jinja.palletsprojects.com/), and a separate (Ruby) process
+generated CSS from [SASS](https://sass-lang.com/).
+
+In theory, the system was loosely coupled with strong separation of concerns.
+The back-end developers could build their database models and HTML templates,
+the designers could write CSS to make it look nice, and the front-end devs could
+spin some [jQuery](https://jquery.com) to make it interactive.
+
+In practice, the coupling was tight and brittle. The CSS and JavaScript both
+depended on relatively stable structure and class names, so when the markup
+changed, the others often needed an accompanying change. The dependencies
+between these were hard to track and test, because they relied on matching
+string class names between separate codebases.

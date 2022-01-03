@@ -1,0 +1,110 @@
+---
+title: Advent of Code 2021 - Day 10
+author: Aron
+tags: [advent-of-code, javascript]
+excerpt: Syntax Scoring
+index: false
+---
+
+> Syntax error in navigation subsystem on line: all of them
+
+## Day 10a
+
+```typescript
+export const d10a = ({input = inputs.d10}: {input?: string}) => {
+  const lines = clean(input).split(/\n/)
+  const pairs = {'(': ')', '[': ']', '{': '}', '<': '>'}
+  const points = {')': 3, ']': 57, '}': 1197, '>': 25137}
+  const lineScore = (line: string) =>
+    reduce(
+      Array.from(line),
+      ([stack]: [string[], number], c) => {
+        if (points[c]) {
+          if (pairs[R.last(stack)] !== c) {
+            return reduced([[], points[c]])
+          }
+          stack.pop()
+        } else {
+          stack.push(c)
+        }
+        return [stack, 0]
+      },
+      [[], 0],
+    )[1]
+  return sum(lines.map(lineScore))
+}
+```
+
+Sample:
+
+<Advent day={10} part="a" debug input={`
+[({(<(())[]>[[{[]{<()<>>
+[(()[<>])]({[<{<<[]>>(
+{([(<[<>[]}>{[]{[(<()>
+(((({<>}<{<{<>}{[]{[]
+[[<[([]))<([[[[()]]]
+[{[{(]{}}([{[{{{}}([]
+{<[[]]>}<{[{[{[]{()[[[]
+[<(<(<(<))><([]([]()
+<{([([[(<>())]>(<<{{
+<{([{}[<[[[<>{}]]]>[]]
+`} />
+
+Mine:
+
+<Advent day={10} part="a" debug />
+
+## Day 10b
+
+```typescript
+export const d10b = ({input = inputs.d10}: {input?: string}) => {
+  const lines = clean(input).split(/\n/)
+  const pairs = {'(': ')', '[': ']', '{': '}', '<': '>'}
+  const points = {')': 1, ']': 2, '}': 3, '>': 4}
+  const lineScore = (line: string) =>
+    reduce.indexed(
+      Array.from(line),
+      ([stack]: [string[], number], c, i) => {
+        if (points[c]) {
+          if (pairs[R.last(stack)] !== c) {
+            return reduced([[], 0])
+          }
+          stack.pop()
+        } else {
+          stack.push(c)
+        }
+        if (i === line.length - 1 && stack.length) {
+          return [
+            [],
+            stack
+              .reverse()
+              .reduce((score, c) => 5 * score + points[pairs[c]], 0),
+          ]
+        }
+        return [stack, 0]
+      },
+      [[], 0],
+    )[1]
+  const scores = lines.map(lineScore).filter(Boolean)
+  return scores.sort((a, b) => a - b)[(scores.length + 1) / 2 - 1]
+}
+```
+
+Sample:
+
+<Advent day={10} part="b" debug input={`
+[({(<(())[]>[[{[]{<()<>>
+[(()[<>])]({[<{<<[]>>(
+{([(<[<>[]}>{[]{[(<()>
+(((({<>}<{<{<>}{[]{[]
+[[<[([]))<([[[[()]]]
+[{[{(]{}}([{[{{{}}([]
+{<[[]]>}<{[{[{[]{()[[[]
+[<(<(<(<))><([]([]()
+<{([([[(<>())]>(<<{{
+<{([{}[<[[[<>{}]]]>[]]
+`} />
+
+Mine:
+
+<Advent day={10} part="b" debug />
